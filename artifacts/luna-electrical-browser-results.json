@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "results": [
+    "1: Engineering -> Electrical immediately opens the unified Electrical Control Board (no Oyi command required), deterministic default focus (Utility)",
+    "2: Whole-building Electrical Engineering view captured",
+    "3: Electrical Control Board asset switching updates one persistent board across Utility/Main Dist./ATS/Generator/Inverter/Riser/L06 Dist./6A Meter (never a second board)",
+    "4: Start command issued from the board produces a real runtime state change (generator STARTING), visible on the same board",
+    "5: Oyi electrical-system selection (\"Show me the electrical system.\") opens the same unified board",
+    "6: Oyi Apartment 6A power trace (\"Trace power to Apartment 6A.\") resolves and keeps the board open",
+    "7: Architecture/All Systems/Structure representation switching preserves electrical runtime state",
+    "Board closes cleanly once Electrical engineering layer is left and no electrical asset remains focused",
+    "Consumer privacy boundary re-verified against the live running app: B1 electrical plant HIDDEN for a resident identity",
+    "REGRESSION: Elevator Control Board still opens correctly (Oyi \"Show me Passenger Lift 02.\") — Electrical did not break the shared SystemControlBoard shell",
+    "REGRESSION: Water Control Board still auto-opens on Engineering -> Water and its tabs still switch correctly — Electrical coexists cleanly with Water"
+  ],
+  "errors": []
+}

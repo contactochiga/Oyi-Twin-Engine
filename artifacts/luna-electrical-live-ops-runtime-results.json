@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    "Building active-source resolver: normal state resolves activeSource=utility, utilityAvailable, ATS on grid, main bus energized, stable transition, no faults",
+    "Inverter/battery participation: surfaced as informational telemetry only, never fabricated as a building supply source (matches its actual, non-cascade-participating canonical role)",
+    "L06 inherited source and Apartment 6A energization both mirror the resolver's mainBusEnergized/activeSource truth",
+    "Utility failure: resolver reflects utility unavailable, generator STARTING, activeSource NONE (truthfully reflects the gap, not a fabricated source), lastTransition records the loss",
+    "Generator RUNNING -> ATS TRANSFERRING (observable) -> ATS transferred to Generator -> full downstream re-energization (MDB/L06/Apartment 6A all agree with the resolver)",
+    "Active power-path resolution: \"Show me the active power path.\" resolves to a real route target, not a generic unresolved response",
+    "Oyi \"What is the building running on?\" resolves and answers with the live, derived narrative: \"Luna is currently running on generator supply. Utility is unavailable. Generator 01 is running normally, 82% fuel. The ATS is on generator. Main distribution is energized. Most recent transition: ATS transferred to Generator, moments ago.\"",
+    "Oyi \"Why are we on generator?\" resolves and gives a causal answer referencing the actual event log: \"Luna is currently running on generator supply. Utility is unavailable. Generator 01 is running normally, 82% fuel. The ATS is on generator. Main distribution is energized. Most recent transition: ATS transferred to Generator, moments ago.\"",
+    "Event history: full causal chain recorded in order (Utility supply lost -> Generator start initiated -> ... -> ATS transferred to Generator -> Main distribution energized)",
+    "Utility restoration: ATS transfers back to Utility, generator completes a real cooldown sequence (STOPPING -> STOPPED with logged start/complete events), all downstream stays consistent throughout the handback",
+    "Generator failure during a utility outage: resolver correctly reports activeSource NONE and an active generator fault; downstream truthfully de-energizes rather than showing a fabricated partial state",
+    "Full Oyi controller round-trip unaffected: Facility can still start the generator, Consumer still denied",
+    "Reset produces a clean, consistent resolver state and clears the event log"
+  ]
+}

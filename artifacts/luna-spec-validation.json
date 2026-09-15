@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "checks": [
+    "16 unique level programme entries",
+    "43 homes = 32 standard + 9 premium + 2 PH",
+    "80 standard bedrooms and 112 standard toilets",
+    "continuous target datums; roof 52.8m",
+    "76 source asset refs exactly preserved, with original parents/positions/policy snapshots",
+    "51 requirement families with valid existing-asset and design-decision links",
+    "4 lift assemblies with unique role keys; no duplicate lift assets",
+    "6 conceptual route requirements",
+    "new private home/room IDs remain null/candidates",
+    "all audited src and scripts files hash-identical",
+    "all six deliverables present and local links valid"
+  ],
+  "sourceFilesHashed": 136,
+  "errors": []
+}

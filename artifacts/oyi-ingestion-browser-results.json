@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "results": [
+    "11. Oyi identity in top bar: still present, unaffected by the ingestion foundation being added",
+    "12. Oyi closed conversation identity: still the Facility-matched dark-glass \"Oyi\" orb, unaffected",
+    "1. Create New Project entry: reachable from the existing Profile overflow menu (no new floating chip), opens as an overlay over the still-visible building",
+    "8. Luna reference project: \"Luna Residences (LUNA)\" already appears as a registered project — the first project exercising the system, not hardcoded as the only one possible",
+    "2. Project intake: a real form capturing name/projectId/developer/type/buildingType/address/phase/revision/notes exists, matching the brief's own example fields",
+    "3/4. Source registration + status: the seeded Luna source shows a real format, an honest support-level badge (PARTIALLY SUPPORTED), and a real file-upload input is present for registering new sources",
+    "5/6. Ingestion workflow + detected model info: real extraction status/counts shown for the Luna source — \"Extracted 265 objects.\"",
+    "7. Normalization/review state: real PROPOSED mappings with real confidence percentages are listed, Accept/Reject actions present, nothing pre-confirmed",
+    "Publish boundary proven live: confirming one real mapping then publishing produced a real canonical ref — \"Published canonical refs for this project: 1\"",
+    "9. Existing Twin still opens: closing the ingestion overlay returns cleanly to the full 3D Twin, still visually dominant",
+    "10. Existing Oyi conversation still works: a real drainage-system query resolved correctly through the unchanged intelligence pipeline",
+    "13. Existing Engineering drawer: still opens correctly, unaffected by the ingestion foundation",
+    "14. Existing systems remain operational: the Drainage Control Board (the most recently completed system) still opens correctly after the ingestion foundation and identity integration were added"
+  ],
+  "errors": []
+}

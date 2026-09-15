@@ -1,0 +1,6 @@
+src/App.css
+src/App.tsx
+src/engine/components/spatial/EngineeringDrawer.tsx
+src/engine/components/spatial/LevelRail.tsx
+src/engine/components/spatial/ScenesDrawer.tsx
+scripts/verifyPresentation.mjs

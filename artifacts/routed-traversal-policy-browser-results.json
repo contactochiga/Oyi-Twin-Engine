@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "results": [
+    "1. Facility: a common route requiring the lift is real and permitted — the route narration confirms it actually began (not silently rejected)",
+    "2. Switched to Consumer scope via the existing, real OyiPanel scope toggle",
+    "3. Consumer: \"Enter the lobby\" completes a REAL physical route (approach, door opens, threshold crossed) — common routes are not blanket-denied for Consumer",
+    "4. Consumer: riding the passenger lift to their OWN assigned floor (Level 6) is real and permitted — the narrow passengerStopAllowed() capability, never full lift control, proven by the SAME unmodified policy pipeline every other system enforces",
+    "5. Consumer: a route to an unrelated floor (Level 7, not their own home) is correctly excluded — passenger access is real but scoped to the resident's own floor, never a blanket lift-control bypass"
+  ],
+  "errors": []
+}

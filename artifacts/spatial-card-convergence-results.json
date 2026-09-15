@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "results": [
+    "1. L06 level card: breadcrumb \"Level 6\" present, rich plan rendered",
+    "2. Apartment A selected: breadcrumb \"Level 6 › Apartment A\" present, restrained highlight (not entered)",
+    "3. Apartment A interior: single embedded map (1), 27 real door swing path(s), 68 real furniture silhouette(s), live dot embedded in-card",
+    "4. Living Room selected: breadcrumb \"Level 6 › Apartment A › Living Room\", real Devices section present in the SAME card",
+    "Asset depth: Level 6 › Apartment A › Living Room › Curtain",
+    "5. Device command executed directly from the room's embedded Devices section — same card, same runtime, no separate floating device card needed for an in-apartment device",
+    "Back chain returns through room, home, summary and level; compact viewport contains the card.",
+    "6. Facility view: the common L06 plan stays visible (unchanged, privacy-safe) but the private Apartment A interior plan/card never appears through the new embedded-card path — privacy re-verified after this phase's UI changes"
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "phase": "Drainage V1",
+  "principle": "If it exists physically, represent it truthfully; if unknown, disclose DESIGN DECISION REQUIRED — never fabricate.",
+  "auditPerformedBeforeImplementation": true,
+  "existingEvidence": {
+    "wastewaterBackbone": {
+      "status": "already real since Phase 10 / Domestic Water Reference System V1",
+      "chain": [
+        "LUNA-L06-APT-A-KITCHEN-DRAIN-01",
+        "LUNA-L06-APT-A-BATH-01-DRAIN-01",
+        "LUNA-L06-APT-A-BATH-02-DRAIN-01",
+        "LUNA-L06-APT-A-BATH-03-DRAIN-01",
+        "-> LUNA-L06-APT-A-DRAIN-01",
+        "-> LUNA-L06-DRAINAGE-BRANCH-01",
+        "-> LUNA-RISER-DRAINAGE-01",
+        "-> LUNA-B1-DRAINAGE-MAIN-01"
+      ],
+      "mechanism": "parentRef only, no parallel graph"
+    },
+    "runtimeGapFixed": {
+      "refs": ["LUNA-L06-APT-A-KITCHEN-DRAIN-01", "LUNA-L06-APT-A-BATH-01-DRAIN-01", "LUNA-L06-APT-A-BATH-02-DRAIN-01", "LUNA-L06-APT-A-BATH-03-DRAIN-01"],
+      "issue": "real canonical assets since Phase 10 with no runtime rows at all",
+      "fix": "added static normal runtime rows"
+    },
+    "directionInverseWarning": {
+      "preExistingDisclosure": "docs/LUNA_MEP_COORDINATION_SPEC.md: 'Drainage's source-to-terminal graph display is inverse to actual wastewater flow.'",
+      "engineRouteBuilderModified": false,
+      "workaround": "resolver arrays ordered fixture->discharge; Oyi narrative phrases routed through query intents, not show_route"
+    },
+    "ventBeforePhase": "did not exist at all",
+    "stormwaterBeforePhase": "EQ-STORM/EQ-SUMP had zero registered instances (confirmed still true before this phase)"
+  },
+  "newCanonicalOperationalAssets": [
+    { "ref": "LUNA-ROOF-VENT-TERMINATION-01", "type": "vent_termination", "parentRef": "LUNA-RISER-DRAINAGE-01", "note": "single-stack venting; same soil/waste riser continues through roof, not a fabricated second riser" },
+    { "ref": "LUNA-ROOFTOP-STORM-DRAIN-01", "type": "roof_drain", "parentRef": "LUNA-STORM-DOWNPIPE-01" },
+    { "ref": "LUNA-STORM-DOWNPIPE-01", "type": "downpipe", "parentRef": "LUNA-SITE-STORM-DISCHARGE-01" },
+    { "ref": "LUNA-SITE-STORM-DISCHARGE-01", "type": "infrastructure_asset", "parentRef": null }
+  ],
+  "relationshipTypeDecision": {
+    "drainsToEdgesAdded": 0,
+    "routedThroughEdgesAdded": 0,
+    "reason": "every real drainage relationship this phase touches is a parentRef walk; adding redundant typed edges would duplicate the route graph, violating lunaEngineeringRelationships.ts's own stated design principle. drains_to/routed_through remain correctly defined-but-unused vocabulary."
+  },
+  "stateModel": {
+    "vocabulary": ["NORMAL", "RESTRICTED", "BLOCKED", "LEAK", "ACCESS_REQUIRED", "DESIGN_REFERENCE"],
+    "actuallyAssigned": ["NORMAL", "RESTRICTED", "BLOCKED", "DESIGN_REFERENCE"],
+    "notYetJustified": ["LEAK", "ACCESS_REQUIRED"],
+    "oneAssetUpgradedToRealTelemetry": "LUNA-L06-APT-A-DRAIN-01 (condition: clear|restricted|blocked)",
+    "newAssetsHardcodedDesignReference": true,
+    "finalDischargeDesignRequired": true
+  },
+  "capabilities": {
+    "newCommandsAdded": 0,
+    "reason": "no valve/actuator fabricated for a passive gravity system; every drainage asset remains asset-only"
+  },
+  "physicalGeometry": {
+    "newComponents": ["DrainPointGeometry", "DischargeChamberGeometry", "VentCapGeometry", "RoofDrainGeometry", "DownpipeGeometry"],
+    "newPipeRuns": 5,
+    "manufacturerNeutral": true,
+    "noFabricatedDimensions": true
+  },
+  "controlBoard": {
+    "component": "DrainageControlBoard",
+    "consumerNumber": 9,
+    "tabs": 8,
+    "defaultRef": "LUNA-B1-DRAINAGE-MAIN-01",
+    "fixtureDrainsFoldIntoStackConnectionTab": true
+  },
+  "oyiIntelligence": {
+    "newMatcher": "matchDrainageInvestigation",
+    "targetPhrases": [
+      "Show me the drainage from Apartment 6A.",
+      "Where does the master bathroom waste go?",
+      "Show me the soil stack serving Apartment 6A.",
+      "Show me the stormwater route from the roof.",
+      "Where does wastewater from this apartment terminate?",
+      "Show me the nearest drainage access point."
+    ],
+    "collisionChecksPassed": true,
+    "deliberatelyUnhandled": "Where does the master bathroom waste go? — falls through to the pre-existing generic matchShowRoute mechanism unchanged, proving route-tracing itself still works honestly for drainage"
+  },
+  "engineeringWrapUp": {
+    "allSystems": "already wired (activeSystem === 'all'), confirmed still working",
+    "structure": "already wired (SYSTEM_ORDER includes 'structure'); real gap found and fixed: structural-element selections had no Information Card, fell through to a generic unhelpful branch",
+    "structuralInformationCardFix": {
+      "file": "src/luna/LunaContextCard.tsx",
+      "fields": ["canonical type", "level", "local position", "connected element (if set)"],
+      "commandsExposed": 0,
+      "disclosure": "Conceptual, coordinated reference structural element — not certified structural design, reinforcement, loads or member sizing."
+    }
+  },
+  "doNotOverbuildHonored": [
+    "no pipe diameters/gradients/invert levels fabricated",
+    "no sump/lifting pump equipment invented",
+    "no treatment/discharge authority claimed",
+    "no valves/actuators fabricated for gravity drainage",
+    "no second vent riser fabricated",
+    "no continuous downpipe-to-grade geometry fabricated",
+    "no new capabilities added to any of the 9 prior systems",
+    "RepresentationPolicy unchanged"
+  ],
+  "safetyBoundaries": {
+    "referenceSimulationLabeledEverywhere": true,
+    "noCrossSystemContamination": "proven: Fire and HVAC resolve independently while a drainage blockage is active"
+  },
+  "tests": {
+    "deterministic": { "script": "scripts/verifyDrainage.mjs", "checks": 18, "status": "all passing, run twice for stability" },
+    "browser": {
+      "script": "scripts/verifyDrainageBrowser.mjs",
+      "screenshots": [
+        "luna-drainage-engineering-board.png",
+        "luna-drainage-wastewater-backbone.png",
+        "luna-drainage-apartment-6a-route.png",
+        "luna-drainage-vent.png",
+        "luna-drainage-stormwater.png",
+        "luna-drainage-blockage.png",
+        "luna-drainage-recovery.png",
+        "luna-all-systems-view.png",
+        "luna-structure-view.png",
+        "luna-structure-information-card-attempt.png",
+        "luna-drainage-facility-view.png",
+        "luna-regression-water-board.png",
+        "luna-regression-electrical-board.png"
+      ],
+      "structuralInformationCardLiveClick": "not achieved in headless harness — disclosed known limitation, see spec §10",
+      "status": "all assertions passing"
+    },
+    "regressionConfirmed": ["Elevator", "Water", "Electrical", "Electrical Live Ops", "Fire", "HVAC", "Access", "CCTV", "Network/Edge"],
+    "assetCountBaseline": { "before": 82, "after": 86, "updatedIn": "scripts/verifyLift.mjs" },
+    "typecheckBuildLint": "clean"
+  }
+}

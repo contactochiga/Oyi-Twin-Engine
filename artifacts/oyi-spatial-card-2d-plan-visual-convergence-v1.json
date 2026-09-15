@@ -1,0 +1,130 @@
+{
+  "phase": "OYI_SPATIAL_CARD_2D_PLAN_VISUAL_CONVERGENCE_V1",
+  "status": "implemented_verified_local",
+  "gitAudit": {
+    "available": false,
+    "reason": "The local /Users/ochigaidoko/Oyi-Twin-Engine folder has no .git metadata in this environment, so git status and git diff cannot produce a working-tree diff."
+  },
+  "preserved": [
+    "Inherited Apartment A 14-room interior implementation",
+    "Existing RepresentationPolicy behavior and policy source",
+    "Canonical IDs and 2D-to-3D canonical binding",
+    "Shared navigationMode state and TELEPORT/TOUR semantics",
+    "Existing world-to-2D live position transform",
+    "Existing Oyi parser/controller path",
+    "Existing Twin runtime provider and command execution path",
+    "Facility/Consumer projection model",
+    "Engineering Layers, View/Section tray and Level Rail behavior"
+  ],
+  "filesChangedInContinuation": [
+    "src/App.tsx",
+    "src/luna/InteriorNavigationCard.tsx",
+    "src/luna/LevelContextCard.tsx",
+    "src/luna/ApartmentContextCard.tsx",
+    "src/luna/LunaSpatialMap.tsx",
+    "src/luna/NavigationModeToggle.tsx",
+    "src/engine/components/FloorPlan2D.tsx",
+    "src/ui/AssetInfoPanel.tsx",
+    "scripts/verifySpatialCardConvergence.mjs",
+    "docs/OYI_SPATIAL_CARD_2D_PLAN_VISUAL_CONVERGENCE_V1.md",
+    "artifacts/oyi-spatial-card-2d-plan-visual-convergence-v1.json",
+    "artifacts/oyi-spatial-card-2d-plan-visual-convergence-v1-report.md"
+  ],
+  "cardProgression": [
+    "Level",
+    "Apartment or common space",
+    "Room",
+    "Asset"
+  ],
+  "breadcrumbs": [
+    "Level 6",
+    "Level 6 > Apartment A",
+    "Level 6 > Apartment A > Living Room",
+    "Level 6 > Apartment A > Living Room > Curtain"
+  ],
+  "screenshots": [
+    "artifacts/scc-01-l06-level-card.png",
+    "artifacts/scc-02-apartment-a-selected.png",
+    "artifacts/scc-03-apartment-a-interior.png",
+    "artifacts/scc-04-living-room-selected.png",
+    "artifacts/scc-05-actual-device-selected.png",
+    "artifacts/scc-05-device-command.png",
+    "artifacts/scc-06-facility-view.png",
+    "artifacts/scc-07-assigned-consumer.png",
+    "artifacts/scc-08-apartment-overview.png",
+    "artifacts/scc-09-compact-card.png"
+  ],
+  "spatialCardBrowserProof": {
+    "passed": true,
+    "source": "artifacts/spatial-card-convergence-results.json",
+    "observed": {
+      "singleEmbeddedMap": true,
+      "doorSwingPaths": 27,
+      "furnitureSilhouettes": 68,
+      "liveDotEmbeddedInCard": true,
+      "facilityPrivateInteriorBlocked": true,
+      "compactViewportContained": true
+    }
+  },
+  "validation": {
+    "green": [
+      "npx tsc -b --pretty false",
+      "npm run lint (warning-only)",
+      "npm run build",
+      "node scripts/verifySpatialCardConvergence.mjs",
+      "npm run test:representation",
+      "npm run test:presentation",
+      "npm run test:lift",
+      "npm run test:four-lift",
+      "npm run test:water",
+      "npm run test:electrical",
+      "npm run test:electrical-live-ops",
+      "npm run test:fire",
+      "npm run test:hvac",
+      "npm run test:access",
+      "npm run test:cctv",
+      "npm run test:network",
+      "npm run test:drainage",
+      "npm run test:ingestion",
+      "npm run test:l06-gold-standard",
+      "npm run test:grand-lobby",
+      "npm run test:spatial-transition",
+      "npm run test:routed-traversal",
+      "npm run test:l06-floor",
+      "npm run test:apt-a-interior",
+      "npm run test:apt-a-graph",
+      "npm run test:apt-a-oyi-semantics",
+      "npm run test:apt-a-map-policy",
+      "node scripts/verifyApartmentAMapPrivacyBrowser.mjs",
+      "node scripts/verifyApartmentATeleportBrowser.mjs",
+      "node scripts/verifyApartmentAGoldenJourneyBrowser.mjs",
+      "node scripts/verifyRoutedTraversalBrowser.mjs",
+      "npm run test:routed-traversal:policy-browser",
+      "node scripts/verifyL06FloorBrowser.mjs",
+      "node scripts/verifyOyiIdentityBrowser.mjs"
+    ],
+    "knownPreExistingOrDisclosed": [
+      {
+        "command": "npm run test:ingestion-v2",
+        "reason": "Known L06 derived outline depth mismatch from earlier floor-plate geometry."
+      },
+      {
+        "command": "node scripts/verifyL06GoldStandardBrowser.mjs",
+        "reason": "Known fragile old Kitchen-door pixel-click assertion after route/privacy sections succeed."
+      },
+      {
+        "area": "Apartment A internal TOUR continuation",
+        "reason": "Golden journey still reports the disclosed internal multi-hop TOUR stall after the outer Take me home route."
+      }
+    ],
+    "newFailures": []
+  },
+  "productionBoundary": {
+    "productionDeploy": false,
+    "cloudWrites": false,
+    "supabaseWrites": false,
+    "serviceRoleKeys": false,
+    "physicalDeviceCommands": false,
+    "remoteMigrations": false
+  }
+}

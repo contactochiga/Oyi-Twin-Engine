@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "checks": [
+    "1. L06 A source registration: registered as a second real BuildingSource on the existing LUNA project, not a new project or a new store",
+    "2. Source -> apartment mapping: LUNA-L06-APT-A extracted and mapped to its own already-canonical ref at full confidence",
+    "3. Room mapping: all 14 real rooms extracted and mapped to their own existing canonical refs",
+    "4. Mapping confidence: rooms/apartment (already-canonical) score full confidence; doors (newly proposed) score a real, lower, evidence-based confidence — an honest gradient, not uniform certainty",
+    "5. Unresolved handling: no window objects exist per room and this is disclosed via a real extraction warning, never silently invented",
+    "6. Coordinate transform: the massing/plan frame divergence this phase originally disclosed was resolved by a later phase (L06 Gold Standard Part 2) — both frames now read the same live value, computed not hand-typed; source frame remains an honest identity transform pending a real source",
+    "7. Asset binding readiness: source status honestly PENDING (no real source registered) — the adapter/normalizer/store pathway is real and ready to receive one",
+    "8. Canonical identity preservation: LUNA-L06-APT-A and every real room ref are preserved exactly, never renamed",
+    "9. Duplicate detection (extraction): zero duplicate source ids in the L06 Apt A model",
+    "10. Door/opening mapping: 27 real door openings extracted from doors[] data, each proposed as PROPOSED (never auto-confirmed)",
+    "11. Structural coordination: checked against 6 real LUNA-L06 columns — status CLEAR, min clearance 0.106m",
+    "12. MEP interface compatibility: 11 rooms associated with real, already-existing device/asset refs by position-containment — no new assets or routes invented",
+    "13. Facility representation: private-room and door refs both resolve to OPERATIONAL_2D for Facility — unchanged privacy boundary, RepresentationPolicy untouched",
+    "14. Consumer representation: the assigned resident sees FULL_3D, a different resident does not — unchanged, real, RepresentationPolicy-enforced boundary",
+    "15. Versioning/replaceability: frame contract is explicitly versioned (v1); the Gold Standard registry is fully derived (not hand-duplicated) and every room discloses PROCEDURAL_REFERENCE status",
+    "16. Cross-source duplicate detection: two independent sources both proposing LUNA-L06-APT-A converge to exactly one published canonical record, with the duplicate explicitly skipped and disclosed — never silently double-counted"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "revision": "test-fixture-v1",
+  "url": "/architectural-assets/ground-fixture.glb",
+  "sha256": "8ea6bdea4af0c828f05a3c206de264fd6a665b35c06876ff95f60005c321ef89",
+  "ownerLevelRef": "LUNA-GROUND",
+  "coordinateFrame": "ground-floor-local-metres-y-up",
+  "bindings": [
+    {
+      "nodeName": "LUNA-GROUND__envelope__fixture_front__LOD2",
+      "canonicalRef": "LUNA-GROUND",
+      "role": "envelope"
+    },
+    {
+      "nodeName": "LUNA-GROUND__envelope__fixture_back__LOD2",
+      "canonicalRef": "LUNA-GROUND",
+      "role": "envelope"
+    }
+  ],
+  "gltf": {
+    "url": "/architectural-assets/ground-fixture.gltf",
+    "sha256": "800c712b7fb326d88e0dfe3f22c2e711b2908a5ffa3cc41c6b634495b0f9846c"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "checks": [
+    "1. Coordinate frame resolution: 2D plan and 3D massing read the exact same box for all 4 units (run twice, stable)",
+    "2. Floor plate coordination: zero real overlaps among core/lobby/stair-links/apartments (run twice, stable)",
+    "3. Envelope check: every new rectangle stays within the existing tower footprint (run twice, stable)",
+    "4. Programme: exactly 4 apartments with the real A=3BED/B=3BED/C=2BED/D=2BED mix",
+    "5. Vertical core: 3 passenger lifts, 1 service/fire lift, 2 protected stairs — none moved or resized",
+    "6. Real common circulation: Lift Lobby + 2 stair-link corridors exist with real, non-zero geometry",
+    "7. Apartment entrance doors: 4 real doors, Apartment A access-controlled, B/C/D not (no fabricated locks)",
+    "8. No duplicate canonical refs: 14 regions on the L06 2D plan, all unique",
+    "9. 2D<->3D canonical binding: every apartment ref on the plan resolves to a real space (run twice, stable)",
+    "10. Navigation graph: Lift Lobby has a real adjacency edge to LUNA-L06, Apartment A reachable via a real door edge",
+    "11. Door transitions: all 4 apartment entrance doors bound into the real route engine",
+    "12. Facility privacy: entering a private unit door edge is not spatially-visible-only, requires FULL_3D (run twice, stable)",
+    "13. Consumer privacy: a resident of Apartment A cannot route into Apartment B, C, or D (run twice, stable)",
+    "14. Structural coordination: Apartment A vs real L06 columns remains CLEAR after the floor-plate fix (run twice, stable)",
+    "15. Lift arrival: a facility route from the exterior to the L06 Lift Lobby is a real, connected path (run twice, stable)",
+    "16. Oyi alias resolution: Apartment A/B/C/D and the L06 Lift Lobby all have real, resolvable aliases (run twice, stable)",
+    "17. RepresentationPolicy untouched: LUNA_PRIVATE_UNIT_REFS unchanged from before this phase"
+  ]
+}

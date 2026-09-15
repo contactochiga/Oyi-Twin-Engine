@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "results": [
+    "1: Engineering -> Access & Security auto-opens the Access Control Board — no Oyi command required, matching every other system",
+    "2: Access NORMAL state — board auto-opens with deterministic default focus (Main Entrance), live status summary widget present",
+    "3: Whole registered access-point network view captured",
+    "4: Main Entrance tab selected — panel honestly discloses no instrumented lock capability (DESIGN DECISION REQUIRED), never fabricated",
+    "5: Service Entrance tab selected",
+    "6: Lift Lobby tab selected",
+    "7 (denial path): a real Facility credential attempts to unlock Apartment 6A's entrance through the actual runtime.execute() authorization gate (not a UI-hidden button) and is DENIED — physical state unchanged, ACCESS_DENIED event recorded",
+    "8 (grant path): the assigned resident's credential is GRANTED through the same real authorization gate — lock releases (a real state change), ACCESS_GRANTED + UNLOCKED events recorded, matching the brief's own worked example",
+    "9: Access Control Board captured with the live registered-access-points summary and recent access event history",
+    "10 (Oyi path): \"Why was access denied?\" resolves through Oyi and keeps the board open — Oyi is an additional route, not the only way to discover this system",
+    "11 (Facility/Consumer path): the live running app's Facility Access Control Board exposes only the three common access points — Apartment 6A's own private lock is confirmed absent as a board tab, the same disclosed privacy boundary as HVAC's indoor units (RepresentationPolicy byte-hash re-verified separately by test:lift)",
+    "State preservation through camera/view changes: access resolver state unchanged across Architecture/All Systems/Structure switching",
+    "REGRESSION: Elevator, Water, Electrical, Fire and HVAC Control Boards all still work correctly after Access & Security was added"
+  ],
+  "errors": []
+}

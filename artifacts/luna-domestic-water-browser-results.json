@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "results": [
+    "1: Engineering -> Water immediately opens the unified Water Control Board (no Oyi command required), deterministic default focus (Tank)",
+    "2: Water Control Board asset switching updates one persistent board across Tank/Treatment/Pump 01/Pump 02/Header/Riser/L06 Branch/6A Meter (never a second board)",
+    "Commands issued from the board (Stop/Start) produce real runtime state changes, visible in the riser telemetry on the very same board — stopping the duty pump with the standby already running keeps the riser pressurized",
+    "3: Oyi water-system selection (\"Show me the water system.\") opens the same unified board",
+    "4: Oyi Apartment 6A supply trace (\"Show me what supplies water to Apartment 6A.\") resolves and focuses the board on a real asset in the chain",
+    "5: Architecture/All Systems/Structure representation switching preserves water runtime state (BP-02 stays stopped throughout)",
+    "Board closes cleanly once Water engineering layer is left and no water asset remains focused",
+    "Consumer privacy boundary re-verified against the live running app: B1 water plant HIDDEN for a resident identity"
+  ],
+  "errors": []
+}

@@ -1,0 +1,176 @@
+{
+  "phase": "Oyi Building Ingestion V2 — 2D<->3D Spatial Binding + Automatic Twin Generation",
+  "successCondition": "Normalize a building into Oyi's spatial model, bind architect-supplied 2D and 3D representations to the same canonical objects, and automatically instantiate the interaction grammar Luna already proves — not merely upload-and-display.",
+  "canonicalIdentityModel": "ARCHITECT_2D -> CANONICAL -> ARCHITECT_3D (canonical ref mediates every 2D<->3D relationship; no direct 2D-source-to-3D-node lookup exists anywhere)",
+
+  "audit": {
+    "engineGeneric": ["LevelRail.tsx", "FloorPlan2D.tsx", "useSelection/useHover hooks", "UnitVolume.tsx", "CameraRig.tsx", "representationPolicy.ts contract", "TwinDataProvider contract", "src/engine/ingestion/* (V1)", "TopCommandBar.tsx"],
+    "lunaSpecific": ["lunaLevelRail.ts (item production)", "lunaFloorPlans.ts (spec production, 3 strategies)", "App.tsx's selectUnitAndFly/enterInterior/focusRoom closures", "lunaCameraPresets.ts/lunaRoomCameraPresets.ts (mostly authored literals)", "lunaRepresentationPolicy.ts (implementation)"],
+    "mixedOrPartiallyDerivedAlready": ["unitExteriorFocusCamera() - radial pullback, already spatial", "roomFocusCamera()'s 40% corner-inset fallback", "assetFocusCamera()'s opposite-corner pullback"],
+    "realFindingNotFromStaticCodeAlone": "Luna's 2D floor-plan click behavior is not uniform: unit-kind clicks (selectUnitAndFly) set canonical `selected` and get full 2D<->3D reverse sync; region-kind clicks (onFocusRegion, used by Ground/B1/L01/Penthouse/Rooftop's lift lobbies/stairs/rooms) fly the camera and highlight but do NOT set `selected`, so no reverse sync exists for those objects today. Pre-existing, not introduced by this phase, not retrofitted (disclosed, not rebuilt).",
+    "headerSpacingRootCause": ".identity-slot { flex: 0 1 100px } in App.css gave a 22px logo a 100px flex-basis, pushing the hamburger and search field visibly further right than intended."
+  },
+
+  "sourceRoles": {
+    "roles": ["ARCHITECTURAL_2D", "ARCHITECTURAL_3D", "BIM", "STRUCTURAL", "MEP", "SITE", "SCHEDULE", "REFERENCE_IMAGE", "SUPPLEMENTARY"],
+    "declaredExplicitlyNeverInferredFromFormat": true,
+    "additiveToV1": true,
+    "uiWiredIntoCreateProjectFlow": true
+  },
+
+  "parserSupportHonesty": {
+    "vocabularyReused": "SUPPORTED / PARTIALLY_SUPPORTED / VISUAL_ONLY / REQUIRES_CONVERSION / REQUIRES_REVIEW (V1, already honest)",
+    "anyFormatClaimingFullSupport": false,
+    "changesNeeded": "none — re-verified only"
+  },
+
+  "normalizedSpatialModel": {
+    "file": "src/engine/spatial/types.ts",
+    "extendsNotDuplicates": "CanonicalTargetKind (ingestion V1), ReviewStatus (V1), confidence shape (V1)",
+    "newCanonicalTargetKindMembers": ["unit", "riser", "corridor", "amenity", "common_area", "service_space"],
+    "kinds": ["NormalizedBuilding", "NormalizedSite", "NormalizedLevel", "NormalizedUnit", "NormalizedRoom", "NormalizedCommonArea", "NormalizedDoor", "NormalizedWindow", "NormalizedLift", "NormalizedStair", "NormalizedRiser", "NormalizedStructuralElement"],
+    "baseObjectFields": ["canonicalRef", "sourceRefs", "source2DRefs", "source3DRefs", "parentRef", "levelRef", "spaceType", "name", "boundary", "centroid", "bounds", "entryPoints", "connectedSpaceRefs", "representationRefs", "confidence", "reviewStatus", "provenance"]
+  },
+
+  "representations": {
+    "file": "src/engine/spatial/representations.ts",
+    "planRepresentation": { "originValues": ["vector", "reviewed_overlay"], "neverClaimsVectorWithoutRealVectorData": true },
+    "modelRepresentation": { "meshIsRepresentationNotIdentity": true },
+    "crosswalkFunctions": ["resolvePlanToModel", "resolveModelToPlan", "planRepresentationsFor", "modelRepresentationsFor", "fullyCrosswalkedRefs"],
+    "allCrosswalkQueriesRouteThroughCanonicalRef": true
+  },
+
+  "levelRail": {
+    "file": "src/engine/spatial/levelRail.ts",
+    "shortLabelHeuristic": "small disclosed pattern set, mirrors normalize.ts's proposeRefSlug discipline",
+    "fallsBackTo": "explicit NormalizedLevel.shortLabel override, then ref tail",
+    "verifiedAgainstLuna": { "matchesRealLUNA_LEVEL_RAIL_ITEMS": true, "usedMixOfAutoAndExplicitLabels": true, "levelsCount": 16 }
+  },
+
+  "floorControl": {
+    "file": "src/engine/spatial/floorControl.ts",
+    "function": "deriveFloorPlanSpec",
+    "polygonReducedToBoundingRect": "disclosed simplification for non-rect boundaries",
+    "coreBandComputedFrom": "union of lift/riser/stair boundaries serving the level (checks both direct levelRef and servedLevelRefs membership — bug found and fixed during Luna-equivalence testing)",
+    "verifiedAgainstLuna": { "matchesRealLUNA_L06_FLOOR_PLAN_outline": true, "matchesRealCoreBand": true, "matchesAllFourUnitPositions": true }
+  },
+
+  "twoStageInteraction": {
+    "file": "src/engine/spatial/twoStageInteraction.ts",
+    "function": "resolveTapAction",
+    "rules": ["tap on unselected object -> locate", "tap on selected-not-entered object -> enter", "tap on already-entered object -> locate (no false fresh-entry claim)"],
+    "generalizesRealLunaLogic": "selectUnitAndFly/enterInterior decision logic, extracted as pure function",
+    "disclosedLimitation": "Luna's own live region-click path (onFocusRegion) does not yet use this — flies camera + highlights but never sets canonical selection for region-kind objects (Lift Lobby, Stair, Pool, Lounge); unit-kind objects (apartments) already have full sync via the pre-existing selectUnitAndFly path. Pre-existing Luna behavior, not retrofitted this phase."
+  },
+
+  "cameraDerivation": {
+    "file": "src/engine/spatial/cameraDerivation.ts",
+    "kinds": ["BUILDING_OVERVIEW", "LEVEL_OVERVIEW", "SPACE_EXTERIOR", "SPACE_ENTRY", "SPACE_INTERIOR", "ASSET_FOCUS", "LIFT_LOBBY", "STAIR_INTERFACE"],
+    "generalizesRealLunaFunctions": ["unitExteriorFocusCamera", "roomFocusCamera's corner-inset fallback", "assetFocusCamera's opposite-corner pullback"],
+    "statusValues": ["AUTO_PROPOSED", "CAMERA_REVIEW_REQUIRED"],
+    "validationChecksImplemented": ["degenerate zero-distance shot", "camera position inside another space's solid bounds3D"],
+    "validationChecksNotClaimed": ["true visual mesh occlusion (requires live scene geometry, not data-only)"]
+  },
+
+  "navigationGraph": {
+    "file": "src/engine/spatial/navigationGraph.ts",
+    "edgeSources": ["real door fromSpaceRef/toSpaceRef", "lift servedLevelRefs (star topology through the lift node)", "stair servedLevelRefs", "common area's own levelRef (open-plan, no door required)", "explicit connectedSpaceRefs"],
+    "neverAutoConnects": "a level directly to a private unit (verified live: corridor->unit via real door only)",
+    "navigationVsAuthorization": "navigation graph answers WHERE CAN A PATH GO; RepresentationPolicy (unmodified) answers MAY THIS USER GO THERE",
+    "doorKinds": ["hinged", "sliding", "automatic_sliding", "unknown"],
+    "architecturalDoorIsNotSmartLockByDefault": true,
+    "operationalAssetRefOnlySetWhenRealAssetMapped": true
+  },
+
+  "oyiSpatialLanguage": {
+    "file": "src/engine/spatial/oyiAliasIndex.ts",
+    "aliasDerivation": "lowercase form + 'the X' variant, no speculative synonym dictionary",
+    "matching": "longest-pattern-first substring, same discipline as lunaVocabulary.ts's findByPattern",
+    "collisionDetection": { "zeroCollisionsWithinLunaOwnIndex": true, "zeroCollisionsWithinMiniFixtureOwnIndex": true, "realCollisionSurfacedWhenIndicesDeliberatelyMerged": "ground (LUNA-GROUND vs MINI-GROUND)" },
+    "replacesLunaVocabulary": false,
+    "note": "generalizes the MECHANISM a new project's own thin vocabulary layer would use; lunaVocabulary.ts remains real, hand-tuned, in production, untouched"
+  },
+
+  "operationalBinding": {
+    "file": "src/engine/spatial/operationalBinding.ts",
+    "connectivityStates": ["SPATIAL_TWIN", "CONNECTED_OPERATIONAL_TWIN"],
+    "connectedFlagNeverCallerSupplied": true,
+    "connectedDerivedFromRealTwinDataProviderLookup": true,
+    "verifiedLive": { "realAssetRefResolvesConnectedTrue": true, "fakeAssetRefResolvesConnectedFalse": true },
+    "representationPolicyModified": false,
+    "representationPolicyGivenSufficientMetadata": true
+  },
+
+  "reviewAndPublish": {
+    "reviewArchitectureIntroduced": "crosswalk (canonicalRef-mediated 2D/3D correspondence) — full UI highlighting wiring disclosed as a future step, not built",
+    "reviewUIRedesigned": false,
+    "publishFunction": "buildTwinProjectDefinition (src/engine/spatial/twinProjectDefinition.ts)",
+    "publishOutputFields": ["projectId", "projectMeta", "model", "crosswalk", "levelRailItems", "floorPlans", "navigationGraph", "cameraDestinations", "operationalBindings", "aliasIndex", "sourceProvenance", "reviewRequired"],
+    "representationPolicyBakedIntoDefinition": false,
+    "representationPolicyBakedInReason": "evaluated per-identity at request time so it can never go stale",
+    "loadSteps": ["LOAD_PROJECT", "LOAD_CANONICAL_SPATIAL_MODEL", "LOAD_REPRESENTATIONS", "BUILD_LEVELRAIL", "BUILD_FLOOR_CONTROL", "BUILD_SELECTION_INDEX", "BUILD_NAVIGATION", "BUILD_CAMERA_DESTINATIONS", "APPLY_REPRESENTATION_POLICY", "LOAD_OPERATIONAL_BINDINGS", "START_TWIN"],
+    "stepsPerformedByBuildTwinProjectDefinition": 9,
+    "stepsLeftToHost": ["APPLY_REPRESENTATION_POLICY (per-identity)", "START_TWIN (rendering)"]
+  },
+
+  "lunaReferenceFixture": {
+    "file": "src/luna/ingestion/lunaSpatialModel.ts",
+    "dataOrigin": "repackaged from Luna's own real LUNA_LEVELS/LUNA_L06_UNITS/LUNA_L01_CLUB.rooms/LUNA_CORES — no re-authored data",
+    "equivalenceProofs": [
+      { "check": "deriveLevelRailItems(luna.levels) === real LUNA_LEVEL_RAIL_ITEMS", "result": "exact match, 16 levels" },
+      { "check": "deriveFloorPlanSpec(luna, LUNA-L06) outline/core/units === real LUNA_L06_FLOOR_PLAN", "result": "exact match" },
+      { "check": "L01 Pool/Lounge present with real canonical refs", "result": "confirmed" }
+    ],
+    "productionAppRewired": false,
+    "productionAppRewiredReason": "do not rebuild Luna architecture — equivalence proven, live path left unchanged and now provably correct"
+  },
+
+  "nonLunaFixture": {
+    "file": "src/engine/spatial/testFixtures/miniBuildingFixture.ts",
+    "harness": "tests/ingestion-v2/index.html + harness.tsx",
+    "structure": "Ground/L01/L02; L01 has Unit 101, Unit 102, Corridor, Lift Lobby; 1 lift, 1 stair, 2 real doors",
+    "componentsRendered": ["LevelRail (engine-generic)", "FloorPlan2D (engine-generic)"],
+    "lunaSpecificCodeInRenderPath": 0,
+    "liveProven": ["LevelRail derivation", "floor plan derivation", "two-stage tap interaction (locate then enter)", "navigation graph connectivity"]
+  },
+
+  "truthVocabulary": {
+    "camera": ["AUTO_PROPOSED", "CAMERA_REVIEW_REQUIRED"],
+    "reviewStatusReusedFromV1": ["DETECTED", "PROPOSED", "CONFIRMED", "EDITED", "REJECTED", "UNRESOLVED", "DESIGN_DECISION_REQUIRED"],
+    "operationalBinding": ["SPATIAL_TWIN", "CONNECTED_OPERATIONAL_TWIN"],
+    "silentPromotion": false,
+    "unresolvedSpacesSurfacedInReviewRequired": true
+  },
+
+  "testing": {
+    "deterministic": { "script": "scripts/verifyIngestionV2.mjs", "checks": 17, "runTwiceConfirmed": true, "result": "PASS x2" },
+    "browser": { "script": "scripts/verifyIngestionV2Browser.mjs", "items": 25, "runTwiceConfirmed": true, "result": "PASS x2", "pageErrors": 0 },
+    "fullExistingRegressionSuite": { "allPassed": true, "regressionsFound": 1, "regressionFixed": true, "regressionDetail": "verifyOyiIdentityBrowser.mjs's header DOM-order check assumed direct children of .top-command-glass; the header-spacing fix's new identity-group wrapper changed nesting depth (not the real invariant). Test updated to check the same real invariant (identity mark first, hamburger immediately after) via document order instead of direct-children class names." }
+  },
+
+  "genuineChangesOutsideNewSpatialFiles": [
+    { "file": "src/engine/components/spatial/TopCommandBar.tsx", "change": "wrapped identity button + hamburger in a shared identity-group div, gap 16 (was 12) on the outer row", "reason": "Part 2 header spacing fix" },
+    { "file": "src/App.css", "change": ".identity-slot flex changed from '0 1 100px' to '0 0 auto'", "reason": "root cause of the spacing bug — 100px flex-basis on a 22px logo" },
+    { "file": "src/engine/ingestion/types.ts", "change": "added SourceRole type, role field on BuildingSourceRecord, extended ExtractedObjectClass/CanonicalTargetKind", "reason": "Parts 3/5" },
+    { "file": "src/engine/ingestion/projectStore.ts", "change": "RegisterSourceInput.role, persisted on registerSource", "reason": "Part 3 provenance" },
+    { "file": "src/ui/ingestion/CreateProjectFlow.tsx", "change": "role selector in the Sources step, role badge in the source list", "reason": "Part 3 UI" },
+    { "file": "scripts/verifyOyiIdentityBrowser.mjs", "change": "header DOM-order check updated to survive the new identity-group nesting", "reason": "real regression found + fixed during full regression pass" }
+  ],
+
+  "protectedSystemsUnchanged": [
+    "lunaRepresentationPolicy.ts's mode-resolution logic",
+    "Every existing TwinRuntimeProvider/resolver for all 9 completed operational systems",
+    "Luna's own production LevelRail/FloorPlan2D/camera rendering path in App.tsx",
+    "lunaVocabulary.ts/lunaIntentParser.ts",
+    "Every existing SystemControlBoard consumer",
+    "Grand Lobby architecture",
+    "L06 Apartment A Gold Standard"
+  ],
+
+  "nextSteps": [
+    "Retrofit Luna's region-click path (onFocusRegion) to also set canonical selection, closing the reverse-sync gap for common-area objects",
+    "Wire a real project's own Review UI to the crosswalk for live highlight-on-select",
+    "Build a real IFC/BIM adapter to prove the plan-role/model-role split against an actual external file, not only hand-authored fixtures",
+    "Consider rewiring Luna's own LevelRail production through deriveLevelRailItems() now that byte-equivalence is proven — currently left unchanged, deliberately, per scope discipline"
+  ]
+}

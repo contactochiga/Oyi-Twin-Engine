@@ -1,0 +1,83 @@
+{
+  "phase": "Luna — True Floor Plan System V1: L06 Gold Standard Architectural Floor",
+  "status": "LUNA_REFERENCE_DESIGN",
+  "successCondition": "Level 6 becomes one real digital floor: canonical data + 2D plan + 3D architecture + navigation + transitions + policy + Oyi all agree. Proof journey: Exterior -> real Grand Lobby -> real Lift -> Level 6 -> real L06 Lift Lobby -> Apartment A entrance.",
+  "coordinateFrameResolution": {
+    "before": { "massingFrameOrigin": [-8.1818, -6.3636], "planFrameOrigin": [-10.5, -9], "divergence": "real, disclosed, never reconciled" },
+    "after": { "authoritativeFrame": "massing", "massingToPlanOffset": [0, 0], "note": "2D plan now reads the exact LUNA_L06_UNITS entry the 3D massing box uses" }
+  },
+  "floorPlate": {
+    "sourceFile": "src/luna/architecture/l06FloorPlate.ts",
+    "coordinationCheck": "checkL06FloorPlateCoordination() -> CLEAR (zero real overlaps)",
+    "envelopeCheck": "checkL06WithinEnvelope() -> CLEAR (fits within 36x28 tower footprint)",
+    "apartmentA_B_zTranslation": -1.549,
+    "units": [
+      { "ref": "LUNA-L06-APT-A", "x": -8.181818, "z": -7.912636, "width": 15.652174, "depth": 12.173913, "bedrooms": 3, "hasRealInterior": true },
+      { "ref": "LUNA-L06-APT-B", "x": 8.181818, "z": -7.912636, "width": 15.652174, "depth": 12.173913, "bedrooms": 3, "hasRealInterior": false },
+      { "ref": "LUNA-L06-APT-C", "x": -6.1135, "z": 7.912636, "width": 8.673, "depth": 12.173913, "bedrooms": 2, "hasRealInterior": false },
+      { "ref": "LUNA-L06-APT-D", "x": 6.1135, "z": 7.912636, "width": 8.673, "depth": 12.173913, "bedrooms": 2, "hasRealInterior": false }
+    ],
+    "circulation": [
+      { "ref": "LUNA-L06-LOBBY", "label": "Passenger Lift Lobby", "x": 0, "z": 0, "width": 20.9, "depth": 3.4 },
+      { "ref": "LUNA-L06-STAIR-LINK-01", "label": "Stair 01 Access Corridor", "x": -11.35, "z": 5.025, "width": 1.8, "depth": 13.45 },
+      { "ref": "LUNA-L06-STAIR-LINK-02", "label": "Stair 02 Access Corridor", "x": 11.35, "z": 5.025, "width": 1.8, "depth": 13.45 }
+    ],
+    "disclosedAsymmetry": "Both real protected stairs sit on the same (north) side of the building (fixed, building-wide LUNA_CORES constraint) — Apartments A/B reach both stairs via the Lift Lobby, not a direct spur.",
+    "disclosedSimplification": "The Lift Lobby is one open circulation volume containing all 3 passenger lifts + the service/fire lift + the riser — no separate walled service landing (insufficient real depth: 3.4m)."
+  },
+  "programmeCorrection": {
+    "file": "src/luna/lunaResidentialUnits.ts",
+    "before": "every L06 unit hardcoded to 2 bedrooms regardless of tier",
+    "after": { "A": 3, "B": 3, "C": 2, "D": 2 },
+    "scope": "L06 only — every other generated standard level (L02-L05, L07-L09) keeps its disclosed-as-reference uniform 2-bedroom default"
+  },
+  "entranceDoors": [
+    { "ref": "LUNA-L06-APT-A-ENTRANCE-DOOR", "unitRef": "LUNA-L06-APT-A", "accessControlled": true, "actuatorBinding": "LUNA-L06-APT-A-ENTRY-LOCK-01", "hinge": "left" },
+    { "ref": "LUNA-L06-APT-B-ENTRANCE-DOOR", "unitRef": "LUNA-L06-APT-B", "accessControlled": false, "hinge": "right" },
+    { "ref": "LUNA-L06-APT-C-ENTRANCE-DOOR", "unitRef": "LUNA-L06-APT-C", "accessControlled": false, "hinge": "left" },
+    { "ref": "LUNA-L06-APT-D-ENTRANCE-DOOR", "unitRef": "LUNA-L06-APT-D", "accessControlled": false, "hinge": "right" }
+  ],
+  "doorAnimationDisclosure": "All 4 doors render CLOSED with no live open/close runtime binding — STATIC_BOUNDARY, matching the Ground stair doors' own honest category. Real ACCESS_CONTROLLED resolution and real camera crossing do not require an animating leaf mesh.",
+  "realBugsFoundAndFixed": [
+    "lunaRepresentationPolicy.ts's resolveLevelRefFor() crashed for any ref with no InteriorSpec (a private unit or the new Lift Lobby) — fixed with a real 'unit' branch; 3 dependent test-canary hashes updated with disclosed reasoning",
+    "LunaRouteDriver.tsx's MOVE step never called onCurrentSpaceChange, silently completing without reporting a real destination change — a generic route-engine bug, fixed generically (not Luna-specific)",
+    "A JSX prop named 'ref' in a new component (L06CommonArchitecture.tsx) silently broke click-select/hover on the new circulation zones — caught by oxlint, renamed to 'ref_' matching the codebase's own convention"
+  ],
+  "testUpdatesDisclosed": [
+    "verifyIngestionV2.mjs: deriveFloorPlanSpec() bit-for-bit equivalence updated — the hand-authored plan now layers real core/circulation enrichments the generic model doesn't yet derive as units; outline check changed from equality to containment-within-envelope",
+    "verifyL06GoldStandard.mjs: plan/massing divergence assertion (from the prior Architectural Reality V2 phase) updated to assert convergence, since this phase resolved that exact divergence"
+  ],
+  "navigationGraph": {
+    "newCommonAreas": ["LUNA-L06-LOBBY", "LUNA-L06-STAIR-LINK-01", "LUNA-L06-STAIR-LINK-02"],
+    "freeAdjacencyEdge": "LUNA-L06 (level) <-> LUNA-L06-LOBBY (common area), via the generic 'common areas get a free adjacency edge to their own level' engine rule",
+    "newDoorEdges": 4,
+    "liftArrivalFix": "App.tsx's LEVEL_ARRIVAL_REF map redirects a physical route to LUNA-L06 toward LUNA-L06-LOBBY instead — LevelRail's own instant LOCATE click is unaffected"
+  },
+  "policy": {
+    "representationPolicyModified": false,
+    "privateUnitRefsUnchanged": true,
+    "routeEdgePredicateTightened": "lunaRoutePolicy.ts now requires FULL_3D specifically (not just spatially-visible) before a route may cross into a private unit's real door",
+    "facilityResult": "OK — can route into any apartment, including B/C/D (Facility-owned building context)",
+    "consumerResult": "a resident of Apartment A can route into Apartment A only; B/C/D routes are excluded before any door-crossing narration"
+  },
+  "oyi": {
+    "newAliases": ["LUNA-L06-APT-B", "LUNA-L06-APT-C", "LUNA-L06-APT-D", "LUNA-L06-LOBBY", "LUNA-L06-STAIR-LINK-01", "LUNA-L06-STAIR-LINK-02"],
+    "workingPhrasesProven": ["Take me to Level 6", "Show me Apartment A", "Show me Apartment B", "Take me to Apartment A", "Take me back to the ground floor"],
+    "disclosedPreExistingLimitation": "\"Where is X?\" phrasing is intercepted by an earlier matcher (matchQuery) before it reaches space resolution, returning 'unknown' — confirmed against 'Where is Stair 1?' and 'Where is Apartment A?' too, not introduced by this phase. 'Show me X' is the real working equivalent."
+  },
+  "tests": {
+    "deterministic": { "script": "scripts/verifyL06Floor.mjs", "checkCount": 17, "runTwiceForCritical": true, "result": "PASS" },
+    "browser": { "script": "scripts/verifyL06FloorBrowser.mjs", "result": "PASS", "runTwice": true, "mandatoryGoldenJourneyReRun": "PASS — arrives at LUNA-L06-LOBBY" },
+    "regressionDeterministic": { "suiteCount": 21, "result": "PASS", "disclosedUpdates": 4 },
+    "typecheck": "clean (tsc -b)",
+    "build": "clean (vite build)",
+    "lint": "clean (oxlint, warnings only, no errors)"
+  },
+  "explicitlyDeferred": [
+    "Apartment B/C/D interior rooms, furniture, MEP (real shell envelopes only — Part 11's own scope boundary)",
+    "Live door-leaf animation for any of the 4 new entrance doors",
+    "Global building-wide elevation/datum migration",
+    "Tower exterior footprint / façade redesign"
+  ],
+  "nextPhase": "Luna — Apartment A Full Interior Reality V1"
+}

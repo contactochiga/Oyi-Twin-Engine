@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "results": [
+    "1: Utility powering Luna — the live Electrical Control Board summary reads UTILITY, Utility Available, Generator Standby, ATS Utility, Main Bus Energized",
+    "2: Utility failure — live summary correctly reads NONE while utility is gone and the generator has not yet reached RUNNING",
+    "3: Generator starting — GEN-01 phase is STARTING immediately after the utility loss (auto-sequenced, not commanded)",
+    "4: Generator powering Luna — live summary reads GENERATOR once the ATS has actually completed its transfer",
+    "5: ATS asset tab shows live source/fault/transitioning state on the same board",
+    "6: Utility restoration — ATS transfers back, generator completes cooldown back to STOPPED, live summary reads UTILITY again",
+    "7: Whole-building Electrical X-ray view captured",
+    "8: Realistic B1 electrical equipment (generator set with control panel) captured",
+    "9: Electrical riser (busway-style duct cross-section) / floor distribution captured",
+    "10: L06 active power trace captured",
+    "11: Apartment 6A trace captured",
+    "12: Electrical Control Board with live building-source summary captured",
+    "Oyi \"What is the building running on?\" answered and kept the board open",
+    "State preservation through camera/view changes: building power resolver state unchanged across Architecture/All Systems/Structure switching",
+    "REGRESSION: Elevator Control Board still opens correctly after the V1.1 convergence pass",
+    "REGRESSION: Water Control Board still auto-opens and its commands still work after the V1.1 convergence pass"
+  ],
+  "errors": []
+}

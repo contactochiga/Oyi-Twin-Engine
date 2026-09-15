@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    "1. Lobby canonical identity: LUNA-GROUND-LOBBY and its 3 real room refs preserved exactly, unchanged from Phase 3",
+    "2. Entrance identity: GroundEntrance binds to the real LUNA-GROUND-ACCESS-MAIN-01 (\"Main Resident Entrance\") at its own real seeded position (0, 16)",
+    "3. Entrance door state/animation: real SlidingGlassDoor state machine (CLOSED/OPENING/OPEN/CLOSING), opening width 3.6m",
+    "4. Architectural binding: entrance door honestly discloses non-instrumented status, matching the real Access & Security V1 resolver — never claims fabricated remote control",
+    "5. Ground spatial relationships: Lift Lobby layout (x=1.80, width=13.80) independently recomputed from real LUNA_CORES data and matches exactly",
+    "6. Lift opening alignment: all 4 real lift cores (3 passenger + service) fall fully within the corrected Lift Lobby room boundary — verified by real geometry, not assumed",
+    "7. Stair interface identity: LUNA-STAIR-01/02 door assemblies bind to the real, already-existing LUNA_CORES stair entries",
+    "8. 2D/3D identity consistency: the Ground 2D plan's Lift Lobby/Reception regions derive from the exact same canonical room data the 3D architecture reads — real correspondence, not a decorative drawing",
+    "9. Camera destinations: entranceApproach + 3 real authored per-room lobby presets, each verified to sit within the room's own real bounds",
+    "10. Oyi lobby aliases: all 8 real phrase->ref mappings resolve correctly through the existing matchSpace() pipeline, zero new parallel systems",
+    "11. Facility/Consumer visibility: Facility retains full entrance-asset visibility; a resident correctly gets HIDDEN for the raw access-point asset card (pre-existing Access & Security V1 boundary, verified not a regression) while still retaining real spatial context for the Ground level itself",
+    "12. Architectural vs operational selection: doors/rooms resolve through the new architectural lookup; existing operational assets (cameras, access points) remain fully intact and separately queryable — no actuator commands attached to passive architecture",
+    "13. No duplicate canonical identities: every real catalog (207 pre-existing refs) is internally unique; the known, correct lift-ref overlap between LUNA_OPERATIONAL_ASSETS and LUNA_CORES is disclosed and excluded from the false-positive check; this phase's 6 own refs collide with nothing pre-existing",
+    "14. L06 Apartment A untouched by Grand Lobby: 14 real rooms (current, post-Apartment-A-V1 count), unaffected by the Grand Lobby work itself (Part 40: do not expand scope)"
+  ]
+}

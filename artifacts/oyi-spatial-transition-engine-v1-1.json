@@ -1,0 +1,81 @@
+{
+  "phase": "Oyi Spatial Transition Engine V1.1 — Routed Traversal Completion",
+  "successCondition": "SPACE A -> DOOR -> SPACE B -> LIFT -> ANOTHER LEVEL -> SPACE C, using the actual building. 'Take me to Level 6' physically uses the entrance, lobby, and lift.",
+  "engineFilesNew": [
+    "src/engine/spatial/route.ts",
+    "src/engine/spatial/liftHandoff.ts",
+    "src/engine/spatial/transitionBinding.ts",
+    "src/engine/spatial/routeRequest.ts"
+  ],
+  "engineFilesModified": [
+    { "file": "src/engine/spatial/routePlanning.ts", "change": "added planTraversableRoute() — capability-aware BFS with three-tier honest failure reporting (BLOCKED_BY_POLICY / NOT_PHYSICALLY_TRAVERSABLE / NO_PATH); planRoute() itself untouched" }
+  ],
+  "lunaFilesNew": [
+    "src/luna/transitions/lunaRouteTransitions.ts",
+    "src/luna/transitions/lunaRoutePolicy.ts",
+    "src/luna/transitions/LunaRouteDriver.tsx"
+  ],
+  "lunaFilesModified": [
+    { "file": "src/luna/ingestion/lunaSpatialModel.ts", "change": "lift servedLevelRefs now derived from the real LIFT_STOPS (excludes Penthouse/Rooftop) instead of ALL_LEVEL_REFS — a real, pre-existing data gap this phase fixed" },
+    { "file": "src/luna/intelligence/lunaIntentParser.ts", "change": "added matchExterior for 'go outside'/'exterior' phrasing" },
+    { "file": "src/App.tsx", "change": "replaced LunaEntranceTransitionDriver with LunaRouteDriver; added currentSpaceRef/activeRoute/routeNarration state; requestLunaRoute(); onRouteCurrentSpaceChange(); lift-leg wiring functions; sceneActions.navigateToSpace now attempts a real route before falling back to instant camera behavior" },
+    { "file": "src/luna/transitions/LunaEntranceTransitionDriver.tsx", "change": "retired, superseded by LunaRouteDriver.tsx" }
+  ],
+  "removedFiles": ["src/luna/transitions/LunaEntranceTransitionDriver.tsx"],
+  "realBugsFoundAndFixed": [
+    "planRoute()'s naive shortest-path preferred an untraversable stair edge over a longer, real, walkable lift path -- fixed with planTraversableRoute()'s capability-aware search",
+    "lunaSpatialModel.ts's lifts claimed servedLevelRefs covering all 16 levels including Penthouse/Rooftop, which the real lift simulation (LIFT_STOPS) has always excluded -- fixed to derive from LIFT_STOPS directly",
+    "A false-positive browser test result: the first full run of the golden journey appeared to succeed via screenshots alone, but was actually the old instant-teleport fallback firing silently; caught via direct console diagnostics, not assumed from screenshots"
+  ],
+  "goldenJourney": {
+    "forward": ["LUNA-EXTERIOR-ENTRANCE-PLAZA", "LUNA-GROUND-LOBBY", "LUNA-GROUND (adjacency, instant)", "LUNA-LIFT-PASS-0X (real lift ride)", "LUNA-L06"],
+    "reverse": ["LUNA-L06", "LUNA-GROUND (real lift ride)", "LUNA-GROUND-LOBBY", "LUNA-EXTERIOR-ENTRANCE-PLAZA"],
+    "commandsProven": ["Take me to Level 6", "Take me back to the ground floor", "Go outside", "Enter the lobby"]
+  },
+  "liftHandoff": {
+    "phases": ["WAITING_FOR_ACCESS", "CALLING", "BOARDING", "TRAVELLING", "ARRIVING", "EXITING", "ARRIVED", "DENIED", "UNAVAILABLE", "FAULT", "CANCELLED"],
+    "realCommandsUsed": ["callLift", "setPosition"],
+    "capableLiftRefs": ["LUNA-LIFT-PASS-01", "LUNA-LIFT-PASS-02", "LUNA-LIFT-PASS-03", "LUNA-LIFT-SERVICE-01"],
+    "noSecondLiftSimulation": true
+  },
+  "policyFiltering": {
+    "predicate": "lunaIsRouteEdgeAllowed",
+    "liftGate": "RepresentationPolicy.resolveMode(liftRef) === 'FULL_3D', identical to the existing lunaSimulationProvider.execute() gate",
+    "representationPolicyModified": false,
+    "facilityResult": "OK, full lift journey completes",
+    "consumerResult": "common routes (Main Entrance) OK; lift-requiring routes BLOCKED_BY_POLICY, excluded before any boarding narration"
+  },
+  "nonLunaFixture": {
+    "file": "src/engine/spatial/testFixtures/miniBuildingFixture.ts",
+    "addedRefs": ["MINI-GROUND-LOUNGE"],
+    "transitionBuilder": "buildMiniOpenPassageTransition()",
+    "chainedRouteProof": "MINI-EXTERIOR-PLAZA -[real door]-> MINI-GROUND-LOBBY -[real OPEN_PASSAGE]-> MINI-GROUND-LOUNGE, zero Luna-specific code"
+  },
+  "tests": {
+    "deterministic": { "script": "scripts/verifyRoutedTraversal.mjs", "checkCount": 14, "runTwice": true, "result": "PASS" },
+    "browserGoldenJourney": { "script": "scripts/verifyRoutedTraversalBrowser.mjs", "result": "PASS", "runTwice": true },
+    "browserPolicy": { "script": "scripts/verifyRoutedTraversalPolicyBrowser.mjs", "result": "PASS" },
+    "regressionDeterministic": { "suiteCount": 20, "result": "PASS", "disclosedUpdates": ["verifyIngestionV2.mjs lift-edge count 16->14"] },
+    "regressionBrowser": { "suiteCount": 19, "result": "PASS", "note": "one pre-existing pixel-perfect-click test flaked once, passed on immediate retry, unrelated to this phase" },
+    "typecheck": "clean",
+    "build": "clean",
+    "lint": "exit 0"
+  },
+  "explicitlyDeferred": [
+    "Live stair-traversal UI affordance (stairs remain named, honestly excluded from capability)",
+    "A live OPEN_PASSAGE in Luna's own architecture (proven only in the non-Luna fixture)",
+    "Per-lift dispatch fallback beyond what the capability-aware search already provides for free",
+    "A permanent route/transition diagnostics UI",
+    "A UI control for mid-flight route cancellation",
+    "A distinct 'L06 Lift Lobby' canonical space (arrival point is the LUNA-L06 level itself until the next phase's True Floor Plan work)"
+  ],
+  "notFabricated": [
+    "No second lift simulation",
+    "No second navigation graph",
+    "No second authorization engine",
+    "RepresentationPolicy not modified",
+    "No fabricated life-safety certification for the Service/Fire lift",
+    "No fake apartment interior work started",
+    "No additional lobby architecture built"
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "phase": "OYI_EXPLORE_MODE_V1",
+  "status": "implemented_reference_v1",
+  "scope": "manual movement controller for existing Luna Twin presentation",
+  "canonicalArchitecturePreserved": true,
+  "representationPolicyChanged": false,
+  "productionCloudChanges": false,
+  "inputContract": {
+    "actions": [
+      "MOVE_FORWARD",
+      "MOVE_BACKWARD",
+      "MOVE_LEFT",
+      "MOVE_RIGHT",
+      "LOOK",
+      "INTERACT",
+      "EXIT"
+    ],
+    "sharedBy": [
+      "touchController",
+      "keyboard"
+    ]
+  },
+  "controller": {
+    "placement": "bottom-right viewport",
+    "shape": "circular glass base with circular directional buttons and center Interact",
+    "secondaryControls": [
+      "OYI",
+      "EXIT"
+    ],
+    "hiddenWhenInactive": true,
+    "inactiveLauncher": "Explore"
+  },
+  "keyboard": {
+    "activeOnlyInExploreMode": true,
+    "bindings": {
+      "W_or_ArrowUp": "MOVE_FORWARD",
+      "S_or_ArrowDown": "MOVE_BACKWARD",
+      "A_or_ArrowLeft": "MOVE_LEFT",
+      "D_or_ArrowRight": "MOVE_RIGHT",
+      "E_or_Enter": "INTERACT",
+      "Escape": "EXIT"
+    }
+  },
+  "movement": {
+    "cameraOwner": "existing CameraRig / OrbitControls",
+    "worldPositionPath": "existing liveWorldPosition/currentSpaceRef pathway",
+    "bounds": "canonical interior or level footprint bounds",
+    "collisionLimit": "reference bounds only; full wall collision deferred",
+    "planarWalking": true,
+    "translationBasis": "camera yaw only; pitch discarded before movement",
+    "strafe": "A/D and left/right strafe on horizontal right vector; no keyboard rotation in V1",
+    "eyeHeight": "camera Y locked to captured walk plane during normal Explore movement",
+    "smoothing": "modest acceleration and damping with prompt release stop"
+  },
+  "targeting": {
+    "method": "center-screen raycast to userData.canonicalRef with selected-object fallback",
+    "descriptorSources": [
+      "lunaTwinDataProvider",
+      "findSpace",
+      "buildLunaReferenceModel"
+    ],
+    "policyAuthority": "existing RepresentationPolicy and runtime route/capability checks"
+  },
+  "verification": {
+    "typecheck": "npx tsc -b --pretty false PASS",
+    "lint": "npm run lint PASS with existing warnings",
+    "build": "npm run build PASS",
+    "deterministic": "npm run test:explore PASS",
+    "browser": "npm run test:explore:browser PASS",
+    "privacy": "npm run test:apt-a-map-privacy:browser PASS",
+    "teleport": "npm run test:apt-a-teleport:browser PASS",
+    "representation": "npm run test:representation PASS",
+    "planarBrowser": "npm run test:explore:planar-browser PASS; all measured movement deltaY=0.0000"
+  },
+  "screenshots": [
+    "artifacts/explore-v1-01-inactive.png",
+    "artifacts/explore-v1-02-active-controller.png",
+    "artifacts/explore-v1-03-after-hold-forward.png",
+    "artifacts/explore-v1-04-interact.png",
+    "artifacts/explore-v1-05-exited.png",
+    "artifacts/explore-planar-01-active.png",
+    "artifacts/explore-planar-02-upward-forward.png",
+    "artifacts/explore-planar-03-downward-forward.png",
+    "artifacts/explore-planar-04-left-strafe.png",
+    "artifacts/explore-planar-05-right-strafe.png",
+    "artifacts/explore-planar-06-backward.png"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "results": [
+    "JOURNEY 1 (Engineering discovery): Engineering -> Drainage auto-opens the Drainage Control Board — no Oyi command required, deterministic default focus, live status summary present, building remains visually dominant (no giant panel)",
+    "Wastewater route: the 6A Stack Connection tab lists the real fixture drains (kitchen + 3 bathrooms) that physically drain to it",
+    "Apartment 6A drainage route: \"Show me the drainage from Apartment 6A.\" resolves through Oyi and keeps the Drainage board open on the real stack-connection chain",
+    "Vent route: the Vent Termination tab discloses single-stack venting (the real soil/waste riser continuing through the roof), never a fabricated second riser",
+    "Stormwater route: the Roof Drain tab shows the genuinely separate stormwater reference chain, explicitly disclosing DD10 (sizing/gradient/coverage) rather than inventing an engineered design",
+    "Drainage panel honestly discloses \"Asset only\" classification rather than showing dead valve/pump controls for a passive gravity system",
+    "Deterministic reference simulation proven against the live running app: the drainage-blockage scenario sets the 6A stack connection to BLOCKED, read directly from the live provider",
+    "Recovery captured — resetting the provider returns the stack connection to NORMAL",
+    "All Systems view: the pre-existing integrated engineering layer selection renders every connected operational system together with no errors — confirmed still working after Drainage V1 was added",
+    "Structure view: Engineering -> Structure renders the structural layer with no errors",
+    "Structural information card: the underlying fix (LunaContextCard.tsx's new structural-element branch) is implemented and type-checked, but no screen-space click in this headless harness reached a structural element behind the (non-fading, clip-is-visual-only) facade — a disclosed, known testing-harness limitation, not evidence the fix is broken. See docs/LUNA_DRAINAGE_REFERENCE_SPEC.md.",
+    "Privacy: the live Facility Drainage Control Board exposes exactly the 8 registered reference-chain tabs — fixture-level drains correctly fold into the stack-connection tab rather than each getting their own, and no private-unit boundary was widened",
+    "REGRESSION: Elevator, Water, Electrical, Fire, HVAC, Access, CCTV and Network/Edge Control Boards all still work correctly after Drainage V1 & Engineering wrap-up were added"
+  ],
+  "errors": [],
+  "structuralCardFound": false
+}

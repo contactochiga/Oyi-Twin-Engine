@@ -1,0 +1,38 @@
+[
+  {
+    "test": "spatial-card",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-browser-spatial-card.log",
+    "seconds": 27.0
+  },
+  {
+    "test": "apt-a-map-privacy",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-browser-apt-a-map-privacy.log",
+    "seconds": 15.6
+  },
+  {
+    "test": "apt-a-teleport",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-browser-apt-a-teleport.log",
+    "seconds": 12.3
+  },
+  {
+    "test": "apt-a-golden-journey",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-browser-apt-a-golden-journey.log",
+    "seconds": 101.4
+  },
+  {
+    "test": "routed-traversal",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-browser-routed-traversal.log",
+    "seconds": 47.0
+  },
+  {
+    "test": "routed-traversal:policy",
+    "exitCode": 1,
+    "log": "/tmp/oyi-scc-browser-routed-traversal-policy.log",
+    "seconds": 0.2
+  }
+]

@@ -1,0 +1,140 @@
+{
+  "phase": "Luna Architectural Reality V2 — L06 Apartment A Gold Standard",
+  "principle": "Make L06 Apartment A the first Oyi-readable, spatially correct, source-bound, walkable, policy-aware architectural space.",
+  "architecturalGoldStandardSourcePending": true,
+  "sourceSearchPerformed": true,
+  "realSourceFilesFound": [],
+  "sourceSearchedExtensions": ["rvt", "ifc", "skp", "fbx", "obj", "dwg", "dxf", "pdf", "glb", "gltf"],
+
+  "coordinateFrameContract": {
+    "version": 1,
+    "chain": ["source", "building", "level", "apartment-massing", "apartment-plan"],
+    "sourceFrame": { "status": "PENDING" },
+    "apartmentMassingFrame": { "x": -8.1818, "z": -6.3636, "width": 15.652, "depth": 12.174, "note": "actually rendered; rooms/devices/camera-presets are local to this origin" },
+    "apartmentPlanFrame": { "x": -10.5, "z": -9, "width": 15, "depth": 10, "note": "Facility 2D floor plan only, never the 3D scene" },
+    "massingToPlanOffsetComputed": true,
+    "silentlyReconciled": false
+  },
+
+  "canonicalIdentity": {
+    "apartmentRef": "LUNA-L06-APT-A",
+    "preservedUnchanged": true,
+    "newIdentitiesCreated": 12,
+    "newIdentityKind": "door",
+    "roomIdentitiesRenamed": 0
+  },
+
+  "adapter": {
+    "id": "luna-l06-apt-a-procedural-reference",
+    "sourceFormat": "gltf",
+    "registeredAsSecondBuildingSourceOnExistingProject": true,
+    "projectId": "LUNA"
+  },
+
+  "rooms": {
+    "count": 12,
+    "typesReadFromExistingLabelsNotInvented": true,
+    "list": [
+      { "ref": "LUNA-L06-APT-A-UTILITY", "type": "utility", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-ENTRY", "type": "entry", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-BATH-03", "type": "bathroom", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-BED-03", "type": "bedroom", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-KITCHEN", "type": "kitchen", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-BATH-02", "type": "bathroom", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-BATH-01", "type": "bathroom", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-BED-02", "type": "bedroom", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-DINING", "type": "dining", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-LIVING", "type": "living", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-BED-01", "type": "bedroom", "doors": 1 },
+      { "ref": "LUNA-L06-APT-A-BALCONY", "type": "balcony", "doors": 1 }
+    ]
+  },
+
+  "doors": {
+    "count": 12,
+    "allNewlyProposed": true,
+    "autoConfirmed": false,
+    "confidenceRange": "real, sub-1.0, evidence-based (not uniform)",
+    "assemblyDetailModeled": false,
+    "selectableLiveIn3D": true,
+    "verifiedRef": "LUNA-L06-APT-A-KITCHEN-DOOR-01"
+  },
+
+  "windows": {
+    "count": 0,
+    "status": "UNRESOLVED",
+    "reason": "no per-room window objects exist anywhere in this codebase's procedural data",
+    "fabricated": false
+  },
+
+  "structuralCoordination": {
+    "checkedRealColumnCount": 6,
+    "status": "CLEAR",
+    "conflicts": [],
+    "minClearanceMetres": 0.106,
+    "computedNotAsserted": true
+  },
+
+  "mepInterfaces": {
+    "roomsWithAssociatedDevices": 11,
+    "roomsTotal": 12,
+    "newDevicesCreated": 0,
+    "newRoutesCreated": 0,
+    "derivationMethod": "position-containment against real existing device positions, corroborated by locationLabel text"
+  },
+
+  "assetBinding": {
+    "groundAssetFoundationTouched": false,
+    "groundAssetFoundationReused": true,
+    "bindingPathway": "Building Ingestion V1 SourceAdapter/ProjectStore architecture, proven at apartment/room granularity",
+    "readyForRealSource": true
+  },
+
+  "navigation": {
+    "mechanism": "existing per-room camera presets (Phase 12), Enter -> room list -> per-room fly",
+    "continuousWalkthroughImplemented": false,
+    "teleportOnlyStub": false
+  },
+
+  "selection": {
+    "roomsSelectable": true,
+    "doorsSelectable": true,
+    "representationPolicyInheritedCorrectly": true,
+    "representationPolicyModified": false
+  },
+
+  "representation": {
+    "facility": "OPERATIONAL_2D (unchanged)",
+    "assignedResident": "FULL_3D (unchanged, proven live for all 12 rooms + 1 door)",
+    "otherResident": "denied (unchanged)",
+    "representationPolicyFileModified": false
+  },
+
+  "testing": {
+    "deterministic": { "script": "scripts/verifyL06GoldStandard.mjs", "checks": 16, "runTwiceConfirmed": true, "result": "PASS x2" },
+    "browser": { "script": "scripts/verifyL06GoldStandardBrowser.mjs", "checks": 17, "runTwiceConfirmed": true, "result": "PASS x2" },
+    "fullExistingRegressionSuite": { "allPassed": true, "regressionsFound": 0 }
+  },
+
+  "protectedSystemsUnchanged": [
+    "RepresentationPolicy (lunaRepresentationPolicy.ts)",
+    "Every existing TwinRuntimeProvider / resolver for the 9 completed operational systems",
+    "TwinIntelligenceController / Oyi vocabulary+parser for existing systems",
+    "SystemControlBoard and all 9 existing Control Board consumers",
+    "Existing Twin navigation (TopCommandBar, EngineeringDrawer, ScenesDrawer)",
+    "Facility and Consumer host integration",
+    "groundAsset.ts Asset Pipeline Foundation (read, not modified)"
+  ],
+
+  "genuineChangesOutsideL06Scope": [
+    { "file": "src/luna/lunaProgramme.ts", "change": "extracted l06UnitMassingBox() helper", "reason": "shared source of truth between rendering (LunaLevel.tsx) and the new structural coordination check" },
+    { "file": "src/luna/LunaLevel.tsx", "change": "uses the extracted helper instead of inline formula", "reason": "no behavior change, same computed values" },
+    { "file": "src/engine/components/InteriorRoom.tsx", "change": "added optional doorRef prop", "reason": "door selection; backward-compatible, undefined for every other interior" },
+    { "file": "src/engine/types.ts", "change": "added \"door\" to TwinNodeKind", "reason": "door selection needs a real kind" },
+    { "file": "src/engine/ingestion/types.ts", "change": "added \"door\"/\"window\" to CanonicalTargetKind", "reason": "Building Ingestion V1 anticipated door/window ExtractedObjectClass but never added the corresponding target kind" },
+    { "file": "src/engine/components/spatial/ContextCard.tsx", "change": "added data-context-card/data-context-card-title test hooks", "reason": "stable browser-test selectors, no visual change" },
+    { "file": "src/luna/InteriorNavigationCard.tsx", "change": "added data-interior-navigation-card test hook", "reason": "stable browser-test selector, no visual change" }
+  ],
+
+  "nextScalePlan": "L06 A Gold Standard -> L06 remaining apartments (B/C/D) -> L06 complete floor -> standard residential floor template -> L02-L09 -> premium floors L10-L12 -> penthouses -> L1 amenities -> Ground -> B1 -> Roof -> site/environment. Each floor mapped from real source data where available; canonical identities remain distinct; no blind duplication."
+}

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "1. Room alias resolution: kitchen/living room/bedroom phrases resolve to their real canonical room refs",
+    "2. Mode-agnostic ENTER: \"Take me to the kitchen\" resolves Kitchen with no forced mode — obeys the current session navigationMode",
+    "3. Explicit TOUR override: \"walk me to X\" / \"tour me to X\" force a one-shot TOUR override without touching navAction",
+    "4. Explicit TELEPORT override: \"jump to X\" / \"teleport me to X\" force a one-shot TELEPORT override",
+    "5. LOCATE phrases: \"where is X\" / \"show me X\" resolve navAction:\"locate\" — select/peek only, never travel",
+    "6. \"Take me home\": the sentinel resolves through scopePolicy.actor.assignedHomeRefs — identity-correct, not a fixed Apartment A string",
+    "7. \"Take me home\" (no assigned home): fails honestly rather than guessing a destination",
+    "8. Single dispatch path (Part 1): TwinIntelligenceController.handleNavigate forwards navAction/navModeOverride verbatim to SceneActions.navigateToSpace — no second route/camera system, no Kitchen-specific code",
+    "9. Honest response wording: LOCATE replies read as \"here is where it is\", ENTER replies read as \"here you go\" — never conflated",
+    "10. Unrelated identity stays blocked: resolving the Kitchen alias correctly is independent of, and does not bypass, RepresentationPolicy",
+    "11. Device command proof: \"Turn on the living room light\" resolves ROOM -> canonical device -> permitted capability -> real runtime command -> updated state, via the existing unmodified command pipeline"
+  ]
+}

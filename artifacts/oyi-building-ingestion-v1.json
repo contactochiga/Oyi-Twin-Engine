@@ -1,0 +1,167 @@
+{
+  "phase": "Luna/Oyi Identity Integration + Building Ingestion V1",
+  "principle": "Oyi should do the hard interpretation. The human should do the confirmation. The uploaded building model MUST NOT become a second source of truth.",
+  "auditPerformedBeforeImplementation": true,
+
+  "partA_visualIdentity": {
+    "sourceRepo": "facility-oyi (/Users/ochigaidoko/Documents/facility-oyi)",
+    "assetsReused": [
+      {
+        "facilityAsset": "public/oyi-logo-transparent.png",
+        "facilityUsage": "Sidebar.tsx brand mark, 28x28",
+        "twinPath": "src/engine/assets/oyi-logo.png",
+        "twinUsage": "TopCommandBar.tsx identity-slot, 22x22, first child before hamburger"
+      },
+      {
+        "facilityAsset": ".oyi-shell-orb CSS treatment (components/oyi-shell/OyiOrb.tsx)",
+        "facilityUsage": "closed-state conversation launcher, dark glass + sky glow + literal 'Oyi' text",
+        "twinPath": "src/engine/components/spatial/OyiOrb.tsx",
+        "twinUsage": "closed-state button, ported as OYI_ORB_BG/BORDER/BORDER_HOVER/GLOW constants"
+      }
+    ],
+    "assetsInvented": [],
+    "svgTraced": false,
+    "screenshotCroppedIntoProduction": false,
+    "sharedConversationState": {
+      "owner": "App.tsx oyiConversationOpen (single boolean)",
+      "entryPoints": ["TopCommandBar identity button", "OyiOrb closed state"],
+      "secondAiSessionCreated": false
+    },
+    "browserVerification": {
+      "script": "scripts/verifyOyiIdentityBrowser.mjs",
+      "npmScript": "test:oyi-identity:browser",
+      "checksTotal": 7,
+      "checksPassed": 7,
+      "reVerifiedAsRegressionAfter": ["Ingestion V1 implementation and testing"]
+    }
+  },
+
+  "partB_buildingIngestion": {
+    "layering": {
+      "engine": "src/engine/ingestion/ (building-agnostic, never names Luna)",
+      "luna": "src/luna/ingestion/ (Luna-specific adapter/normalizer/seed)",
+      "ui": "src/ui/ingestion/CreateProjectFlow.tsx (depends only on engine contracts)"
+    },
+    "coreFiles": {
+      "types.ts": 198,
+      "formatRegistry.ts": 81,
+      "adapters.ts": 42,
+      "normalize.ts": 95,
+      "projectStore.ts": 305,
+      "index.ts": 5,
+      "lunaProceduralAdapter.ts": 78,
+      "lunaNormalizer.ts": 52,
+      "lunaProjectSeed.ts": 67,
+      "CreateProjectFlow.tsx": 286
+    },
+    "sourceFormatRegistry": [
+      { "format": "ifc", "category": "primary", "supportLevel": "REQUIRES_CONVERSION" },
+      { "format": "rvt", "category": "primary", "supportLevel": "REQUIRES_CONVERSION" },
+      { "format": "archicad", "category": "primary", "supportLevel": "REQUIRES_CONVERSION" },
+      { "format": "skp", "category": "secondary", "supportLevel": "VISUAL_ONLY" },
+      { "format": "glb", "category": "secondary", "supportLevel": "PARTIALLY_SUPPORTED" },
+      { "format": "gltf", "category": "secondary", "supportLevel": "PARTIALLY_SUPPORTED" },
+      { "format": "pdf", "category": "document", "supportLevel": "REQUIRES_REVIEW" },
+      { "format": "cad", "category": "document", "supportLevel": "REQUIRES_REVIEW" },
+      { "format": "image", "category": "document", "supportLevel": "REQUIRES_REVIEW" }
+    ],
+    "realAdaptersImplemented": [
+      {
+        "id": "luna-procedural-reference",
+        "sourceFormat": "gltf",
+        "extractsFrom": "Luna's own existing canonical data (LUNA_LEVELS, LUNA_CORES, LUNA_BUILDING_ROOT, LUNA_STRUCTURAL_ELEMENTS, LUNA_RESIDENTIAL_UNITS, lunaTwinDataProvider.listAssets())",
+        "fabricatedData": false
+      }
+    ],
+    "thirdPartyFormatParsersImplemented": [],
+    "lunaFirstProjectRun": {
+      "projectId": "LUNA",
+      "extractedObjects": 265,
+      "duplicateSourceIds": 0,
+      "unresolvedAfterAutoNormalize": 36,
+      "publishedCanonicalRefsWhenAllProposalsConfirmed": 228,
+      "canonicalCountsMatchedExactly": { "operationalAssets": 86, "levels": 16, "structuralElements": 117 }
+    },
+    "publishBoundary": {
+      "onlyStatusesPromoted": ["CONFIRMED", "EDITED"],
+      "everyOtherStatusSkippedWithReason": true,
+      "duplicateRefsWithinOnePublishBlocked": true
+    },
+    "persistence": {
+      "implementation": "LocalProjectStore",
+      "backing": "window.localStorage with in-memory fallback outside the browser",
+      "checksum": "real SHA-256 via crypto.subtle.digest, computed only when real bytes supplied",
+      "cloudBackendClaimed": false
+    }
+  },
+
+  "testing": {
+    "deterministic": {
+      "script": "scripts/verifyIngestion.mjs",
+      "npmScript": "test:ingestion",
+      "checks": 16,
+      "runTwiceConfirmed": true,
+      "result": "PASS x2"
+    },
+    "browser": {
+      "script": "scripts/verifyIngestionBrowser.mjs",
+      "npmScript": "test:ingestion:browser",
+      "checks": 14,
+      "result": "PASS",
+      "screenshotsCaptured": 11
+    },
+    "fullRegressionSuite": {
+      "deterministicSuitesRun": [
+        "test:representation", "test:presentation", "test:architecture", "test:lift",
+        "test:four-lift", "test:water", "test:electrical", "test:electrical-live-ops",
+        "test:fire", "test:hvac", "test:access", "test:cctv", "test:network", "test:drainage"
+      ],
+      "browserSuitesRun": [
+        "test:oyi-identity:browser", "test:lift:browser", "test:four-lift:browser",
+        "test:control-surface:browser", "test:water:browser", "test:electrical:browser",
+        "test:electrical-live-ops:browser", "test:fire:browser", "test:hvac:browser",
+        "test:access:browser", "test:cctv:browser", "test:network:browser", "test:drainage:browser"
+      ],
+      "allPassed": true,
+      "regressionsFound": 0
+    },
+    "bugsFoundAndFixedDuringThisPhase": [
+      {
+        "bug": "Lift core refs double-extracted (once as 'lift', once as 'equipment')",
+        "foundBy": "deterministic test — duplicate sourceId assertion",
+        "fix": "lunaProceduralAdapter.ts equipment loop now excludes LUNA_CORES refs"
+      },
+      {
+        "bug": "Luna Residences Tower and its 4 core objects incorrectly showed UNRESOLVED in live Review tab",
+        "foundBy": "live browser screenshot inspection, not caught by deterministic tests",
+        "fix": "lunaNormalizer.ts's alreadyCanonicalRef() gained LUNA_BUILDING_ROOT and LUNA_CORES checks"
+      },
+      {
+        "bug": "React 19 StrictMode double-effect-invocation produced 530 mappings instead of 265 (two racing normalization runs)",
+        "foundBy": "live browser Publish step showing '1 of 530'",
+        "fix": "projectStore.ts recordMappings() replace-by-source instead of upsert-by-mappingId; lunaProjectSeed.ts gained an in-flight-promise guard"
+      },
+      {
+        "bug": "Publish button click in test script matched the Publish TAB button (identical text, earlier in DOM) instead of the Publish ACTION button, so publishProject() was never actually invoked",
+        "foundBy": "direct localStorage inspection proving underlying data was correct while the UI outcome was not",
+        "fix": "CreateProjectFlow.tsx: added data-publish-action attribute to the real button; test script now targets it directly"
+      },
+      {
+        "bug": "'Close Engineering Layers' button not found after selecting 'Drainage' in the browser regression script",
+        "foundBy": "browser test failure at the Existing Engineering Drawer regression check",
+        "fix": "verifyIngestionBrowser.mjs now re-queries and exact-matches the close button by its own scoped selector instead of relying on the simpler clickByText helper after a prior selection changed the tray's DOM state"
+      }
+    ]
+  },
+
+  "protectedSystemsUnchanged": [
+    "RepresentationPolicy (lunaRepresentationPolicy.ts)",
+    "TwinRuntimeProvider contract and every existing runtime provider",
+    "TwinIntelligenceController / Oyi vocabulary+parser for the 9 completed operational systems",
+    "SystemControlBoard and all 9 existing Control Board consumers",
+    "Every existing Twin navigation surface (TopCommandBar core behavior, EngineeringDrawer, ScenesDrawer)",
+    "Facility and Consumer host integration"
+  ],
+
+  "nextPhase": "LUNA — ARCHITECTURAL REALITY V2 (not started; see docs/OYI_BUILDING_INGESTION_V1.md Next Phase section and docs/LUNA_ARCHITECTURAL_REALITY_V2_PREREQUISITES.md)"
+}

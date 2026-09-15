@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "checks": [
+    "Canonical access asset identity preserved: every registered access-related ref intact (zero new operational assets were created), no duplicates",
+    "Safety boundary preserved: no lock/door capability was fabricated for the three common access points; the one real reference lock keeps its exact pre-existing lock/unlock capability, nothing added",
+    "Worked example (resident): valid resident credential -> authorized -> ACCESS_GRANTED event -> lock releases -> door state changes -> UNLOCKED event recorded, matching the brief's own worked example",
+    "Worked example (Facility denial): Facility credential presented at the private home lock -> DENIED, reason recorded, PHYSICAL STATE unchanged (door remains locked), event recorded",
+    "Worked example (unauthorized resident): a resident credential assigned to a different home is denied at this lock, physical state unchanged",
+    "Worked example (Visitor/Unauthorized): the pre-existing \"public\" role and a missing actor both deny access at the lock — never fails open",
+    "resolveAccessAuthorization() honestly refuses to authorize an uncontrollable access point rather than fabricating a decision",
+    "resolveAccessState(): the three common points honestly report not-instrumented (locked: null); the one real reference lock reports its actual live state",
+    "Access event log capped at 40 entries (max 40), newest-first — same capped-array convention as FireEvent/ElectricalEvent",
+    "Oyi parser resolves all 9 access target phrases from the brief to the correct intent shape",
+    "Vocabulary collision check: Electrical's \"active power path\" and HVAC's \"turn on the AC\"/\"is the AC running\" phrases resolve exactly as before — no substring hijack introduced",
+    "Oyi \"why was access denied\"/\"show me the access point\"/\"which doors are unlocked\" all resolve to the SAME aggregate narrative: \"Access & Security (reference simulation): Main Resident Entrance has no lock/door telemetry instrumented in this reference build (DESIGN DECISION REQUIRED). Service Entrance has no lock/door telemetry instrumented in this reference build (DESIGN DECISION REQUIRED). Lift Lobby Access (Ground) has no lock/door telemetry instrumented in this reference build (DESIGN DECISION REQUIRED). Apartment 6A — Entrance Smart Lock is locked. No access events recorded yet.\"",
+    "Oyi answer for Apartment 6A's own entrance lock: \"Apartment 6A — Entrance Smart Lock is locked.\"",
+    "RepresentationPolicy unchanged: Facility sees common access points FULL_3D, the private lock stays HIDDEN to Facility, the assigned resident sees their own lock FULL_3D — identical to pre-existing behavior",
+    "Full Oyi controller round-trip: resident unlock succeeds end-to-end (real state change, real GRANTED event); Facility attempt denied end-to-end (physical state never changes)",
+    "Access Control Board asset registry: 3 real common-access-point tabs, deterministic default (Main Entrance); the private lock correctly excluded",
+    "lunaRepresentationPolicy.ts module unchanged and functional (byte-hash re-verified by test:lift in the full regression run)"
+  ]
+}

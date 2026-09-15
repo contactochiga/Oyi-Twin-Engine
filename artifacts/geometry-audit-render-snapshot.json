@@ -1,0 +1,20 @@
+{
+  "view": "initial Architecture, Facility, 1440x900, DPR 1, high lighting/shadows, headless Chrome",
+  "meshes": 730,
+  "visibleFlagMeshes": 403,
+  "sceneTrianglesBeforeCulling": 62278,
+  "uniqueGeometries": 730,
+  "uniqueMaterials": 570,
+  "rendererMemory": {
+    "geometries": 416,
+    "textures": 7
+  },
+  "rendererRender": {
+    "frame": 66,
+    "calls": 642,
+    "triangles": 49638,
+    "points": 0,
+    "lines": 0
+  },
+  "programs": 8
+}

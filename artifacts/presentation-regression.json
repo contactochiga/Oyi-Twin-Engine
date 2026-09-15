@@ -1,0 +1,223 @@
+{
+  "result": "PASS",
+  "plans": {
+    "B1": [
+      "Passenger Elevator 01 · normal",
+      "Passenger Elevator 02 · normal",
+      "Passenger Elevator 03 · normal",
+      "Service / Fire Elevator · normal",
+      "Protected Stair 01 · Modeled space",
+      "Protected Stair 02 · Modeled space",
+      "Service Riser (Representative) · Modeled space",
+      "Grid / Incoming Supply · normal",
+      "Main Electrical Distribution Board · normal",
+      "Standby Generator 01 · normal",
+      "ATS / Changeover Switch 01 · normal",
+      "Inverter / Battery Backup (Representative) · active",
+      "Main Electricity Meter (Building) · normal",
+      "Main Water Storage Tank · normal",
+      "Water Treatment Unit · normal",
+      "Booster Pump 01 · active",
+      "Booster Pump 02 · normal",
+      "Main Water Meter (Building) · normal",
+      "Water Isolation/Control Valve (Building Main) · active",
+      "Fire Alarm Control Panel · normal",
+      "Fire Pump · normal",
+      "Fire Water Tank · normal",
+      "Parking / B1 Camera · normal",
+      "Service Entrance · normal",
+      "Core Network Gateway / Router · normal",
+      "Luna Oyi Edge Core · normal",
+      "Main Drainage / Municipal Discharge · normal",
+      "Electrical Riser (Representative) · normal",
+      "Water Riser (Representative) · normal",
+      "Drainage Stack (Representative) · normal",
+      "Fire Riser (Representative) · normal",
+      "Data / Fiber Riser (Representative) · normal"
+    ],
+    "G": [
+      "Passenger Elevator 01 · normal",
+      "Passenger Elevator 02 · normal",
+      "Passenger Elevator 03 · normal",
+      "Service / Fire Elevator · normal",
+      "Protected Stair 01 · Modeled space",
+      "Protected Stair 02 · Modeled space",
+      "Service Riser (Representative) · Modeled space",
+      "Reception · Modeled space",
+      "Waiting Lounge · Modeled space",
+      "Lift Lobby · Modeled space"
+    ],
+    "L01": [
+      "Passenger Elevator 01 · normal",
+      "Passenger Elevator 02 · normal",
+      "Passenger Elevator 03 · normal",
+      "Service / Fire Elevator · normal",
+      "Protected Stair 01 · Modeled space",
+      "Protected Stair 02 · Modeled space",
+      "Service Riser (Representative) · Modeled space",
+      "Pool · Modeled space",
+      "Lounge · Modeled space"
+    ],
+    "L02": [
+      "Apartment A · Reserved",
+      "Apartment B · Reserved",
+      "Apartment C · Reserved",
+      "Apartment D · Occupied · Normal"
+    ],
+    "L03": [
+      "Apartment A · Reserved",
+      "Apartment B · Reserved",
+      "Apartment C · Occupied · Normal",
+      "Apartment D · Occupied · Normal"
+    ],
+    "L04": [
+      "Apartment A · Reserved",
+      "Apartment B · Occupied · Normal",
+      "Apartment C · Occupied · Normal",
+      "Apartment D · Occupied · Normal"
+    ],
+    "L05": [
+      "Apartment A · Occupied · Normal",
+      "Apartment B · Occupied · Normal",
+      "Apartment C · Occupied · Normal",
+      "Apartment D · Occupied · Normal"
+    ],
+    "L06": [
+      "Apartment A · Occupied · Normal",
+      "Apartment B · Occupied · Normal",
+      "Apartment C · Available — vacant",
+      "Apartment D · Reserved"
+    ],
+    "L07": [
+      "Apartment A · Occupied · Normal",
+      "Apartment B · Occupied · Normal",
+      "Apartment C · Occupied · Normal",
+      "Apartment D · Occupied · Normal"
+    ],
+    "L08": [
+      "Apartment A · Occupied · Normal",
+      "Apartment B · Occupied · Normal",
+      "Apartment C · Occupied · Normal",
+      "Apartment D · Occupied · Normal"
+    ],
+    "L09": [
+      "Apartment A · Occupied · Normal",
+      "Apartment B · Occupied · Normal",
+      "Apartment C · Occupied · Normal",
+      "Apartment D · Occupied · Normal"
+    ],
+    "L10": [
+      "Apartment A (Premium) · Occupied · Normal"
+    ],
+    "L11": [
+      "Apartment A · Occupied · Normal",
+      "Apartment B · Occupied · Normal",
+      "Apartment C · Available — vacant"
+    ],
+    "L12": [
+      "Apartment A · Occupied · Normal",
+      "Apartment B · Available — vacant",
+      "Apartment C · Available — vacant"
+    ],
+    "PH": [
+      "Penthouse · Private residence"
+    ],
+    "ROOF": [
+      "Passenger Elevator 01 · normal",
+      "Passenger Elevator 02 · normal",
+      "Passenger Elevator 03 · normal",
+      "Service / Fire Elevator · normal",
+      "Service Riser (Representative) · Modeled space",
+      "Sky Bar · Modeled space",
+      "Pool Deck · Modeled space"
+    ]
+  },
+  "tray": {
+    "ys": [
+      857,
+      857,
+      857,
+      857,
+      857,
+      857,
+      857,
+      857,
+      857,
+      857,
+      857,
+      857,
+      857
+    ],
+    "scroll": true,
+    "height": 186
+  },
+  "labels": {
+    "Architecture": {
+      "label": "Architecture",
+      "icon": "architecture",
+      "svg": "<path d=\"M4 21V10l8-6 8 6v11\"></path><path d=\"M9 21v-7h6v7\"></path>"
+    },
+    "All Systems": {
+      "label": "All Systems",
+      "icon": "all",
+      "svg": "<path d=\"M12 3 3 8l9 5 9-5-9-5Z\"></path><path d=\"M3 12l9 5 9-5\"></path><path d=\"M3 16l9 5 9-5\"></path>"
+    },
+    "Structure": {
+      "label": "Structure",
+      "icon": "structure",
+      "svg": "<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"1\"></rect><path d=\"M4 10h16M4 16h16M10 4v16M16 4v16\"></path>"
+    },
+    "Electrical": {
+      "label": "Electrical",
+      "icon": "electrical",
+      "svg": "<path d=\"M13 2 4 14h7l-1 8 9-12h-7l1-8Z\"></path>"
+    },
+    "Water": {
+      "label": "Water",
+      "icon": "water",
+      "svg": "<path d=\"M12 3s6 7 6 11.5A6 6 0 0 1 6 14.5C6 10 12 3 12 3Z\"></path>"
+    },
+    "Drainage": {
+      "label": "Drainage",
+      "icon": "drainage",
+      "svg": "<path d=\"M6 4v6a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4\"></path><path d=\"M12 16v5M9 21h6\"></path>"
+    },
+    "Fire": {
+      "label": "Fire",
+      "icon": "fire",
+      "svg": "<path d=\"M12 22c4 0 6-2.5 6-6 0-3-2-4.5-3-7-.5 2-1.5 3-2.5 2 .5-3-1-5.5-3-7 .5 3-1.5 5-3 7.5C5 13 5 14 5 16c0 3.5 3 6 7 6Z\"></path>"
+    },
+    "HVAC": {
+      "label": "HVAC",
+      "icon": "hvac",
+      "svg": "<circle cx=\"12\" cy=\"12\" r=\"3\"></circle><path d=\"M12 3v3M12 18v3M4.2 7.8l2.6 1.5M17.2 14.7l2.6 1.5M4.2 16.2l2.6-1.5M17.2 9.3l2.6-1.5\"></path>"
+    },
+    "Elevators": {
+      "label": "Elevators",
+      "icon": "vertical-transport",
+      "svg": "<rect x=\"6\" y=\"3\" width=\"12\" height=\"18\" rx=\"1\"></rect><path d=\"m10 8 2-2 2 2M10 16l2 2 2-2\"></path>"
+    },
+    "Security": {
+      "label": "Security",
+      "icon": "security",
+      "svg": "<path d=\"M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z\"></path>"
+    },
+    "Access": {
+      "label": "Access",
+      "icon": "access",
+      "svg": "<rect x=\"5\" y=\"10\" width=\"14\" height=\"10\" rx=\"1.5\"></rect><path d=\"M8 10V7a4 4 0 0 1 8 0v3\"></path>"
+    },
+    "Network / Edge": {
+      "label": "Network / Edge",
+      "icon": "network-edge",
+      "svg": "<circle cx=\"12\" cy=\"5\" r=\"2\"></circle><circle cx=\"5\" cy=\"19\" r=\"2\"></circle><circle cx=\"19\" cy=\"19\" r=\"2\"></circle><path d=\"M12 7v6M12 13 5 17M12 13l7 4\"></path>"
+    }
+  },
+  "pointerChecks": {
+    "trayDragCameraUnchanged": true,
+    "viewDragCameraUnchanged": true,
+    "canvasDragCameraChanged": true,
+    "canvasPointerDowns": 5
+  },
+  "errors": []
+}

@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "checks": [
+    "Canonical drainage inventory: 4 new reference assets (single-stack vent roof termination + roof drain/downpipe/site discharge stormwater chain), zero duplicate refs, zero fabricated controllable capability",
+    "Runtime gaps fixed: the 4 fixture-level drain points (already real canonical assets since Phase 10/Domestic Water V1) and all 4 new drainage assets now have real runtime rows",
+    "Wastewater route integrity: Kitchen/Bath1/Bath2/Bath3 -> 6A stack connection -> L06 branch -> riser -> B1 discharge reference, entirely via the pre-existing parentRef mechanism — no parallel graph",
+    "Vent route integrity: single-stack venting — the roof termination parents directly to the real soil/waste riser, proving no second/parallel vent riser was fabricated",
+    "Stormwater route integrity: roof drain -> downpipe -> site discharge, a genuinely separate reference chain from wastewater/vent (distinct refs, distinct types, no shared node)",
+    "Apartment 6A drainage tracing resolves via the pre-existing buildServiceRoute()/UNIT_SYSTEM_TERMINATION mechanism: Main Drainage / Municipal Discharge -> Drainage Stack (Representative) -> Level 6 Drainage Connection Point -> Wet-Area Drainage Connection",
+    "DD10 boundary enforced at the code level: finalDischargeDesignRequired is hardcoded true (mirrors resolveNetworkState()'s edgeCoreConnected:false pattern), and every new vent/stormwater asset is explicitly marked DESIGN_REFERENCE — never invented as engineered/approved",
+    "resolveDrainageState() fresh-reset baseline: every fixture and the stack connection read NORMAL (clear)",
+    "Reference simulation: drainage-blockage scenario deterministically sets the 6A stack connection to BLOCKED, explicitly labeled as reference simulation (never claimed as real sensor data)",
+    "Recovery: reset returns the stack connection to NORMAL",
+    "No cross-system state contamination: Fire and HVAC resolve their own complete, correct, independent state while a drainage blockage is active — drainage never becomes a dependency of any other system's resolver, and the blockage patch touches only the one asset it names",
+    "Oyi parser resolves all 6 drainage target phrases from the brief to the correct intent shape",
+    "Oyi honestly discloses DD10 rather than inventing a final destination: \"Main Drainage / Municipal Discharge: the reference drainage route is traced to this collection/inspection point. Final discharge strategy (municipal connection, treatment, pump) is DESIGN DECISION REQUIRED (DD10).\"",
+    "Oyi \"show me the drainage from Apartment 6A\" narrative covers the real wastewater/vent/stormwater picture plus DD10: \"Drainage (reference simulation) — wastewater path from Apartment 6A's fixtures to the B1 reference discharge point: Wet-Area Stack Connection is clear. Level 6 Drainage Connection Point is clear. Drainage Stack (Riser) is clear. Main Drainage / Municipal Discharge (Reference) is clear. Final discharge strategy beyond the B1 reference point (municipal connection, treatment, pump) is DESIGN DECISION REQUIRED (DD10). Vent: single-stack — the same soil/waste stack continues to its roof termination (a real, common configuration); per-fixture individual venting, if required, is DESIGN DECISION REQUIRED (DD10). Stormwater is a genuinely separate reference chain (roof drain, downpipe, site discharge) — none of it is engineered yet; all DESIGN DECISION REQUIRED (DD10).\"",
+    "Vocabulary collision check: CCTV/HVAC/Network/Fire phrases all resolve exactly as before — the new \"waste\"/\"stormwater\" system patterns and new asset aliases introduced no substring hijack",
+    "RepresentationPolicy behavior unchanged (file untouched): Facility sees common drainage infrastructure FULL_3D and the pre-existing Facility-owned unit allowlist entries stay CONTEXT_3D for Facility / FULL_3D for the assigned resident",
+    "Consumer privacy: all 4 new common vent/stormwater reference assets are HIDDEN to residents, matching the existing common-infrastructure boundary — no new asset accidentally widened resident visibility",
+    "Drainage Control Board asset registry: 8 real registered tabs, deterministic default (B1 Discharge); fixture-level drains correctly resolve to the stack-connection tab",
+    "Final canonical asset count confirmed: 86 (82 + 4 new drainage reference assets), zero duplicates, matching scripts/verifyLift.mjs's own updated baseline"
+  ]
+}

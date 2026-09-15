@@ -1,0 +1,105 @@
+{
+  "title": "Luna Electrical System Live Operations V1.1",
+  "revision": "1",
+  "status": "REFERENCE DESIGN — not procurement, not certified electrical engineering",
+  "buildsOn": "docs/LUNA_ELECTRICAL_REFERENCE_SPEC.md (V1, unchanged in shape)",
+  "buildingPowerState": {
+    "resolver": "resolveBuildingPower() in src/luna/runtime/lunaPowerResolver.ts",
+    "derivedFrom": ["LUNA-B1-ELECTRICAL-GRID-01", "LUNA-B1-ELECTRICAL-MDB-01", "LUNA-B1-ELECTRICAL-GEN-01", "LUNA-B1-ELECTRICAL-ATS-01", "LUNA-B1-ELECTRICAL-INV-01", "electrical event log"],
+    "notStoredState": true,
+    "fields": {
+      "activeSource": "'utility' | 'generator' | 'inverter' | 'mixed' | 'none' — only utility/generator/none are ever emitted given current topology; mixed is reserved for the ATS changeover window; inverter is never emitted (see inverterRole)",
+      "utilityAvailable": "boolean",
+      "generator": "{ phase, running, fault, fuelPct }",
+      "inverter": "{ on, batteryPct } | null — informational only, never a supply source",
+      "ats": "{ source, autoMode, fault, transitioning }",
+      "mainBusEnergized": "boolean",
+      "voltageV": "number — reference/simulated, 415 or 0",
+      "frequencyHz": "number — reference/simulated, 50 or 0 (new this phase)",
+      "currentA": "number — reference/simulated, 118 or 0 (new this phase)",
+      "loadPct": "number — reference/simulated",
+      "transition": "'stable' | 'transferring'",
+      "activeFaults": "string[]",
+      "lastTransition": "ElectricalEvent | null",
+      "quality": "'simulated'"
+    },
+    "inverterRole": "LUNA-B1-ELECTRICAL-INV-01 is surfaced for information (on/battery_pct) only. Its canonical state (a simple independent on/off toggle, parented to MDB-01, not wired into recomputePowerNetwork()'s cascade) does not support treating it as a building supply source — doing so would fabricate a role it doesn't have."
+  },
+  "sourceTransitionSequence": {
+    "normal": ["Utility available", "ATS on Utility", "Building Source = UTILITY", "Main distribution energized", "riser energized", "L06 energized", "Apartment 6A energized", "Generator standby"],
+    "utilityFailure": ["Utility lost", "ATS recognizes source loss", "Generator start initiated", "Main distribution de-energized (momentary, no valid source yet)", "Generator available (RUNNING, ~3s)", "ATS transfer initiated (TRANSFERRING, ~1s)", "ATS transferred to Generator", "Building Source = GENERATOR", "downstream re-energizes"],
+    "utilityRestoration": ["Utility restored", "ATS transfer initiated (TRANSFERRING) + Generator cooldown started (parallel)", "ATS transferred to Utility (~1s)", "Generator cooldown completed (~1.5s)", "Building Source = UTILITY", "Generator standby"],
+    "generatorFailureDuringOutage": ["Generator faults while it is the live source", "generatorRunning -> false", "mainBusEnergized -> false", "activeSource -> NONE (truthful, not fabricated)", "downstream de-energizes", "auto-start guarded against retry loop by the fault flag"]
+  },
+  "runtimeChanges": {
+    "newFields": [
+      { "ref": "LUNA-B1-ELECTRICAL-ATS-01", "field": "transitioning", "type": "boolean", "note": "break-before-make changeover window, managed by sequenceAtsTransfer()" },
+      { "ref": "LUNA-B1-ELECTRICAL-MDB-01", "field": "frequency_hz", "type": "number" },
+      { "ref": "LUNA-B1-ELECTRICAL-MDB-01", "field": "current_a", "type": "number" }
+    ],
+    "newFunctions": [
+      { "name": "sequenceAtsTransfer(newSource)", "location": "lunaSimulationProvider.ts", "note": "real ~1s changeover, mirrors sequenceGeneratorPhase()'s existing believable-timing precedent" }
+    ],
+    "eventLog": {
+      "type": "ElectricalEvent { id, at, label, detail? }",
+      "cap": 40,
+      "order": "newest-first",
+      "export": "lunaRuntimeInternals.getElectricalEvents()",
+      "pubSub": "reuses the existing provider notify()/subscribe() mechanism — no second event system",
+      "labels": ["Utility supply lost", "Utility supply restored", "Generator start initiated", "Generator available", "Generator cooldown started", "Generator cooldown completed", "Generator fault", "Generator fault cleared", "ATS transfer initiated", "ATS transferred to Generator", "ATS transferred to Utility", "Main distribution energized", "Main distribution de-energized"]
+    }
+  },
+  "controlBoard": {
+    "sharedShellChange": "SystemControlBoard gained an optional headerContent?: ReactNode prop, rendered between the title row and tab selector — generic, building-agnostic, unused by Elevators/Water (no regression)",
+    "summaryComponent": "BuildingSupplySummary in ElectricalControlBoard.tsx",
+    "domHooks": { "container": "[data-building-supply-summary]", "sourceAttr": "data-building-supply-source" },
+    "fieldsShown": ["Utility (Available/Unavailable)", "Generator (Standby/Starting/Running/Cooldown/Fault)", "ATS (Utility/Generator/Transferring…)", "Main Bus (Energized/De-energized)"]
+  },
+  "oyiChanges": {
+    "newMatcher": "matchBuildingPower — resolves asset-less building-power phrases to real anchors (GRID-01 for general, GEN-01 for causal 'why')",
+    "extendedMatchers": ["matchQuery (space-block: 'is Apartment 6A powered', 'what source is L06 using')", "matchShowRoute (broadened power-phrase detection; 'active power path' default target; fixed a pre-existing system-dropping bug in its unresolved fallback)"],
+    "newVocabulary": ["'utility'/'the utility' alias for GRID-01", "'l06' alias for LUNA-L06 level"],
+    "newExplainFunctions": ["explainBuildingPower(power) in lunaExplain.ts — the one canonical building-power narrative, ref-anchored at GRID-01 and GEN-01"],
+    "targetPhrasesVerified": [
+      "What is the building running on?",
+      "What is powering Luna?",
+      "Are we on generator?",
+      "Is utility available?",
+      "Why are we on generator?",
+      "What happened to utility?",
+      "What source is L06 using?",
+      "Is Apartment 6A powered?",
+      "Show me the active power path.",
+      "Show me where the power is coming from.",
+      "Show the generator.",
+      "Show the ATS."
+    ]
+  },
+  "physicalGeometryImprovements": [
+    { "component": "SwitchboardCabinetGeometry", "change": "single door -> two door leaves + handles with a visible seam (segmented switchgear panel look)" },
+    { "component": "GeneratorSetGeometry", "change": "added a control/annunciator panel with a fault/running indicator lamp" },
+    { "component": "ATSCabinetGeometry", "change": "both source lamps flicker together during the transitioning changeover window instead of one being solid-lit" },
+    { "component": "RiserShaft (engine-shared)", "change": "new optional shape?: 'round'|'duct' prop; electrical riser alone renders as a rectangular busway cross-section; every other riser (water/drainage/fire/network) unchanged (prop defaults to 'round')" }
+  ],
+  "routeImprovements": [
+    "B1_ELECTRICAL_PLANT_RUNS gained per-run sourceGate ('utility'|'generator'|'bus'); each cable run's flowing pulse now reflects whether that specific physical path is live right now, read directly from resolveBuildingPower().activeSource"
+  ],
+  "referenceAssumptions": {
+    "voltageV": "415 (three-phase LV reference figure, not a final spec)",
+    "frequencyHz": "50 (reference nominal)",
+    "currentA": "118 (flat reference figure at nominal load_pct, not measured)",
+    "generatorStartDelay": "~3s (believable reference timing, not a performance spec)",
+    "atsTransferDelay": "~1s (believable reference timing)",
+    "generatorCooldownDelay": "~1.5s (believable reference timing)"
+  },
+  "unresolvedDesignDecisions": {
+    "DD08": "Electrical supply and resilience — demand/diversity, utility intake/transformer need, voltage arrangement, standby duty, generator count/rating, fuel/exhaust, ATS sequence, BESS strategy and metering ownership. Not resolved by this phase.",
+    "DD07": "Cable containment/coordinated shaft final routing. Not resolved — the duct-shaped riser is a closer visual read, not a final containment spec.",
+    "other": "Real UPS/BESS-as-a-supply-source modeling and Solar remain entirely unresolved/future — neither was invented in this phase."
+  },
+  "tests": {
+    "deterministic": "scripts/verifyElectricalLiveOps.mjs — 12 checks",
+    "browser": "scripts/verifyElectricalLiveOpsBrowser.mjs — 16 checks including Elevator + Water regression",
+    "regressionReRun": ["test:electrical (13/13)", "test:water (14/14)", "test:lift (9/9)", "test:four-lift (12/12)", "test:representation", "test:presentation", "test:architecture", "typecheck", "build", "lint (no new errors)"]
+  }
+}

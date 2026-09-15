@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "results": [
+    "1. Twin top bar reads [OYI][HAMBURGER][ASK OYI...] — the real Oyi brand asset (copied from Facility, never redrawn) sits first, immediately before the hamburger",
+    "2. Closed Oyi conversation identity: the bottom-right orb now uses the exact dark-glass/cyan-glow \"Oyi\" treatment ported from Facility's own oyi-shell-orb, replacing the prior purple \"✦\" orb",
+    "3. Oyi conversation opened: clicking the closed orb expands the same composer that already exists (parseIntent -> TwinIntelligenceController pipeline unchanged)",
+    "One shared conversation confirmed: the top-bar Oyi identity mark opens the exact same conversation surface the closed orb opens — no second AI session was created",
+    "4/5. Existing top bar still works: the hamburger still toggles the sidebar, unaffected by the identity mark being added before it",
+    "6. Oyi still answers through the existing system: the top-bar search field (unchanged) resolved a real water-system query",
+    "7. Building remains visually dominant: the 3D canvas still occupies 100% of the viewport after the identity integration"
+  ],
+  "errors": []
+}

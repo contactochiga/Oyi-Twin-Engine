@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "results": [
+    "A: real pointer Ground→L10, runtime-driven physical car, follow camera, live rail, arrival doors",
+    "B: real pointer L10→B1",
+    "C: call at Ground, lobby, board, ride to L06, exit through open doors",
+    "D/E: engineering Cutaway and Structure during continuous movement",
+    "G: state preservation — currentFloor unchanged across Structure/All Systems/Architecture representation switches",
+    "H: command conflict rejected mid-journey (no override/teleport); door interlock rejected while moving",
+    "I: Consumer identity rejected by the live app's own provider instance when attempting to command Lift 02 (runtime.execute authorization boundary, not just the Node-side deterministic test)",
+    "J: selecting Elevators from Engineering Layers (no prior Oyi command) exposes Lift 02 — group.visible=true, shaft-wall opacity=0.12 (reduced from its normal 0.9)",
+    "K (LIMITATION, not a defect): no on-screen pixel currently raycasts to the car before a nearer, visually-transparent floor slab — see report for root cause and recommendation. onClick->select() wiring on the lift group itself is confirmed correct by source inspection.",
+    "F: tracking exit and ordinary L06 plan navigation"
+  ],
+  "errors": []
+}

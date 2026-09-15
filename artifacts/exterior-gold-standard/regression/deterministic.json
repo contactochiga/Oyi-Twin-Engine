@@ -1,0 +1,122 @@
+[
+  {
+    "name": "test:representation",
+    "status": "PASS",
+    "ms": 494
+  },
+  {
+    "name": "test:lift",
+    "status": "PASS",
+    "ms": 484
+  },
+  {
+    "name": "test:four-lift",
+    "status": "PASS",
+    "ms": 715
+  },
+  {
+    "name": "test:water",
+    "status": "PASS",
+    "ms": 3087
+  },
+  {
+    "name": "test:electrical",
+    "status": "PASS",
+    "ms": 17346
+  },
+  {
+    "name": "test:electrical-live-ops",
+    "status": "PASS",
+    "ms": 14496
+  },
+  {
+    "name": "test:fire",
+    "status": "PASS",
+    "ms": 1488
+  },
+  {
+    "name": "test:hvac",
+    "status": "PASS",
+    "ms": 2128
+  },
+  {
+    "name": "test:access",
+    "status": "PASS",
+    "ms": 12475
+  },
+  {
+    "name": "test:cctv",
+    "status": "PASS",
+    "ms": 1129
+  },
+  {
+    "name": "test:network",
+    "status": "PASS",
+    "ms": 633
+  },
+  {
+    "name": "test:drainage",
+    "status": "PASS",
+    "ms": 724
+  },
+  {
+    "name": "test:ingestion",
+    "status": "PASS",
+    "ms": 398
+  },
+  {
+    "name": "test:l06-gold-standard",
+    "status": "PASS",
+    "ms": 554
+  },
+  {
+    "name": "test:grand-lobby",
+    "status": "PASS",
+    "ms": 791
+  },
+  {
+    "name": "test:ingestion-v2",
+    "status": "FAIL",
+    "ms": 848
+  },
+  {
+    "name": "test:spatial-transition",
+    "status": "PASS",
+    "ms": 800
+  },
+  {
+    "name": "test:routed-traversal",
+    "status": "PASS",
+    "ms": 602
+  },
+  {
+    "name": "test:l06-floor",
+    "status": "PASS",
+    "ms": 529
+  },
+  {
+    "name": "test:apt-a-interior",
+    "status": "PASS",
+    "ms": 557
+  },
+  {
+    "name": "test:apt-a-graph",
+    "status": "PASS",
+    "ms": 512
+  },
+  {
+    "name": "test:apt-a-oyi-semantics",
+    "status": "PASS",
+    "ms": 1027
+  },
+  {
+    "name": "test:apt-a-map-policy",
+    "status": "PASS",
+    "ms": 560
+  },
+  {
+    "name": "test:explore",
+    "status": "PASS",
+    "ms": 84
+  }
+]

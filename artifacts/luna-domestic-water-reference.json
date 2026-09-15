@@ -1,0 +1,122 @@
+{
+  "title": "Luna Domestic Water Reference System V1",
+  "revision": "1",
+  "status": "REFERENCE DESIGN — not procurement, not certified hydraulic engineering",
+  "chain": {
+    "stages": ["source", "storage", "treatment", "booster", "header", "riser", "floor_branch", "isolation_meter", "distribution", "fixture"],
+    "sourceToDestinationExample": [
+      "LUNA-B1-WATER-INTAKE-01",
+      "LUNA-B1-WATER-TANK-01",
+      "LUNA-B1-WATER-BP-01",
+      "LUNA-RISER-WATER-01",
+      "LUNA-L06-WATER-BRANCH-01",
+      "LUNA-L06-APT-A-UTILITY-VALVE-01",
+      "LUNA-L06-APT-A-METER-WATER-01",
+      "LUNA-L06-APT-A-WATER-MAIN-01",
+      "LUNA-L06-APT-A-WATER-COLD-01",
+      "LUNA-L06-APT-A-KITCHEN-FIXTURE-BRANCH-01"
+    ]
+  },
+  "canonicalAssets": {
+    "reused": [
+      { "ref": "LUNA-B1-WATER-TANK-01", "type": "infrastructure_asset", "classification": "observable", "phase": "pre-existing" },
+      { "ref": "LUNA-B1-WATER-TREAT-01", "type": "infrastructure_asset", "classification": "observable", "phase": "pre-existing" },
+      { "ref": "LUNA-B1-WATER-BP-01", "type": "pump", "classification": "controllable", "role": "duty", "phase": "pre-existing" },
+      { "ref": "LUNA-B1-WATER-BP-02", "type": "pump", "classification": "controllable", "role": "standby", "phase": "pre-existing" },
+      { "ref": "LUNA-B1-WATER-METER-01", "type": "water_meter", "classification": "observable", "phase": "pre-existing" },
+      { "ref": "LUNA-B1-WATER-VALVE-01", "type": "switch", "classification": "controllable", "role": "building main header isolation", "phase": "pre-existing" },
+      { "ref": "LUNA-RISER-WATER-01", "type": "riser", "classification": "observable", "note": "upgraded this phase from static context-only to real derived telemetry", "phase": "pre-existing, upgraded" },
+      { "ref": "LUNA-L06-WATER-BRANCH-01", "type": "floor_branch", "classification": "observable", "note": "upgraded this phase from static context-only to real derived telemetry", "phase": "pre-existing, upgraded" },
+      { "ref": "LUNA-L06-APT-A-UTILITY-VALVE-01", "type": "switch", "classification": "controllable", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-METER-WATER-01", "type": "water_meter", "classification": "observable", "note": "gained new derived field supply_active this phase", "phase": "pre-existing, extended" },
+      { "ref": "LUNA-L06-APT-A-WATER-MAIN-01", "type": "distribution_point", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-WATER-HOT-01", "type": "distribution_point", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-WATER-COLD-01", "type": "distribution_point", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-KITCHEN-FIXTURE-BRANCH-01", "type": "distribution_point", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-BATH-01-FIXTURE-BRANCH-01", "type": "distribution_point", "classification": "asset-only", "medium": "hot", "phase": "pre-existing" },
+      { "ref": "LUNA-B1-DRAINAGE-MAIN-01", "type": "infrastructure_asset", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-RISER-DRAINAGE-01", "type": "riser", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-DRAINAGE-BRANCH-01", "type": "floor_branch", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-DRAIN-01", "type": "drain_point", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-KITCHEN-DRAIN-01", "type": "drain_point", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-BATH-01-DRAIN-01", "type": "drain_point", "classification": "asset-only", "phase": "pre-existing" }
+    ],
+    "new": [
+      { "ref": "LUNA-B1-WATER-INTAKE-01", "type": "infrastructure_asset", "classification": "observable", "role": "incoming supply / backflow isolation demarcation (EQ-WATER-INTAKE, previously unregistered)", "state": { "supply_active": true } },
+      { "ref": "LUNA-L06-APT-A-BATH-01-FIXTURE-BRANCH-02", "type": "distribution_point", "classification": "asset-only", "medium": "cold", "room": "LUNA-L06-APT-A-BATH-01" },
+      { "ref": "LUNA-L06-APT-A-BATH-02-FIXTURE-BRANCH-01", "type": "distribution_point", "classification": "asset-only", "medium": "cold", "room": "LUNA-L06-APT-A-BATH-02" },
+      { "ref": "LUNA-L06-APT-A-BATH-03-FIXTURE-BRANCH-01", "type": "distribution_point", "classification": "asset-only", "medium": "cold", "room": "LUNA-L06-APT-A-BATH-03" },
+      { "ref": "LUNA-L06-APT-A-BATH-02-DRAIN-01", "type": "drain_point", "classification": "asset-only", "room": "LUNA-L06-APT-A-BATH-02" },
+      { "ref": "LUNA-L06-APT-A-BATH-03-DRAIN-01", "type": "drain_point", "classification": "asset-only", "room": "LUNA-L06-APT-A-BATH-03" }
+    ],
+    "notCreated": [
+      { "concept": "Guest WC", "reason": "ROOM-LUNA-L06-A-GUEST-WC has canonicalRef: null in luna-spatial-program.json — DD05 unresolved, not invented" },
+      { "concept": "Hot-water generation/storage/return plant", "reason": "DD09 unresolved — cold-water truth only this phase" },
+      { "concept": "Sump / lifting plant", "reason": "EQ-SUMP has no registered instance — not needed for this reference chain, not fabricated" }
+    ]
+  },
+  "newRelationships": [
+    { "from": "LUNA-B1-WATER-BP-01", "type": "supplied_by", "to": "LUNA-B1-WATER-TREAT-01", "label": "treated water supplied by" },
+    { "from": "LUNA-B1-WATER-BP-02", "type": "supplied_by", "to": "LUNA-B1-WATER-TREAT-01", "label": "treated water supplied by" },
+    { "from": "LUNA-RISER-WATER-01", "type": "isolated_by", "to": "LUNA-B1-WATER-VALVE-01", "label": "isolated by (building main)" }
+  ],
+  "existingRelationshipsReused": [
+    { "from": "LUNA-RISER-WATER-01", "type": "supplied_by", "to": "LUNA-B1-WATER-BP-02", "label": "standby-supplied by" },
+    { "from": "LUNA-L06-APT-A", "type": "isolated_by", "to": "LUNA-L06-APT-A-UTILITY-VALVE-01", "label": "water supply isolated by" },
+    { "from": "LUNA-L06-APT-A-WATER-MAIN-01", "type": "isolated_by", "to": "LUNA-L06-APT-A-UTILITY-VALVE-01" }
+  ],
+  "runtimeContract": {
+    "pump": {
+      "refs": ["LUNA-B1-WATER-BP-01", "LUNA-B1-WATER-BP-02"],
+      "state": { "running": "boolean", "pressure_bar": "number", "fault": "boolean" },
+      "commands": ["turnOn (labeled Start)", "turnOff (labeled Stop)"],
+      "note": "resetFault deliberately not exposed — real backend capabilities are power.on/power.off only; fault can only be set by the scenario engine, matching pre-existing pumpBehavior()"
+    },
+    "valve": {
+      "refs": ["LUNA-B1-WATER-VALVE-01", "LUNA-L06-APT-A-UTILITY-VALVE-01"],
+      "state": { "open": "boolean" },
+      "commands": ["open", "close"]
+    },
+    "tank": {
+      "ref": "LUNA-B1-WATER-TANK-01",
+      "state": { "level_pct": "number 0-100" },
+      "commands": []
+    },
+    "derivedTelemetry": {
+      "riser": { "ref": "LUNA-RISER-WATER-01", "state": { "pressure_bar": "number", "flow_status": "'flowing' | 'no_flow'" } },
+      "branch": { "ref": "LUNA-L06-WATER-BRANCH-01", "state": { "pressure_bar": "number", "flow_status": "'flowing' | 'no_flow'" } },
+      "apartmentMeter": { "ref": "LUNA-L06-APT-A-METER-WATER-01", "state": { "reading_m3": "number (existing, ambient-drifting)", "supply_active": "boolean (new)" } },
+      "recomputeFunction": "recomputeWaterNetwork() in lunaSimulationProvider.ts — deterministic, conceptual: riser pressure = max(running, fault-free pump pressures) gated to 0 if the B1 header valve is closed; apartment supply_active = riser pressure > 0 AND the apartment's own valve is open",
+      "triggeredBy": ["execute() on LUNA-B1-WATER-BP-01/BP-02/LUNA-B1-WATER-VALVE-01/LUNA-L06-APT-A-UTILITY-VALVE-01", "water-pressure-fault scenario", "pump-failure scenario", "apartment-leak scenario", "resetAll()"]
+    }
+  },
+  "controlBoard": {
+    "title": "Water",
+    "tabs": [
+      { "key": "LUNA-B1-WATER-TANK-01", "label": "Tank" },
+      { "key": "LUNA-B1-WATER-TREAT-01", "label": "Treatment" },
+      { "key": "LUNA-B1-WATER-BP-01", "label": "Pump 01" },
+      { "key": "LUNA-B1-WATER-BP-02", "label": "Pump 02" },
+      { "key": "LUNA-B1-WATER-VALVE-01", "label": "Header" },
+      { "key": "LUNA-RISER-WATER-01", "label": "Riser" },
+      { "key": "LUNA-L06-WATER-BRANCH-01", "label": "L06 Branch" },
+      { "key": "LUNA-L06-APT-A-METER-WATER-01", "label": "6A Meter", "pairedRef": "LUNA-L06-APT-A-UTILITY-VALVE-01" }
+    ],
+    "defaultFocusedRef": "LUNA-B1-WATER-TANK-01"
+  },
+  "oyiReferencePhrases": [
+    "Show me the water system.",
+    "Show the B1 water plant.",
+    "Show Booster Pump 01.",
+    "Start Booster Pump 01.",
+    "Show the water riser.",
+    "Show me what supplies water to Apartment 6A.",
+    "Trace water from the B1 plant to Apartment 6A.",
+    "Show the nearest isolation point for Apartment 6A."
+  ],
+  "unresolvedDesignDecisions": {
+    "DD09": "Domestic water and hot water — supply reliability, demand/storage, treatment technology, pressure zoning, pump duty/head, hot-water generation/return, backflow arrangement. Not resolved by this phase.",
+    "DD10": "Drainage and stormwater — invert levels, gradient, soil/waste/vent separation, pumping need. Not resolved by this phase.",
+    "DD15": "B1 service allocation — final plant room boundaries/separation/clearances. Not resolved by this phase; LunaPlantRoom remains a procedural floor cue, not an approved room."
+  }
+}

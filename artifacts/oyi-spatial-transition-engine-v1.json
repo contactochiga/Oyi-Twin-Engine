@@ -1,0 +1,83 @@
+{
+  "phase": "Oyi Spatial Transition Engine V1",
+  "successCondition": "No enterable space is entered by teleport when a mapped physical transition exists.",
+  "coreGrammar": ["IDLE", "LOCATING_ENTRY", "APPROACHING", "WAITING_FOR_ACCESS", "ACTUATING", "WAITING_FOR_CLEARANCE", "CROSSING", "ARRIVED", "BLOCKED", "DENIED", "FAULT", "PAUSED_FOR_USER_INPUT"],
+  "engineFiles": [
+    "src/engine/spatial/transitions.ts",
+    "src/engine/spatial/clearance.ts",
+    "src/engine/spatial/cameraTraversal.ts",
+    "src/engine/spatial/transitionValidation.ts",
+    "src/engine/spatial/accessResolution.ts",
+    "src/engine/spatial/transitionEngine.ts",
+    "src/engine/spatial/routePlanning.ts"
+  ],
+  "engineFilesModified": [
+    { "file": "src/engine/spatial/types.ts", "change": "NormalizedDoor gains optional pose/entry/exit/geometry/access/animationReadiness fields (additive)" },
+    { "file": "src/engine/spatial/navigationGraph.ts", "change": "NavigationEdge gains optional transitionRef (additive, never auto-populated)" },
+    { "file": "src/engine/components/CameraRig.tsx", "change": "new optional onArrive prop, fires on real fixed-flight settle" },
+    { "file": "src/engine/components/SlidingGlassDoor.tsx", "change": "new optional onProgressChange prop, reports real leaf progress each frame" }
+  ],
+  "lunaFiles": [
+    "src/luna/transitions/lunaTransitions.ts",
+    "src/luna/runtime/lunaAccessTransitionResolver.ts",
+    "src/luna/transitions/LunaEntranceTransitionDriver.tsx"
+  ],
+  "lunaFilesModified": [
+    "src/luna/architecture/GroundEntrance.tsx",
+    "src/luna/architecture/GrandLobbyArchitecture.tsx",
+    "src/luna/LunaLevel.tsx",
+    "src/luna/LunaBuilding.tsx",
+    "src/App.tsx",
+    "src/luna/ingestion/lunaSpatialModel.ts"
+  ],
+  "wiredTransitions": [
+    {
+      "transitionId": "LUNA-TRANSITION-MAIN-ENTRANCE-IN",
+      "type": "AUTOMATIC_DOOR",
+      "fromSpaceRef": "LUNA-EXTERIOR-ENTRANCE-PLAZA",
+      "toSpaceRef": "LUNA-GROUND-LOBBY",
+      "boundaryRef": "LUNA-GROUND-ACCESS-MAIN-01",
+      "accessRequirement": "NONE",
+      "status": "wired, browser-verified, both directions (reverse: LUNA-TRANSITION-MAIN-ENTRANCE-OUT)"
+    }
+  ],
+  "doorHonesty": [
+    { "ref": "LUNA-GROUND-ACCESS-MAIN-01", "animationReadiness": "ANIMATABLE", "note": "real movable leaf, known kinematics, exposed via onProgressChange" },
+    { "ref": "LUNA-STAIR-01-DOOR-01", "animationReadiness": "STATIC_BOUNDARY", "note": "real geometry, no runtime-driven animation" },
+    { "ref": "LUNA-STAIR-02-DOOR-01", "animationReadiness": "STATIC_BOUNDARY", "note": "real geometry, no runtime-driven animation" }
+  ],
+  "nonLunaFixture": {
+    "file": "src/engine/spatial/testFixtures/miniBuildingFixture.ts",
+    "addedRefs": ["MINI-EXTERIOR-PLAZA", "MINI-GROUND-MAIN-ENTRANCE-DOOR-01", "MINI-GROUND-LOBBY"],
+    "transitionBuilder": "buildMiniEntranceTransition()",
+    "proof": "identical validateTransition/transitionEngine/clearance pipeline walked end-to-end deterministically, zero Luna-specific code in the call path"
+  },
+  "tests": {
+    "deterministic": { "script": "scripts/verifySpatialTransitionEngine.mjs", "checkCount": 19, "runTwice": true, "result": "PASS" },
+    "browser": { "script": "scripts/verifySpatialTransitionEngineBrowser.mjs", "itemCount": 9, "result": "PASS" },
+    "regressionDeterministic": { "suiteCount": 19, "result": "PASS", "disclosedUpdates": ["verifyIngestionV2.mjs commonAreas count 2->3 (Grand Lobby object legitimately added)"] },
+    "regressionBrowser": { "suiteCount": 18, "result": "PASS", "disclosedUpdates": ["verifyGrandLobbyBrowser.mjs door-open timing widened to match the real multi-second physical transition, replacing the old fixed 900ms teleport assumption"] },
+    "typecheck": "clean",
+    "build": "clean",
+    "lint": "exit 0 (pre-existing warning classes only; one real staleness bug found by lint in the new driver's useImperativeHandle closure, fixed with a ctxRef)"
+  },
+  "explicitlyDeferred": [
+    "Lift handoff (requestLiftTransition wrapper) and the live lift golden path — no live 3D lift-transition experience wired",
+    "Stair transition wired to a UI affordance",
+    "Live OPEN_PASSAGE transition (no current open-plan boundary in Luna to wire)",
+    "Oyi conversational commands routed through the new transition engine (still use the pre-existing single-target navigateToSpace door branch)",
+    "Automatic multi-transition route chaining by any live host",
+    "Concrete Facility/Consumer route-filtering predicate wired into a live route-planning UI",
+    "Permanent transition-diagnostics UI",
+    "A UI control to invoke mid-flight cancellation"
+  ],
+  "notFabricated": [
+    "No lift subsystem rewritten",
+    "No fake apartment smart lock created",
+    "No second navigation graph",
+    "No second authorization engine",
+    "No door animation claimed where none is real",
+    "No stair-walking animation fabricated",
+    "No RepresentationPolicy modification"
+  ]
+}

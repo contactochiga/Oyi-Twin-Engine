@@ -1,0 +1,53 @@
+{
+  "result": "PASS",
+  "policyHashUnchanged": true,
+  "unitChecks": "registry-before-policy, 2D/hidden denial, local paths, checksum, external dependency rejection, orphan/cyclic content rejection, coordinates, material isolation, clipped/hidden CPU picking, idempotent disposal",
+  "browserChecks": "real GLB/glTF load, canonical pointer selection, same level parent, floor-local origin, Water + Cutaway/Explode, rollback/re-import, failed checksum fallback, rejected binding without request, floor isolation, lobby/Oyi privacy, Consumer/Facility scope switching, runtime identity/state continuity, canceled request cannot mount",
+  "baseline": {
+    "status": "procedural",
+    "imported": false,
+    "parentUuid": "ee52e60c-cc80-4b0e-96e0-6bb0fac0defb",
+    "children": 17,
+    "camera": [
+      72,
+      58,
+      88
+    ]
+  },
+  "imported": {
+    "status": "imported",
+    "imported": true,
+    "parentUuid": "ee52e60c-cc80-4b0e-96e0-6bb0fac0defb",
+    "position": [
+      0,
+      0,
+      0
+    ],
+    "children": 17,
+    "camera": [
+      72,
+      58,
+      88
+    ],
+    "meshes": [
+      {
+        "name": "LUNA-GROUND__envelope__fixture_front__LOD2",
+        "uuid": "e93d2613-26be-4038-b0fd-ea199c0ee4f1",
+        "material": "92ead1f5-4da6-477b-a1be-9b2be436d8d1",
+        "opacity": 1,
+        "map": "srgb",
+        "clip": 0
+      },
+      {
+        "name": "LUNA-GROUND__envelope__fixture_back__LOD2",
+        "uuid": "d43f2d01-e4b8-4631-acd2-1c3ade2f0c8a",
+        "material": "6f1875b5-0a3a-4d5d-b439-66f0bf70228c",
+        "opacity": 1,
+        "map": "srgb",
+        "clip": 0
+      }
+    ]
+  },
+  "requests": 7,
+  "errors": []
+}

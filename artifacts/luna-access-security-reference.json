@@ -1,0 +1,152 @@
+{
+  "title": "Luna Access & Security System V1",
+  "revision": "1",
+  "status": "REFERENCE / CONCEPTUAL / SIMULATED — security/access zoning unresolved (DD13)",
+  "referenceChain": {
+    "governedAccessPoint": "LUNA-L06-APT-A-ENTRY-LOCK-01",
+    "commonAccessPoints": ["LUNA-GROUND-ACCESS-MAIN-01", "LUNA-B1-ACCESS-SERVICE-01", "LUNA-GROUND-ACCESS-LIFT-LOBBY-01"],
+    "aggregateAnchor": "LUNA-GROUND-ACCESS-MAIN-01",
+    "intercomOutOfScope": {
+      "ref": "LUNA-L06-APT-A-ENTRY-INTERCOM-01",
+      "reason": "door_release capability remains unmapped — a pre-existing, deliberate architectural decision predating this phase, not reversed here"
+    }
+  },
+  "existingAssetsReused": ["LUNA-GROUND-ACCESS-MAIN-01", "LUNA-B1-ACCESS-SERVICE-01", "LUNA-GROUND-ACCESS-LIFT-LOBBY-01", "LUNA-L06-APT-A-ENTRY-LOCK-01", "LUNA-L06-APT-A-ENTRY-INTERCOM-01"],
+  "newCanonicalOperationalAssets": [],
+  "newCanonicalAssetsJustification": "none created — the Master Equipment Schedule's own 'Current instance register' already documents every access-related asset this phase needed; the three common points' real capabilities are 'observable; none' and were NOT upgraded, since doing so would fabricate backend data",
+  "scheduleBoundary": {
+    "commonPointsClassification": "observable; none (unchanged)",
+    "governedLockClassification": "controllable; lock, unlock (unchanged, pre-existing lockBehavior)",
+    "noCapabilityFabricated": true
+  },
+  "accessStateModel": {
+    "physicalState": "AccessPointState.locked: boolean | null — real boolean for the governed lock, honest null for uninstrumented common points",
+    "authorizationResult": "AccessAuthorizationResult { granted, reason, role } — computed fresh per attempt, never stored, strictly separate from physical state",
+    "doorMotionStatesImplemented": false,
+    "doorMotionStatesReason": "no real lock/unlock capability data supports OPENING/OPEN/CLOSING/CLOSED for this reference chain — 'do not blindly implement every state'",
+    "faultStateImplemented": false,
+    "faultStateReason": "no fault scenario is wired for the governed lock in this reference build"
+  },
+  "authorization": {
+    "resolver": "resolveAccessAuthorization() in src/luna/runtime/lunaSimulationProvider.ts, re-exported via lunaAccessResolver.ts",
+    "identityModel": "reuses the existing RepresentationIdentity shape (role + assignedHomeRefs) as the credential — no new identity/credential database",
+    "roles": ["facility", "resident", "public"],
+    "publicRoleReuse": "the pre-existing 'public' role (data-model placeholder before this phase) stands in for Visitor/Unauthorized",
+    "rules": [
+      "ungoverned ref (any of the 3 common points) -> always denied, honest DESIGN DECISION REQUIRED reason",
+      "facility role at the private lock -> denied, no master-key capability modeled (mirrors HVAC's own resident-only precedent)",
+      "resident role, assignedHomeRefs includes the lock's unitRef -> granted",
+      "resident role, different unitRef -> denied",
+      "public role or missing identity -> denied, never fails open"
+    ],
+    "wiredInto": "execute() in lunaSimulationProvider.ts, the same real choke point every command already passes through — protects the runtime regardless of which UI/Oyi path reaches it"
+  },
+  "accessEventLog": {
+    "type": "AccessEvent { id, at, label, detail? }",
+    "cap": 40,
+    "order": "newest-first",
+    "convention": "identical shape/cap/order to FireEvent/ElectricalEvent, same notify()/subscribe() pub-sub",
+    "eventTypesEmitted": ["ACCESS_GRANTED", "ACCESS_DENIED", "LOCKED", "UNLOCKED"]
+  },
+  "resolver": {
+    "function": "resolveAccessState() in src/luna/runtime/lunaAccessResolver.ts",
+    "notStoredState": true,
+    "pointFields": ["ref", "label", "instrumented", "locked"],
+    "hooks": ["useAccessState()", "useAccessEvents()"]
+  },
+  "physicalGeometry": {
+    "newComponent": "src/luna/operational/AccessPlantEquipment.tsx",
+    "equipment": [
+      "AccessReaderPanelGeometry — wall/post-mounted control panel with card-reader face + status LED, used for the three common access points",
+      "AccessLockKeypadGeometry — compact wall keypad/plate whose LED reflects the governed lock's own real locked state (green=locked, amber=unlocked)"
+    ],
+    "doorLeafGeometry": "none exists anywhere in the codebase (InteriorRoom's doorSide only cuts a wall opening) — a disclosed geometry gap, not fabricated",
+    "dispatch": "ACCESS_EQUIPMENT_KIND by-exact-ref table in OperationalAssetLayer.tsx, same pattern as Water/Electrical/Fire/HVAC equipment"
+  },
+  "controlBoard": {
+    "component": "src/luna/operational/AccessControlBoard.tsx",
+    "position": "sixth SystemControlBoard consumer, beside Elevators/Water/Electrical/Fire/HVAC",
+    "tabs": ["Main Entrance (default)", "Service Entrance", "Lift Lobby"],
+    "summaryWidget": "AccessStatusSummary — reused headerContent? slot, dom hooks [data-access-status-summary]",
+    "privateLockExcluded": "Apartment 6A's own lock is deliberately NOT a board tab — HIDDEN to Facility, same disclosed boundary as HVAC's indoor units; stays operable via the existing interior device-interaction surface"
+  },
+  "oyiIntelligence": {
+    "newMatcher": "matchAccessStatus in lunaIntentParser.ts, inserted after matchHvacStatus",
+    "newVocabulary": [
+      "LUNA-GROUND-ACCESS-MAIN-01 aliases (main resident entrance, the main entrance, main entrance, main gate, residential entrance, building entrance, the lobby entrance, lobby entrance)",
+      "LUNA-B1-ACCESS-SERVICE-01 aliases (service entrance, the service entrance, b1 service entrance)",
+      "LUNA-GROUND-ACCESS-LIFT-LOBBY-01 aliases (lift lobby access, the lift lobby access point)"
+    ],
+    "collisionCheck": "every new pattern checked against the full existing FACILITY_ASSET_ALIASES list and every other system's own target-phrase list for substring collisions before being added — proactively re-verified in scripts/verifyAccess.mjs (Electrical's 'active power path' and HVAC's 'turn on the AC'/'is the AC running' phrases re-tested and confirmed unaffected)",
+    "targetPhrasesVerified": [
+      "Is the main entrance locked?",
+      "Open the main gate.",
+      "Lock the lobby entrance.",
+      "Why was access denied?",
+      "Show me the last access attempt.",
+      "Who attempted access?",
+      "Show me the access point.",
+      "Which doors are currently unlocked?",
+      "Is the residential entrance secure?"
+    ],
+    "honestRefusal": "the two imperative phrases naming uncontrollable common points ('Open the main gate.', 'Lock the lobby entrance.') resolve to a command intent and are then honestly refused by the PRE-EXISTING generic capability check in execute() — no access-specific fabrication code was needed"
+  },
+  "representationPolicy": {
+    "codeUnchanged": true,
+    "verifiedVia": "test:lift RepresentationPolicy byte-hash assertion",
+    "commonAccessPoints": "FULL_3D for Facility — ordinary common infrastructure, unchanged pre-existing rule",
+    "governedLock": {
+      "facilityMode": "HIDDEN",
+      "assignedResidentMode": "FULL_3D",
+      "otherResidentMode": "HIDDEN",
+      "policyDefectFound": false,
+      "auditConclusion": "resolveAssetMode()'s resident-HIDDEN-for-common-infrastructure rule is consistent, pre-existing, intentional behavior already established identically for Water/Electrical/Fire/HVAC — not a defect, no change made"
+    }
+  },
+  "elevatorRelationship": {
+    "untouched": true,
+    "noGroupDispatch": true,
+    "noAccessToElevatorRelationshipFabricated": true
+  },
+  "doNotOverbuildHonored": [
+    "no CCTV correlation",
+    "no biometric system",
+    "no production credential infrastructure",
+    "no external access-control integration",
+    "no cloud identity provider",
+    "no real-world security certification claim",
+    "no visitor-management platform",
+    "no SOC",
+    "no Network/Edge implementation"
+  ],
+  "safetyBoundaries": [
+    "no lock/door capability was fabricated for the three common access points — they remain observable; none, matching the real backend schedule",
+    "the one governed lock keeps its exact pre-existing lock/unlock capability — no open/close/door-motion command was fabricated",
+    "Facility is denied master-key authority at the private lock — no such capability is documented anywhere in the canonical catalog",
+    "no security certification, biometric technology, credential technology, lock manufacturer, or encryption standard was claimed anywhere"
+  ],
+  "tests": {
+    "deterministic": "scripts/verifyAccess.mjs — 18 checks",
+    "browser": "scripts/verifyAccessBrowser.mjs — including all required screenshots and Elevator/Water/Electrical/Fire/HVAC regression",
+    "fullRegressionReRun": [
+      "test:representation",
+      "test:presentation (browser)",
+      "test:architecture",
+      "test:lift (deterministic + browser)",
+      "test:four-lift (deterministic + browser)",
+      "test:control-surface (browser)",
+      "test:water (deterministic + browser)",
+      "test:electrical (deterministic + browser)",
+      "test:electrical-live-ops (deterministic + browser)",
+      "test:fire (deterministic + browser)",
+      "test:hvac (deterministic + browser)",
+      "typecheck (tsc -b)",
+      "build",
+      "lint"
+    ],
+    "allGreen": true
+  },
+  "unresolvedDesignDecisions": {
+    "DD13": "Security and access zoning — credential technology, lock manufacturer/model, encryption standard, statutory compliance, parking gate, door-leaf hardware for the three common points, and any CCTV correlation. Entirely unresolved; this reference chain does not choose or imply a final strategy."
+  }
+}

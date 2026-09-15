@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "results": [
+    "Upward pitch forward: startY=45.487 endY=45.487 deltaY=0.0000",
+    "Downward pitch forward: startY=45.487 endY=45.487 deltaY=0.0000",
+    "Left strafe: startY=45.487 endY=45.487 deltaY=0.0000",
+    "Right strafe: startY=45.487 endY=45.487 deltaY=0.0000",
+    "Backward: startY=45.487 endY=45.487 deltaY=0.0000",
+    "Release: residual movement damps promptly after keyup."
+  ]
+}

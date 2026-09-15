@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "results": [
+    "Engineering -> Elevators exposes all four canonical lifts simultaneously (visible + transparent shaft walls + real car geometry each)",
+    "Real app: Lift 01 and Lift 03 observed moving concurrently (non-zero speed simultaneously) after independent Oyi commands",
+    "State preservation: switching Architecture -> All Systems -> Structure mid-flight never resets either lift's destination; both arrive correctly",
+    "LevelRail tracks Lift 01 while Follow is active (data-tracking-lift-ref = Lift 01)",
+    "LevelRail cleanly transfers tracking from Lift 01 to Lift 03 on a fresh Follow — one owner at a time, no stale ref left behind",
+    "Exiting lift view returns LevelRail cleanly to static floor navigation",
+    "Service/Fire Lift 01 opens its own contextual card, correctly identified, with the DD-required special-modes disclosure present",
+    "Lift 02 (the golden reference) remained untouched — still at Ground, idle — throughout every Lift 01/03/Service interaction above"
+  ],
+  "errors": []
+}

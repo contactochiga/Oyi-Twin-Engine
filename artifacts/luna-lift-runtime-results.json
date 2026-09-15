@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "checks": [
+    "Identity, 86 assets, 14 current unequal datums, policy byte hash",
+    "Consumer/missing actor/unserved stop rejection",
+    "A: continuous up travel, all passing floors, close/depart/arrival/open, busy rejection and idempotency",
+    "B: downward travel and B1 alignment",
+    "C: hall call, authorized reference boarding, Ground→L06, exit alignment",
+    "Camera anchors and state preservation through detached view consumers",
+    "Fault halts progression; reset leaves no orphan timers",
+    "Deterministic fixed-step trajectory independent of render batches",
+    "Existing Oyi controller handles lookup/follow/shaft/engineering/commands; Consumer control/view refused"
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "title": "Luna HVAC System V1",
+  "revision": "1",
+  "status": "REFERENCE / CONCEPTUAL / SIMULATED — HVAC engineering strategy unresolved (DD12)",
+  "referenceChain": {
+    "outdoorCondenser": "LUNA-L06-APT-A-AC-OUTDOOR-01",
+    "indoorUnits": ["LUNA-L06-APT-A-LIVING-AC-01", "LUNA-L06-APT-A-BED-01-AC-01"],
+    "sensor": "LUNA-L06-APT-A-LIVING-TH-01",
+    "outOfScope": {
+      "ref": "LUNA-ROOFTOP-HVAC-PLANT-01",
+      "reason": "Separate, disconnected common-area asset — MEP Coordination Spec itself flags it as 'a generic roof plant record... not proof of a whole-building HVAC strategy.' Deliberately NOT folded into this reference chain's resolver."
+    }
+  },
+  "existingAssetsReused": [
+    "LUNA-L06-APT-A-LIVING-AC-01",
+    "LUNA-L06-APT-A-BED-01-AC-01",
+    "LUNA-L06-APT-A-AC-OUTDOOR-01",
+    "LUNA-L06-APT-A-LIVING-TH-01"
+  ],
+  "newCanonicalOperationalAssets": [],
+  "newCanonicalAssetsJustification": "none created — every asset needed for the reference chain already existed from Phase 3C/13",
+  "topology": {
+    "hvacConnection": "LUNA-L06-APT-A-AC-OUTDOOR-01 <- connected_to <- LIVING-AC-01 / BED-01-AC-01 (refrigerant-connected, pre-existing edges, unchanged)",
+    "electricalParentRef": "each indoor unit's own parentRef is LUNA-L06-APT-A-AC-CIRCUIT-01 — a DIFFERENT relationship (power), never conflated with the HVAC connection",
+    "typedEdgeCount": 2,
+    "noTopologyInferredFromGeometry": true
+  },
+  "runtimeState": {
+    "resolver": "resolveHvacState() in src/luna/runtime/lunaHvacResolver.ts",
+    "notStoredState": true,
+    "hvacStates": ["off", "running", "fault"],
+    "deliberatelyExcludedStates": ["standby"],
+    "excludedStatesReason": "nothing in the current canonical catalog legitimately models a distinct standby stage for these units",
+    "perZoneFields": ["ref", "label", "zoneRef", "state", "on", "fault", "mode", "targetTempC", "roomTempC"],
+    "outdoorFields": ["outdoorRef", "outdoorDemand"],
+    "outdoorDemandDerivation": "true whenever EITHER connected indoor unit is on && !fault — derived, never a second independently-invented notion of condenser activity"
+  },
+  "thermalSimulation": {
+    "mechanism": "recomputeHvacNetwork() in lunaSimulationProvider.ts, reusing the EXISTING 4-second ambient-tick interval — no second simulator created",
+    "coolingRule": "room_temp_c steps toward target_temp_c when on && !fault, rate 0.16/tick",
+    "ambientRule": "room_temp_c steps toward a 30C reference ambient baseline when off or faulted, rate 0.07/tick",
+    "jitter": "small bounded random texture (+/-0.06C), never the dominant factor",
+    "sensorMirroring": "LIVING-AC-01's room_temp_c is mirrored onto the real registered LIVING-TH-01 sensor every tick — one live truth, never two divergent readings",
+    "bedroomZone": "no separate registered sensor exists — its room_temp_c lives only on the AC unit's own runtime state, disclosed as simulated-only, not a fabricated sensor asset",
+    "qualityLabel": "quality: 'simulated' on every resolver output; every Oyi sentence includes the literal string '(reference simulation)'",
+    "faultBehavior": "climateBehavior gained the same faultAware toggleBehavior guard the generator/pumps/ATS already use — a faulted unit refuses to start (state stays off), no user-facing resetFault exists"
+  },
+  "physicalGeometry": {
+    "newComponent": "src/luna/operational/HvacPlantEquipment.tsx",
+    "equipment": [
+      "OutdoorCondenserGeometry — cabinet, top fan grille, side service panel, mounting frame/feet; fan spins only while demand=true",
+      "IndoorUnitGeometry — flat wall-mounted casing, front discharge louvre, top/rear intake strip; louvre glows while on, pulses while faulted"
+    ],
+    "dispatch": "HVAC_EQUIPMENT_KIND by-exact-ref table in OperationalAssetLayer.tsx, same pattern as Water/Electrical/Fire equipment"
+  },
+  "controlBoard": {
+    "component": "src/luna/operational/HvacControlBoard.tsx",
+    "position": "fifth SystemControlBoard consumer, beside Elevators/Water/Electrical/Fire",
+    "tabs": ["Condenser (default)", "Indoor Unit 01", "Indoor Unit 02"],
+    "summaryWidget": "HvacStatusSummary — reused headerContent? slot, dom hooks [data-hvac-status-summary]/[data-hvac-state]",
+    "hiddenAssetHandling": "indoor-unit tabs render an honest boundary message for Facility ('Resident-managed comfort device. Not visible to Facility...') instead of a silently blank panel — see representationPolicy section below"
+  },
+  "oyiIntelligence": {
+    "newMatcher": "matchHvacStatus in lunaIntentParser.ts, inserted after matchFireStatus",
+    "newVocabulary": [
+      "LUNA-L06-APT-A-AC-OUTDOOR-01 aliases (outdoor unit, outdoor condenser, the condenser, condensing unit)",
+      "LIVING-AC-01 gained 'turn on the ac' / 'is the ac running' / 'indoor unit' / 'the indoor unit' patterns"
+    ],
+    "vocabularyBugFoundAndFixed": {
+      "issue": "an early draft's bare 'the ac' pattern was a substring of 'the active' (as in 'the active power path'), silently hijacking Electrical V1.1's own route phrase",
+      "confirmedVia": "a real failure in verifyElectricalLiveOps.mjs, not a hypothetical",
+      "fix": "replaced with the full literal phrases 'turn on the ac' / 'is the ac running', long enough to avoid the collision while matching the brief's exact required wording"
+    },
+    "newServiceRouteEntry": "UNIT_SYSTEM_TERMINATION.LUNA-L06-APT-A.hvac = LIVING-AC-01 — used ONLY for command-target resolution ('set Apartment 6A to 22 degrees'), deliberately NOT used for 'show hvac route' (see routeSimplification)",
+    "routeSimplification": {
+      "reason": "the reference chain's real connectivity is a connected_to edge, not a parentRef chain (each indoor unit's parentRef is its ELECTRICAL circuit) — walking that chain under an 'HVAC route' label would mislabel the electrical path as HVAC",
+      "resolution": "matchShowRoute's hvac branch navigates directly to the outdoor condenser instead of calling buildServiceRoute()",
+      "precedent": "same honest-anchor simplification as Electrical's 'active power path' and Fire's 'affected floor'"
+    },
+    "targetPhrasesVerified": [
+      "What is the temperature in Apartment 6A?",
+      "Is the AC running?",
+      "What is cooling Apartment 6A?",
+      "What is the current setpoint?",
+      "Which indoor unit is running?",
+      "Show me the HVAC system.",
+      "Show me the outdoor unit.",
+      "Show me the indoor unit.",
+      "Is there an HVAC fault?",
+      "Why isn't Apartment 6A cooling?",
+      "Show me the HVAC route.",
+      "Turn on the AC.",
+      "Set Apartment 6A to 22 degrees."
+    ]
+  },
+  "representationPolicy": {
+    "codeUnchanged": true,
+    "verifiedVia": "test:lift RepresentationPolicy byte-hash assertion",
+    "outdoorCondenser": "CONTEXT_3D for Facility (already on FACILITY_OWNED_UNIT_ASSET_REFS allowlist — shared building plant, like the fire pump)",
+    "indoorUnits": {
+      "facilityMode": "HIDDEN",
+      "assignedResidentMode": "FULL_3D",
+      "otherResidentMode": "HIDDEN",
+      "deliberateDecision": true,
+      "priorDocumentation": "lunaUnitMepAssets.ts's own pre-existing comment already states the resident's own indoor split units stay resident-only — this phase honored that decision rather than reversing it, and did not add the indoor units to the allowlist",
+      "consequence": "the HVAC Control Board's indoor-unit tabs are only ever meaningfully populated for Facility on the outdoor condenser tab; indoor-unit tabs show a disclosed privacy-boundary message for Facility, full state+controls for the assigned resident via the existing interior device-interaction surface (not this board)"
+    }
+  },
+  "safetyBoundaries": [
+    "The outdoor condenser exposes zero commands — no independent start/stop authority was fabricated for it (Part 2/13's own instruction, already true in the existing schedule)",
+    "No condensate routing was fabricated — no canonical drain relationship exists for either indoor unit",
+    "No cooling capacity, refrigerant sizing, duct sizing, or manufacturer/model was fabricated",
+    "No new simulator, control architecture, or RepresentationPolicy change was introduced"
+  ],
+  "tests": {
+    "deterministic": "scripts/verifyHvac.mjs — 15 checks",
+    "browser": "scripts/verifyHvacBrowser.mjs — 16 checks including all 12 required screenshots and Elevator/Water/Electrical/Fire regression",
+    "fullRegressionReRun": [
+      "test:lift (deterministic + browser)",
+      "test:four-lift (deterministic + browser)",
+      "test:control-surface:browser",
+      "test:water (deterministic + browser)",
+      "test:electrical (deterministic + browser)",
+      "test:electrical-live-ops (deterministic + browser)",
+      "test:fire (deterministic + browser)",
+      "test:representation",
+      "test:architecture",
+      "test:presentation",
+      "typecheck (tsc -b)",
+      "build",
+      "lint"
+    ],
+    "regressionFoundAndFixed": "verifyElectricalLiveOps.mjs's 'active power path' check broke once, due to the vocabulary collision described above — fixed, re-verified green",
+    "allGreen": true
+  },
+  "unresolvedDesignDecisions": {
+    "DD12": "HVAC plant and ventilation — cooling/dehumidification loads and operating zones, splits vs VRF vs chilled-water comparison, outside air, wet/parking extract, acoustics, condenser placement, maintenance access. Entirely unresolved; this reference chain does not choose or imply a final strategy."
+  }
+}

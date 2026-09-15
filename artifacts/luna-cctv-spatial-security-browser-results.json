@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "results": [
+    "JOURNEY 1 (Engineering discovery): Engineering -> Security auto-opens the CCTV Control Board — no Oyi command required, deterministic default focus, live status summary present",
+    "JOURNEY 2 (spatial discovery): selecting a different camera tab updates the SAME board — one persistent board, not four independent dashboards",
+    "Physical camera representation captured (recognizable bullet-camera body/bracket/lens, not a generic box)",
+    "Camera panel honestly discloses no PTZ/recording/live-view capability (DESIGN DECISION REQUIRED) rather than showing dead buttons",
+    "JOURNEY 3 setup: a real ACCESS_DENIED event now exists at the apartment entrance lock, via the actual runtime.execute() authorization gate",
+    "JOURNEY 4 (Oyi): \"Show me the camera associated with the last denied access.\" resolves through the live app's own parser to the real correlated camera (the apartment video intercom)",
+    "JOURNEY 5a (Facility): the live Facility CCTV Control Board exposes exactly the four common cameras — the private apartment intercom is confirmed absent as a board tab",
+    "JOURNEY 5b (Consumer/privacy): RepresentationPolicy re-verified in the deterministic suite (test:cctv) against the same policy module — a resident is denied Facility CCTV visibility (HIDDEN) and Facility is denied the private intercom (HIDDEN); this browser pass proves the Facility board itself never lists the private asset (see 5a)",
+    "State preservation through camera/view changes: camera resolver state unchanged across Architecture/All Systems/Structure switching",
+    "REGRESSION: Elevator, Water, Electrical, Fire, HVAC and Access Control Boards all still work correctly after CCTV & Spatial Security was added"
+  ],
+  "errors": []
+}

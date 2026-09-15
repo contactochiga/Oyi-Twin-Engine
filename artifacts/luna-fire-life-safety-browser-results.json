@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "results": [
+    "1: Fire NORMAL state — live summary reads NORMAL, board auto-opens on Engineering -> Fire with deterministic default focus (Panel)",
+    "2: Whole-building Fire Engineering view captured",
+    "3: Alarm/detection network view captured (common-area detector selected)",
+    "4: Fire-water network view captured (fire pump selected)",
+    "5: B1 Fire plant (tank/pump/panel) view captured",
+    "6: Fire riser view captured",
+    "7: L06 fire zone view captured",
+    "8: Selected detector (Apartment 6A entry smoke detector) view captured",
+    "9: Simulated alarm state captured — live summary correctly reads ALARM, originating device and zone identified",
+    "10: Fire Control Board captured with the live building fire-state summary and active-incident investigation section",
+    "11: Oyi incident investigation (\"What triggered the alarm?\") resolves and keeps the board open on the panel",
+    "12: Recovery/reset state captured — clearing the detector returns the live summary to NORMAL",
+    "State preservation through camera/view changes: fire resolver state unchanged across Architecture/All Systems/Structure switching",
+    "Consumer privacy boundary re-verified against the live running app: B1 fire plant HIDDEN for a resident identity",
+    "REGRESSION: Elevator Control Board still opens correctly after Fire was added",
+    "REGRESSION: Water and Electrical Control Boards (including Electrical's live building-supply summary) still work correctly after Fire was added"
+  ],
+  "errors": []
+}

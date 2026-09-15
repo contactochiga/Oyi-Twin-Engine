@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "results": [
+    "1: Engineering -> HVAC auto-opens the HVAC Control Board beside the level rail",
+    "2: HVAC NORMAL (OFF) state — live summary reads OFF, board auto-opens with deterministic default focus (Condenser)",
+    "3: Whole HVAC reference network view captured",
+    "4: Outdoor condenser selection captured",
+    "5: Indoor unit selection captured — tab focuses correctly and honestly discloses the resident-privacy boundary (Facility HIDDEN) rather than rendering blank",
+    "6/7/8: Apartment 6A HVAC chain — forcing a real runtime ON + setpoint change deterministically resolves the live summary to RUNNING with the outdoor condenser showing active demand, all from the same real state",
+    "9: HVAC fault captured — live summary correctly reads FAULT after a real fault state change",
+    "10: Recovery captured — clearing the fault returns the live summary to OFF",
+    "7 (board): HVAC Control Board captured with the live building HVAC-state summary",
+    "11: Oyi HVAC investigation (\"What is the HVAC status?\") resolves and keeps the board open",
+    "12: Physical HVAC equipment close-up satisfied by the earlier outdoor-condenser capture (luna-hvac-outdoor-condenser.png)",
+    "State preservation through camera/view changes: HVAC resolver state unchanged across Architecture/All Systems/Structure switching",
+    "REGRESSION: Elevator, Water, Electrical (incl. live building-supply summary) and Fire Control Boards all still work correctly after HVAC was added"
+  ],
+  "errors": []
+}

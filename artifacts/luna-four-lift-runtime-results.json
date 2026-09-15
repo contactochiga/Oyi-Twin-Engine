@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "checks": [
+    "Registry: all four canonical refs present, on v2 schema, RepresentationPolicy hash unchanged",
+    "Isolation: command to Lift 01 leaves Lift 02/03/Service state byte-identical throughout",
+    "Isolation: command to Lift 03 leaves Lift 01/02/Service state byte-identical throughout",
+    "Concurrent travel: two lifts observed moving simultaneously within the same shared-clock ticks, arriving at independent destinations",
+    "Passenger Lift 01: Ground -> L06 -> Ground",
+    "Passenger Lift 03: Ground -> L10 -> B1",
+    "Service/Fire Lift 01: Ground -> B1 -> L06 (normal reference simulation only; PH/Roof still not admitted)",
+    "Independent state: Lift 01->L03, Lift 02->L10, Lift 03->Ground, Service->B1 all converge to distinct, correctly-isolated positions",
+    "Elevator Fault scenario (v2 schema) halts Lift 01 only — faultState/motionState/doorState correctly set, other three lifts untouched",
+    "Consumer identity rejected commanding every one of the four lifts",
+    "Oyi vocabulary/parser: each of the four canonical lifts resolves distinctly; \"all elevators\" routes to the existing vertical-transport system mode",
+    "Full Oyi controller round-trip for distinct lift refs; Consumer denied engineering/control view"
+  ]
+}

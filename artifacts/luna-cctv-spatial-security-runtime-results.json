@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    "Canonical camera inventory preserved: all four registered CCTV assets intact (zero new canonical operational assets were created), no duplicates",
+    "Safety boundary preserved: no PTZ, recording, playback, live-view or event-search capability was fabricated for any camera — all four remain observable; none, matching the real backend schedule",
+    "Camera state: ONLINE (fresh reset) -> OFFLINE (pre-existing camera-offline scenario, reused not recreated) -> ONLINE (recovery via reset) — no FAULT/MAINTENANCE state was fabricated, since no runtime field or scenario supports them",
+    "Access-point/camera relationships are canonical monitored_by edges, never proximity-derived: Main Entrance<-Ground Entrance Camera and the apartment lock<-video intercom are real; Service Entrance and Lift Lobby are honestly left unresolved (no edge fabricated)",
+    "Access correlation (granted): the intercom's own narrative includes the real resulting event and the lock's real state: \"Video Intercom / Doorbell is online (reference simulation). It monitors Apartment 6A's entrance lock, currently unlocked. Most recent access event: UNLOCKED (Entrance Smart Lock).\"",
+    "Access correlation (denied): the intercom's own narrative includes the real DENIED event and confirms the door remains locked: \"Video Intercom / Doorbell is online (reference simulation). It monitors Apartment 6A's entrance lock, currently locked. Most recent access event: ACCESS_DENIED (Entrance Smart Lock: Facility credentials are not authorized for a private home entrance. No master-key capability is modeled in this reference build.).\"",
+    "Camera state transitions never write to the Access event log — Access remains the sole owner/producer of access events; CCTV only ever reads/correlates them, per the Section 16 boundary",
+    "Oyi parser resolves all CCTV/investigation target phrases to the correct intent shape, including the pre-existing Access phrase (\"Why was access denied?\") unchanged",
+    "Vocabulary collision check: Electrical/HVAC/Access/Water phrases all resolve exactly as before — no substring hijack introduced by the new camera/CCTV patterns",
+    "Oyi camera narrative includes live state and its real monitored access point: \"Ground Entrance Camera is online (reference simulation). Monitors: Main Resident Entrance.\"",
+    "RepresentationPolicy unchanged: Facility sees common cameras FULL_3D, a resident is denied Facility CCTV visibility (HIDDEN), the private apartment intercom stays HIDDEN to Facility and FULL_3D only for the assigned resident",
+    "Full Oyi investigation round-trip: the assigned resident reaches the real correlated camera + event narrative end-to-end; Facility is denied the SAME investigation end-to-end (private-unit privacy preserved even for security investigation, exactly Section 15's requirement)",
+    "CCTV Control Board asset registry: 4 real camera tabs, deterministic default (Camera 01 / Ground Entrance Camera); the private intercom correctly excluded",
+    "resolveAllCameraStates() returns all four cameras with a valid state — the single truth the Control Board summary widget reads"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "results": [
+    "1. Exterior: default arrival view",
+    "2-3. MANDATORY re-run: Exterior -> Grand Lobby -> Passenger Lift -> real L06 Lift Lobby (LUNA-L06-LOBBY), no procedural arrival floating inside geometry",
+    "4. Oyi \"Show me Apartment A\" resolves to the real LUNA-L06-APT-A canonical ref",
+    "5. Oyi \"Show me Apartment B\" resolves to the real LUNA-L06-APT-B canonical ref (LOCATE-only, no fabricated interior enter)",
+    "6. Oyi \"Take me to Apartment A\" runs the real route engine through the real entrance door (Facility identity)",
+    "7. Reverse journey: \"Take me back to the ground floor\" runs the same route engine back through the lift lobby, lift, and Grand Lobby",
+    "8. Consumer privacy re-verified against the new floor plate: a resident of Apartment A cannot route into Apartment C — RepresentationPolicy untouched"
+  ],
+  "errors": []
+}

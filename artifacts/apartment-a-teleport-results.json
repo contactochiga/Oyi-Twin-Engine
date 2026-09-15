@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "results": [
+    "1. LOCATE: \"Where is the kitchen?\" highlights the real Kitchen ref (selection updates) but never claims physical arrival — no map/dot activation, no travel narration",
+    "2. TELEPORT ENTER: \"Teleport me to the kitchen.\" resolves the real Kitchen ref directly — no route narration generated, map + live dot both real and active",
+    "3. Repeat: \"Teleport me to bedroom 2.\" resolves LUNA-L06-APT-A-BED-02 directly, same honest no-narration TELEPORT semantics",
+    "4. One-shot override discipline: explicit \"teleport me to X\" phrases never mutate the session's own persistent navigationMode (still showing TOUR active)"
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "phase": "Network / Edge & Physical Connectivity V1",
+  "principle": "THE NETWORK CARRIES TRUTH. IT DOES NOT CREATE TRUTH.",
+  "auditPerformedBeforeImplementation": true,
+  "oyiEdgeCoreAudit": {
+    "ref": "LUNA-EDGE-CORE-01",
+    "label": "Luna Oyi Edge Core",
+    "kind": "edge-node",
+    "system": "network-edge",
+    "classification": "observable",
+    "capabilities": [],
+    "preExistingSeededState": { "online": true, "uplink_up": true },
+    "preExistingDisclosureComment": "Local digital-twin prototype placeholder, no real edge runtime connected.",
+    "parentRef": null,
+    "hasAnyRegisteredRelationshipToPhysicalChain": false,
+    "finding": "No connection to the physical network chain exists anywhere in canonical data. This phase disclosed that fact rather than fabricating a connection."
+  },
+  "existingAssetsReused": [
+    { "ref": "LUNA-B1-NET-GATEWAY-01", "kind": "device:gateway", "classification": "observable", "capabilities": [], "role": "core network gateway, real uplink_up field" },
+    { "ref": "LUNA-GROUND-NET-WIFI-AP-01", "kind": "device:gateway", "classification": "observable", "capabilities": [], "role": "common-area Wi-Fi access point" },
+    { "ref": "LUNA-RISER-NETWORK-01", "kind": "device:riser", "classification": "asset-only", "capabilities": [], "role": "vertical data riser" },
+    { "ref": "LUNA-L06-NETWORK-BRANCH-01", "kind": "device:floor_branch", "classification": "asset-only", "capabilities": [], "role": "level 6 data distribution branch" },
+    { "ref": "LUNA-L06-APT-A-NET-ONT-01", "kind": "device:ont", "classification": "observable", "capabilities": [], "role": "Apartment 6A fiber termination, Facility demarcation point" },
+    { "ref": "LUNA-L06-APT-A-ROUTER-01", "kind": "device:router", "classification": "observable", "capabilities": [], "role": "Apartment 6A resident-owned router" }
+  ],
+  "newCanonicalOperationalAssets": [],
+  "runtimeGapFixed": {
+    "ref": "LUNA-L06-APT-A-ROUTER-01",
+    "issue": "Asset existed in canonical registry with seededState {simulated:true, uplink_up:true} (Phase 10) but had no row at all in RUNTIME_SEED_ROWS.",
+    "fix": "Added the missing runtime row using the exact value already declared in seededState — no new data invented."
+  },
+  "physicalBackboneChain": {
+    "mechanism": "parentRef (pre-existing, Phase 10) — not the LUNA_ENGINEERING_RELATIONSHIPS edge array",
+    "edges": [
+      { "from": "LUNA-RISER-NETWORK-01", "parentRef": "LUNA-B1-NET-GATEWAY-01" },
+      { "from": "LUNA-L06-NETWORK-BRANCH-01", "parentRef": "LUNA-RISER-NETWORK-01" },
+      { "from": "LUNA-L06-APT-A-NET-ONT-01", "parentRef": "LUNA-L06-NETWORK-BRANCH-01" },
+      { "from": "LUNA-L06-APT-A-ROUTER-01", "parentRef": "LUNA-L06-APT-A-NET-ONT-01" },
+      { "from": "LUNA-GROUND-NET-WIFI-AP-01", "parentRef": "LUNA-B1-NET-GATEWAY-01" }
+    ],
+    "edgeCoreConnected": false,
+    "note": "resolveNetworkState().edgeCoreConnected is hardcoded to the TypeScript literal false, never inferred true."
+  },
+  "relationshipTypeDecision": {
+    "newRelationshipTypeAdded": false,
+    "reason": "The real chain is fully expressed via parentRef. EngineeringRelationshipType already includes connected_to/monitored_by/etc.; no new type was required for this phase's scope."
+  },
+  "representationPolicy": {
+    "changed": false,
+    "findings": [
+      { "ref": "LUNA-B1-NET-GATEWAY-01", "facility": "FULL_3D", "resident": "HIDDEN" },
+      { "ref": "LUNA-GROUND-NET-WIFI-AP-01", "facility": "FULL_3D", "resident": "HIDDEN" },
+      { "ref": "LUNA-EDGE-CORE-01", "facility": "FULL_3D", "resident": "HIDDEN" },
+      { "ref": "LUNA-L06-APT-A-NET-ONT-01", "facility": "CONTEXT_3D", "resident": "FULL_3D (unit-scoped)", "note": "Facility-owned demarcation point, pre-existing FACILITY_OWNED_UNIT_ASSET_REFS entry" },
+      { "ref": "LUNA-L06-APT-A-ROUTER-01", "facility": "HIDDEN", "resident": "FULL_3D", "note": "resident-owned equipment, pre-existing decision, unchanged" }
+    ]
+  },
+  "controlBoard": {
+    "component": "NetworkControlBoard",
+    "consumerNumber": 8,
+    "tabs": ["Gateway", "Wi-Fi AP", "Oyi Edge Core"],
+    "excludedFromBoard": ["LUNA-L06-APT-A-NET-ONT-01", "LUNA-L06-APT-A-ROUTER-01"],
+    "defaultRef": "LUNA-B1-NET-GATEWAY-01"
+  },
+  "oyiIntelligence": {
+    "newMatcher": "matchNetworkInvestigation",
+    "targetPhrases": [
+      "Show me the network.",
+      "Is Apartment 6A's router online?",
+      "Trace the network to Apartment 6A",
+      "Is the fire panel connected to the network?",
+      "What connects the fire panel to the network?"
+    ],
+    "collisionChecksPassed": true,
+    "noSpecialCaseWrittenFor": "What connects the fire panel to the network? — falls through honestly to a plain query with no network mention or fabrication."
+  },
+  "doNotOverbuildHonored": [
+    "no SDN/VLAN management",
+    "no packet inspection or bandwidth telemetry",
+    "no intrusion detection",
+    "no cloud network management console",
+    "no fabricated protocol-stack simulation",
+    "no new operational assets invented for schedule gaps",
+    "no new capabilities added to any of the eight prior systems"
+  ],
+  "safetyBoundaries": {
+    "networkNeverAuthorityOverOtherSystems": true,
+    "provenBy": "With the gateway uplink forced offline and the entire backbone cascaded unreachable, resolveFireState() and resolveHvacState() were queried directly and both still resolved complete, correct, fully independent state.",
+    "cascadeScope": "recomputeNetworkState() only ever writes to network/edge's own assets (riser, branch, ONT, router, Wi-Fi AP) — never reaches into any other system's state."
+  },
+  "tests": {
+    "deterministic": { "script": "scripts/verifyNetwork.mjs", "checks": 17, "status": "all passing" },
+    "browser": {
+      "script": "scripts/verifyNetworkBrowser.mjs",
+      "journeys": 5,
+      "screenshots": [
+        "luna-network-engineering-board.png",
+        "luna-network-backbone-chain.png",
+        "luna-network-wifi-ap-selected.png",
+        "luna-network-edge-core-disclosure.png",
+        "luna-network-uplink-lost.png",
+        "luna-network-recovery.png",
+        "luna-network-oyi-investigation.png",
+        "luna-network-facility-view.png"
+      ],
+      "status": "all passing"
+    },
+    "regressionConfirmed": ["Elevator", "Water", "Electrical", "Fire", "HVAC", "Access", "CCTV"],
+    "typecheckBuildLint": "clean"
+  }
+}

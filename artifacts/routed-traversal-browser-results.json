@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "results": [
+    "1. Exterior: default arrival view, camera outside",
+    "2. \"Take me to Level 6\" resolves through the real route engine (not an instant camera cut) — route begins with the Main Entrance transition",
+    "3-9. Entrance leg: real approach, real clearance-gated door opening, real threshold crossing into the Grand Lobby — no teleport",
+    "10. Waiting outside the lift: the route engine has issued a REAL callLift command through the existing TwinRuntimeProvider, camera is at the real landing",
+    "11-17. Lift travel: polled the real runtime until arrival — reached Level 6",
+    "18/19. Arrived: current spatial context is the real LUNA-L06 level, route status ARRIVED — reached by physically using the building (entrance, lobby, lift), never a direct camera cut to Level 6",
+    "20. Reverse journey: \"Take me back to the ground floor\" runs the SAME route engine in reverse — real lift back down, real arrival at Ground",
+    "21. \"Go outside\" runs the real reverse entrance transition — interior navigation card cleared, back outside"
+  ],
+  "errors": []
+}

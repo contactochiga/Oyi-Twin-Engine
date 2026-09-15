@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "allResults": {
+    "run1": [
+      "1. Exterior: default arrival view, camera outside",
+      "2-4. \"Take me home.\" resolves the resident's own assigned home and begins a real route — Main Entrance transition, not an instant cut",
+      "5-9. Entrance leg: real approach, real clearance-gated door opening, real threshold crossing into the Grand Lobby",
+      "10. Waiting outside the lift: real callLift command issued through TwinRuntimeProvider",
+      "6-9. Real lift travel: polled the real runtime until arrival at Level 6",
+      "11. L06 map becomes spatially relevant: the persistent 2D map now shows the common floor, driven by real currentSpaceRef progression, not a manual toggle",
+      "12-14. Common corridor leg: live position dot tracks the real camera as the route continues toward Apartment A's own entrance",
+      "15-16. Access required + invalid credential denied: the real AccessResolver rejects a wrong code, the panel stays up",
+      "17-18. Valid simulated credential granted: the same real AccessResolver accepts the correct code — canonical lock state changes through the real runtime, not a UI-only flag",
+      "19-22. Physical entry: the real Apartment A door opens, camera crosses the real threshold, arrives in the real Foyer",
+      "23-24. Apartment A 14-room map activates, live dot is in the real Foyer — proven via the map's own rendered room labels",
+      "25-34. Internal multi-hop TOUR continuation: KNOWN ISSUE — internal TOUR continuation stalled: did not arrive at LUNA-L06-APT-A-LIVING (selectedRef=LUNA-L06-APT-A)",
+      "35-37. Real device command: \"Turn on the living room light\" resolves ROOM -> canonical device -> permitted capability -> real runtime command -> truthful updated-state response"
+    ],
+    "run2": [
+      "1. Exterior: default arrival view, camera outside",
+      "2-4. \"Take me home.\" resolves the resident's own assigned home and begins a real route — Main Entrance transition, not an instant cut",
+      "5-9. Entrance leg: real approach, real clearance-gated door opening, real threshold crossing into the Grand Lobby",
+      "10. Waiting outside the lift: real callLift command issued through TwinRuntimeProvider",
+      "6-9. Real lift travel: polled the real runtime until arrival at Level 6",
+      "11. L06 map becomes spatially relevant: the persistent 2D map now shows the common floor, driven by real currentSpaceRef progression, not a manual toggle",
+      "12-14. Common corridor leg: live position dot tracks the real camera as the route continues toward Apartment A's own entrance",
+      "15-16. Access required + invalid credential denied: the real AccessResolver rejects a wrong code, the panel stays up",
+      "17-18. Valid simulated credential granted: the same real AccessResolver accepts the correct code — canonical lock state changes through the real runtime, not a UI-only flag",
+      "19-22. Physical entry: the real Apartment A door opens, camera crosses the real threshold, arrives in the real Foyer",
+      "23-24. Apartment A 14-room map activates, live dot is in the real Foyer — proven via the map's own rendered room labels",
+      "25-34. Internal multi-hop TOUR continuation: KNOWN ISSUE — internal TOUR continuation stalled: did not arrive at LUNA-L06-APT-A-LIVING (selectedRef=LUNA-L06-APT-A)",
+      "35-37. Real device command: \"Turn on the living room light\" resolves ROOM -> canonical device -> permitted capability -> real runtime command -> truthful updated-state response"
+    ]
+  },
+  "errors": []
+}

@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "results": [
+    "1. Exterior: default arrival view before any transition begins",
+    "2. Select + approach main entrance: Oyi resolves the real canonical entrance asset, camera flies to the existing entranceApproach preset",
+    "3. Entrance closed: door renders CLOSED, no transition in flight yet",
+    "4. Door click begins the real transition: camera is still mid-flight, not yet inside, immediately after the click — no instant teleport",
+    "5. Camera settles at the real approach point outside the entrance, door begins its real OPENING animation (clearance not yet satisfied)",
+    "6. Threshold crossed: the transition engine's real WAITING_FOR_CLEARANCE -> CROSSING -> ARRIVED sequence lands the camera inside the Grand Lobby, door state updates from the transition, not a fixed timer",
+    "7. Door closes after arrival: the entrance closes itself once the real traversal has completed, not as a precondition for crossing",
+    "8. Exit Building begins: the SAME back control that used to teleport out now starts the real reverse SpatialTransition (approach the inside face -> actuate -> wait for clearance -> cross -> arrive outside)",
+    "9. Exit Building complete: camera has physically crossed back outside through the same real entrance, interior context cleared, door closed behind it"
+  ],
+  "errors": []
+}

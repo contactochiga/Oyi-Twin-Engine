@@ -1,0 +1,154 @@
+{
+  "title": "Luna Fire & Life Safety System V1",
+  "revision": "1",
+  "status": "REFERENCE DESIGN — not procurement, not certified fire engineering, not a certified fire alarm/control system",
+  "safetyAuthorityRule": {
+    "statement": "Oyi is not the certified fire panel. Twin geometry is not the certified fire panel. Simulation is not certification. Fire/life-safety decisions and interlocks remain under approved life-safety controllers and engineered systems.",
+    "oyiMay": ["observe", "spatially locate", "correlate", "explain", "investigate", "present state", "simulate a deterministic reference incident"],
+    "oyiMustNot": ["disable life safety", "bypass alarms", "suppress fire protection", "unsafe direct pump override", "arbitrary lift/fire-mode control", "arbitrary evacuation commands"],
+    "enforcement": [
+      "LUNA-B1-FIRE-PANEL-01.availableCommands is empty by construction — silence/reset deliberately never mapped to any runtime command",
+      "explainFireState() output always includes the literal string '(reference simulation)'",
+      "reference incident only triggered through the existing scenario/runtime architecture — no separate Fire simulator"
+    ]
+  },
+  "existingAssetsReused": [
+    "LUNA-B1-FIRE-PANEL-01", "LUNA-B1-FIRE-PUMP-01", "LUNA-B1-FIRE-TANK-01",
+    "LUNA-GROUND-FIRE-DET-01", "LUNA-L06-APT-A-ENTRY-SMOKE-01",
+    "LUNA-RISER-FIRE-01", "LUNA-L06-FIRE-BRANCH-01"
+  ],
+  "newCanonicalOperationalAssets": [],
+  "newCanonicalAssetsJustification": "none created — all 7 assets needed for the reference incident and both networks already existed in the catalog from Phase 3C/4/13",
+  "alarmDetectionNetwork": {
+    "topology": "LUNA-B1-FIRE-PANEL-01 (controller) <- LUNA-GROUND-FIRE-DET-01 / LUNA-L06-APT-A-ENTRY-SMOKE-01 (detectors, parentRef to panel/branch chain)",
+    "derivedFields": { "panel.alarm_active": "boolean, true if any detector alarm/smoke is true", "panel.active_zone_ref": "ref of the originating detector, or null", "panel.trouble": "boolean, independent fault condition" },
+    "notCoupledTo": "hydraulic network — starting/stopping the pump never changes alarm_active, and an alarm never auto-starts the pump"
+  },
+  "hydraulicSuppressionNetwork": {
+    "topology": "LUNA-B1-FIRE-TANK-01 (storage) -> LUNA-B1-FIRE-PUMP-01 (pump, supplied_by tank) -> LUNA-RISER-FIRE-01 (riser) -> LUNA-L06-FIRE-BRANCH-01 (floor zone)",
+    "derivedFields": { "pump.running": "boolean, user-commandable (Start/Stop)", "pump.pressure_bar": "number, >0 only while running", "riser.pressurized": "boolean, mirrors pump.running", "branch.pressurized": "boolean, mirrors riser (cascade)" },
+    "notFabricated": ["sprinkler head activation hydraulics", "tank-level sensing", "pump duty/sizing", "zoning beyond L06"]
+  },
+  "newRelationship": {
+    "from": "LUNA-B1-FIRE-PUMP-01",
+    "type": "supplied_by",
+    "to": "LUNA-B1-FIRE-TANK-01",
+    "label": "fire water supplied by",
+    "note": "pump's parentRef is the panel (alarm/control hierarchy); this typed edge is the separate, correct hydraulic-source documentation — same precedent as Water/Electrical"
+  },
+  "buildingFireResolver": {
+    "function": "resolveFireState() in src/luna/runtime/lunaFireResolver.ts",
+    "notStoredState": true,
+    "fireStates": ["normal", "alarm", "trouble"],
+    "deliberatelyExcludedStates": ["PRE_ALARM", "SUPERVISORY", "PARTIALLY_ISOLATED", "RESETTING"],
+    "excludedStatesReason": "nothing in the current canonical catalog legitimately models a distinct investigation/supervisory/partial-isolation stage — not inventing standards-specific terminology unsupported by the model",
+    "fields": {
+      "fireState": "'normal' | 'alarm' | 'trouble'",
+      "alarmActive": "boolean",
+      "troubleActive": "boolean",
+      "originatingZoneRef": "string | null",
+      "originatingZoneLabel": "string | null",
+      "affectedLevelRef": "string | null — resolved from the originating device's ownerLevelRef",
+      "activeAlarmDeviceCount": "number",
+      "pump": "{ running, fault, pressureBar }",
+      "fireWaterAvailable": "boolean — structural baseline (tank registered), not live sensor telemetry",
+      "riserPressurized": "boolean",
+      "controllerCommunicationOk": "boolean",
+      "firstEvent": "FireEvent | null",
+      "lastEvent": "FireEvent | null",
+      "quality": "'simulated'"
+    }
+  },
+  "eventModel": {
+    "type": "FireEvent { id, at, label, detail? }",
+    "cap": 40,
+    "order": "newest-first",
+    "export": "lunaRuntimeInternals.getFireEvents()",
+    "pubSub": "reuses the existing provider notify()/subscribe() mechanism — no second event system",
+    "edgeDetection": "module-level lastFireAlarm/lastFireTrouble/lastFirePumpRunning trackers — events log once per genuine transition, never per poll",
+    "labels": ["Detector alarm received", "Alarm cleared", "Controller trouble/fault", "Controller trouble cleared", "Fire pump started", "Fire pump stopped"]
+  },
+  "runtimePropagation": {
+    "function": "recomputeFireNetwork() in lunaSimulationProvider.ts",
+    "hookedInto": ["execute() after fire-pump commands", "simulateEvent('smoke_detected')", "smoke-alert scenario"],
+    "independentHalves": ["alarm/detection recompute", "hydraulic recompute — not coupled to each other, matching real fire-pump pressure-drop-triggered behavior"]
+  },
+  "controlBoard": {
+    "component": "src/luna/operational/FireControlBoard.tsx",
+    "position": "fourth SystemControlBoard consumer, beside Elevators/Water/Electrical",
+    "tabs": ["Panel (default)", "Grd. Detector", "6A Detector", "Pump", "Tank", "Riser", "L06 Zone"],
+    "summaryWidget": "FireStatusSummary — reused headerContent? slot, dom hooks [data-fire-status-summary]/[data-fire-state]",
+    "activeIncidentSummary": "ActiveIncidentSummary component, renders only when fireState !== 'normal' — origin, affected level, device count, live event narrative",
+    "commandPhilosophy": "fire panel exposes zero commands by construction (silence/reset unmapped) — 'not every asset gets ON/OFF' is satisfied automatically, not special-cased"
+  },
+  "physicalGeometry": {
+    "newComponent": "src/luna/operational/FirePlantEquipment.tsx",
+    "equipment": ["FireAlarmPanelGeometry — wall cabinet, status-lamp face (green/amber/red)", "FirePumpGeometry — pump/motor assembly with discharge manifold", "FireTankGeometry — cylindrical storage vessel with support skirt", "SmokeDetectorGeometry — ceiling-mounted low-profile disc"],
+    "riser": "engine-shared RiserShaft, shape='round' (default, unchanged), pressurized-driven glow via the existing energized prop (semantically repurposed, no shape change)"
+  },
+  "oyiIntelligence": {
+    "newMatcher": "matchFireStatus in lunaIntentParser.ts, inserted after matchBuildingPower",
+    "newVocabulary": ["LUNA-L06-FIRE-BRANCH-01 aliases", "LUNA-L06-APT-A-ENTRY-SMOKE-01 aliases including bare 'the detector'", "fire-water/fire water compound patterns (fixed a system-resolution bug)"],
+    "newExplainFunction": "explainFireState(fire) in lunaExplain.ts — always includes '(reference simulation)'",
+    "vocabularyBugFixed": "findByPattern's longest-pattern-first sort resolved 'fire-water' to the water system alias (substring match on 'water') instead of fire; fixed by adding explicit longer fire-water/fire water patterns to the fire system alias",
+    "targetPhrasesVerified": [
+      "What is the fire status of Luna?",
+      "Are there any fire alarms?",
+      "Where is the alarm?",
+      "What triggered the alarm?",
+      "Show me the affected floor.",
+      "Show the detector.",
+      "Show the fire system.",
+      "Show the fire riser.",
+      "Show the fire pump.",
+      "Is the fire pump running?",
+      "Show the fire-water path to L06.",
+      "What devices responded to this incident?",
+      "Are there any fire system faults?",
+      "Show the active incident."
+    ]
+  },
+  "representationPolicy": {
+    "codeUnchanged": true,
+    "verifiedVia": "test:lift RepresentationPolicy byte-hash assertion",
+    "consumerBoundary": "B1 fire plant (panel/pump/tank) HIDDEN for all resident identities; 6A smoke detector FULL_3D only for the assigned resident, HIDDEN for any other resident",
+    "disclosedDataFix": {
+      "file": "src/luna/policy/lunaUnitMepAssets.ts",
+      "change": "added LUNA-L06-APT-A-ENTRY-SMOKE-01 to FACILITY_OWNED_UNIT_ASSET_REFS allowlist",
+      "reason": "pre-existing gap discovered via a failing browser test — fire detectors are Facility/life-safety responsibility regardless of unit location, same category as the already-allowlisted meters/DBs/circuits",
+      "scope": "additive DATA only, not a RepresentationPolicy.ts code change",
+      "knownRelatedGapNotFixed": "KITCHEN-LEAK-01 (water leak sensor) has the same allowlist gap — identified but left unfixed as out of scope for this Fire-only phase"
+    }
+  },
+  "incidentSimulation": {
+    "mechanism": "existing smoke-alert scenario (lunaScenarios.ts) — patches smoke:true then calls lunaRuntimeInternals.recomputeFireNetwork()",
+    "noSeparateSimulator": true,
+    "sequence": ["NORMAL", "smoke detected (reference simulation)", "Detector alarm received (event)", "panel.alarm_active=true, active_zone_ref=detector", "Building Fire State = ALARM", "Oyi/Control Board/event log reflect the same live truth"],
+    "recovery": "clearing smoke + recompute returns fireState to normal, logs 'Alarm cleared'"
+  },
+  "referenceIncidentLocation": "L06 / Apartment 6A (the one location with a fully detailed canonical MEP presence)",
+  "unresolvedDesignDecisions": {
+    "DD11": "Fire engineering — pump sizing/duty, tank capacity/replenishment, sprinkler/hose-reel coverage and activation hydraulics, zoning beyond L06, detector spacing/coverage standard, manufacturer/model. Entirely unresolved; no sprinkler activation fabricated.",
+    "DD15": "Structural/fire-rating coordination beyond what Phase 13 already modeled. Unchanged, unresolved.",
+    "DD20": "Elevator fire-mode/recall authority. Not touched — no fire recall logic, firefighter lift certification, evacuation lift behavior, or emergency control authority fabricated. Service/Fire Lift boundary remains as previously documented."
+  },
+  "tests": {
+    "deterministic": "scripts/verifyFire.mjs — 16 checks",
+    "browser": "scripts/verifyFireBrowser.mjs — 16 checks including all 12 required screenshots and Elevator/Water/Electrical regression",
+    "fullRegressionReRun": [
+      "test:lift (deterministic + browser)",
+      "test:four-lift (deterministic + browser)",
+      "test:control-surface:browser",
+      "test:water:browser",
+      "test:electrical:browser",
+      "test:electrical-live-ops (deterministic + browser)",
+      "test:representation",
+      "test:architecture",
+      "test:presentation",
+      "typecheck (tsc -b)",
+      "build",
+      "lint"
+    ],
+    "allGreen": true
+  }
+}

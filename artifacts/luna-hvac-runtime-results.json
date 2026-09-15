@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "checks": [
+    "Canonical HVAC asset identity preserved: every existing HVAC reference-chain ref intact (zero new operational assets were needed), no duplicates",
+    "Reference topology: outdoor condenser <- connected_to <- both indoor units, correctly distinct from each unit's own electrical parentRef; exactly 2 typed edges exist",
+    "Safety boundary preserved: the outdoor condenser exposes zero commands — Oyi cannot fabricate independent condenser control authority",
+    "OFF state: resolver reports off for both zones and idle condenser demand on a fresh reset",
+    "RUNNING state: turning on the Living Room AC resolves the building HVAC state to RUNNING and the outdoor condenser to demand=true, both derived from the same real command",
+    "Deterministic temperature response: room_temp_c moved from 23.7°C toward the 18°C setpoint over 3 recomputes (now 21.3°C), mirrored onto the real Living Room sensor",
+    "Setpoint change: resolver reflects the new 18°C target for the Living Room zone",
+    "FAULT state: hvac-fault scenario resolves the building HVAC state to FAULT, trips the unit off, and a restart attempt while faulted is refused (state stays off, explanatory message returned)",
+    "Fault behavior: cooling response stops while faulted — room temperature drifts toward ambient, never continues toward the old target",
+    "Recovery: reset returns the building HVAC state to OFF with the fault cleared",
+    "Oyi parser resolves all HVAC target reference phrases to the correct intent shape (system/asset/query/command)",
+    "Oyi \"what is the HVAC status\"/\"is there a fault\"/\"what is cooling apartment 6a\" all resolve to the SAME live narrative: \"Apartment 6A's HVAC (reference chain) is currently RUNNING (reference simulation). Living Room AC is on (cool mode) and is actively cooling toward its 24°C target, currently 24.9°C (reference simulation). Primary Bedroom AC is off, room reads 26°C (reference simulation). Outdoor condenser demand: active — serving connected zone(s).\"",
+    "Facility contextual admission confirmed (CONTEXT_3D for the shared outdoor condenser); resident-privacy boundary confirmed (Facility HIDDEN from the resident's own indoor unit, matching lights/curtains); assigned resident sees their own indoor unit FULL_3D; a different resident sees HIDDEN",
+    "Full Oyi controller round-trip: \"Turn on the AC\" actually starts it for the assigned resident (real state change); Facility denied the same command (resident-privacy boundary enforced end-to-end, not just in the board UI)",
+    "HVAC Control Board asset registry: 3 real registered tabs, deterministic default (Condenser)"
+  ]
+}

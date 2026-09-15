@@ -1,0 +1,11 @@
+{
+  "passed": false,
+  "results": [
+    "12. Facility representation: default Facility scope resolves Apartment A to an exterior/operational view only — no interior room list, unchanged privacy boundary",
+    "1. L06 selected: Oyi \"Level 6\" resolves and reaches the real level through the real route engine (TOUR default), not an instant cut",
+    "2/3/4. Apartment A selected + entered: Consumer scope reaches real FULL_3D entry (selection resolves to the real canonical LUNA-L06-APT-A ref), the real 12-room list renders — proves the apartment is genuinely walkable, not a teleport-only stub",
+    "5. Living area: real per-room camera preset framing the actual Living Room furniture cluster, selection resolves to LUNA-L06-APT-A-LIVING",
+    "6. Bedroom(s): real per-room camera preset framing the actual Primary Bedroom, selection resolves to LUNA-L06-APT-A-BED-01"
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: clicking the real, computed screen-space position of the Kitchen door opening must select the real door object (LUNA-L06-APT-A-KITCHEN-DOOR-01)\n    at file:///Users/ochigaidoko/Oyi-Twin-Engine/scripts/verifyL06GoldStandardBrowser.mjs:163:10"
+}

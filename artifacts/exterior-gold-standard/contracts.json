@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "canonicalFilesUnchanged": 240,
+  "changed": [
+    "src/luna/LunaBuilding.tsx",
+    "src/luna/LunaEnvironment.tsx",
+    "src/luna/LevelFacade.tsx",
+    "src/luna/LunaLevel.tsx"
+  ],
+  "checks": [
+    "16 levels / site dimensions",
+    "canonical sources byte-identical",
+    "private material ownership",
+    "shared local textures",
+    "bounded detail meshes",
+    "original decorative car length"
+  ]
+}

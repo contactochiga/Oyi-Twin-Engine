@@ -1,0 +1,172 @@
+{
+  "phase": "Luna Architectural Reality V1 — Grand Entrance + Lobby Gold Standard",
+  "principle": "The building itself becomes the interface: real architectural space, real spatial relationships, real interaction, canonical identity, operational state, and Oyi intelligence, all converging in the Ground Lobby.",
+  "classification": "LUNA_REFERENCE_DESIGN",
+  "sourcePendingFraming": false,
+  "sourcePendingFramingReason": "Luna is Oyi's own internally designed reference building; this phase's brief explicitly reverses the prior phase's 'source pending' framing for newly designed Luna architecture.",
+
+  "scope": {
+    "included": ["site arrival", "grand entrance", "entrance assembly", "grand lobby", "reception", "lounge", "passenger lift lobby", "service/fire lift access", "stair/service connections", "ground-floor common circulation"],
+    "excludedThisPhase": ["rest of tower", "L06 Apartment A (untouched, re-verified)", "facade redesign beyond the small entrance-area signage adjustment", "B1/amenities/penthouse rebuild", "second ingestion architecture"]
+  },
+
+  "entrance": {
+    "ref": "LUNA-GROUND-ACCESS-MAIN-01",
+    "position": { "x": 0, "z": 16 },
+    "openingWidthMetres": 3.6,
+    "heightMetres": 2.8,
+    "assemblyType": "automatic sliding glass",
+    "stateModel": ["CLOSED", "OPENING", "OPEN", "CLOSING"],
+    "geometryAnimates": true,
+    "runtimeControlsVisual": true,
+    "instrumented": false,
+    "classification": "REFERENCE_SIMULATION",
+    "fabricatedHardwareClaimed": false,
+    "triggeredEntryVerifiedLive": true
+  },
+
+  "lobby": {
+    "interiorRef": "LUNA-GROUND-LOBBY",
+    "rooms": [
+      { "ref": "LUNA-GROUND-LOBBY-RECEPTION", "label": "Reception" },
+      { "ref": "LUNA-GROUND-LOBBY-LOUNGE", "label": "Waiting Lounge" },
+      { "ref": "LUNA-GROUND-LOBBY-LIFTS", "label": "Lift Lobby" }
+    ],
+    "layoutDesignDecision": "open-plan single volume with three selectable zones, not three separately walled InteriorRoom boxes with doors between them",
+    "layoutDesignDecisionDisclosed": true,
+    "canonicalIdentitiesUnchangedFromPhase3": true
+  },
+
+  "liftLobbyCorrection": {
+    "previousRectCenterX": 9,
+    "correctedFromRealCoreData": true,
+    "computedNotHardcoded": true,
+    "computedX": 1.8,
+    "computedWidth": 13.8,
+    "source": "src/luna/architecture/groundLobbyLayout.ts GROUND_LIFT_LOBBY_LAYOUT, derived live from LUNA_CORES",
+    "allFourRealCoresContained": true,
+    "newLiftDoorGeometryBuilt": false,
+    "reasonNoNewLiftDoors": "DynamicLift.tsx already contains real, functional, per-floor landing-door geometry"
+  },
+
+  "serviceFireLift": {
+    "ref": "LUNA-LIFT-SERVICE-01",
+    "preservedUnchanged": true,
+    "architecturallyDistinguished": true,
+    "fabricatedCertificationClaimed": false,
+    "existingDisclosuresUnchanged": ["DD06", "DD11", "DD20"]
+  },
+
+  "stairs": {
+    "count": 2,
+    "refs": ["LUNA-STAIR-01", "LUNA-STAIR-02"],
+    "doorRefs": ["LUNA-STAIR-01-DOOR-01", "LUNA-STAIR-02-DOOR-01"],
+    "doorKinematic": "hinged (pivot-around-hinge rotation), distinct from the entrance's sliding translation",
+    "fireRatingCertificationClaimed": false
+  },
+
+  "newEnginePrimitives": [
+    { "name": "SlidingGlassDoor", "file": "src/engine/components/SlidingGlassDoor.tsx", "buildingAgnostic": true },
+    { "name": "HingedDoor", "file": "src/engine/components/HingedDoor.tsx", "buildingAgnostic": true }
+  ],
+  "componentFrameworkRewrite": false,
+
+  "structuralCoordination": {
+    "groundColumnsCheckedRealZ": [-14, 14],
+    "lobbyFootprintZRange": [-7, 9],
+    "conflictsFound": 0,
+    "structureMovedOrDeleted": false
+  },
+
+  "structuralCoordinationFixesDisclosed": [
+    {
+      "issue": "LunaSignage.tsx 'LUNA RESIDENCES' panel centered on the entrance approach axis (x=0) at nearly the same depth as the new door (z=17.32 vs door z=16)",
+      "discoveredLiveInBrowserTest": true,
+      "effect": "filled the entire entranceApproach camera frame and blocked raycasts meant for the door mesh",
+      "fix": "moved signage to x=-16 (off-axis, same building face), raised to y = baseElevation + 3.2",
+      "otherExteriorGeometryTouched": false
+    },
+    {
+      "issue": "LevelMassing's solid, full-footprint hit-target box always won raycasts aimed at the recessed (1m inward) entrance door behind it",
+      "fix": "added optional isClickThrough predicate prop to the generic engine LevelMassing component; only Ground's LunaLevel.tsx supplies a predicate scoped to the entrance opening's real bounds",
+      "everyOtherLevelBehaviorUnchanged": true,
+      "generalPurposeClickThroughMechanism": false
+    }
+  ],
+
+  "oyi": {
+    "newSpaceAliasKind": "door",
+    "extendsExistingMachinery": ["TwinNodeKind", "SpaceAlias.kind", "SpaceLookupResult", "ParsedIntent.targetKind", "navigateToSpace()"],
+    "newParallelSystemBuilt": false,
+    "collisionsFoundAndResolvedLive": [
+      { "phrase": "the main entrance / main entrance", "claimedBy": "pre-existing Access-system ASSET_ALIASES entry for the same ref", "resolution": "kept pre-existing alias, dropped from new door vocabulary" },
+      { "phrase": "front door / the front door", "claimedBy": "L06 apartment entry lock's own ASSET_ALIASES entry", "resolution": "dropped from new door vocabulary" }
+    ],
+    "dualPathOutcome": {
+      "ref": "LUNA-GROUND-ACCESS-MAIN-01",
+      "pathA": { "trigger": "asset alias (e.g. 'main entrance')", "mechanism": "matchAsset -> navigateToAsset -> assetFocusCamera", "cameraBehavior": "close-up asset inspection" },
+      "pathB": { "trigger": "door alias ('the entrance door')", "mechanism": "matchSpace -> navigateToSpace -> entranceApproach preset", "cameraBehavior": "architectural approach" },
+      "verifiedNonColliding": true
+    },
+    "fabricatedCommandsAttached": false,
+    "openMainEntranceCommand": "not wired to a fabricated command; no authorized instrumented asset exists for this ref"
+  },
+
+  "representation": {
+    "facility": {
+      "commonInfrastructureAccess": "unchanged, full — Access Control Board still opens correctly for the Main Entrance",
+      "perRoomFullyGranularSelection": true
+    },
+    "consumer": {
+      "policyFileModified": false,
+      "levelModeForSharedAreas": "CONTEXT_3D (pre-existing lunaRepresentationPolicy.resolveLevelMode, unmodified)",
+      "grantedFullRoomLevelSelection": false,
+      "verifiedLive": "clicking 'Enter Ground Lobby' as Consumer resolves selection to LUNA-GROUND (the level), not per-room FULL_3D",
+      "matchesOtherCommonInteriors": true,
+      "policyBroadenedForConvenience": false,
+      "privateAccessPointAssetStaysHidden": true
+    }
+  },
+
+  "twoDThreeDCorrespondence": {
+    "liftLobbyRegion2DDerivedFromSameCanonicalRoomData": true,
+    "selectingIn2DResolvesToSameRef": true,
+    "verifiedLive": true
+  },
+
+  "performance": {
+    "mergedGeometryForCeilingFixtures": true,
+    "materialsMemoizedNotPerFrame": true,
+    "newHeavyPerFrameComputation": false
+  },
+
+  "testing": {
+    "deterministic": { "script": "scripts/verifyGrandLobby.mjs", "checks": 14, "runTwiceConfirmed": true, "result": "PASS x2" },
+    "browser": { "script": "scripts/verifyGrandLobbyBrowser.mjs", "items": 25, "runTwiceConfirmed": true, "result": "PASS x2", "pageErrors": 0 },
+    "fullExistingRegressionSuite": { "allPassed": true, "regressionsFound": 0, "hashGuardsUpdatedForDisclosedChange": true }
+  },
+
+  "genuineChangesOutsideNewLobbyFiles": [
+    { "file": "src/luna/policy/lunaRepresentationPolicy.ts", "change": "added a door branch to resolveLevelRefFor() returning LUNA-GROUND for any door ref", "reason": "so door selections resolve a level for policy purposes; no mode/rule logic changed" },
+    { "file": "src/luna/LunaSignage.tsx", "change": "repositioned off the entrance approach axis", "reason": "structural-coordination conflict with the new entrance door, see structuralCoordinationFixesDisclosed" },
+    { "file": "src/engine/components/LevelMassing.tsx", "change": "added optional isClickThrough predicate prop", "reason": "let clicks fall through to recessed real architecture (the entrance door); default behavior unchanged for every level that doesn't supply one" },
+    { "file": "src/luna/LunaLevel.tsx", "change": "supplies the click-through predicate for Ground only, imports GroundEntrance constants", "reason": "scope the massing fix to exactly the entrance opening" },
+    { "file": "src/luna/interiors/lunaInteriors.ts", "change": "Lift Lobby room now sourced from GROUND_LIFT_LOBBY_LAYOUT instead of a hand-typed rect", "reason": "real correction, computed from LUNA_CORES" },
+    { "file": "src/luna/lunaMaterials.ts", "change": "added 7 new material factories for the lobby/ceiling", "reason": "premium stone/bronze/glass palette for the new architecture" },
+    { "file": "src/luna/lunaCameraPresets.ts, lunaRoomCameraPresets.ts", "change": "added entranceApproach and Reception/Lift Lobby room presets", "reason": "extend existing camera mechanisms, not a new system" },
+    { "file": "src/engine/twinIntelligence.ts", "change": "ParsedIntent.targetKind gained \"door\"", "reason": "door-kind navigation intents need a real target kind" },
+    { "file": "scripts/verifyArchitecture.mjs, scripts/verifyLift.mjs, scripts/verifyFourLift.mjs", "change": "bumped the RepresentationPolicy byte-hash guard to the new, disclosed baseline", "reason": "the file's one legitimate change (the door branch above) was previously caught as an unexpected diff by these pre-existing guards" }
+  ],
+
+  "protectedSystemsUnchanged": [
+    "lunaRepresentationPolicy.ts's mode-resolution logic (resolveAssetMode/resolveUnitMode/resolveLevelMode bodies untouched)",
+    "Every existing TwinRuntimeProvider / resolver for all 9 completed operational systems",
+    "DynamicLift.tsx's real per-floor landing-door geometry and lift runtime",
+    "Access & Security V1's instrumented/not-instrumented boundary and its Access Control Board",
+    "Every existing SystemControlBoard consumer",
+    "Existing Twin navigation chrome (TopCommandBar, EngineeringDrawer, ScenesDrawer)",
+    "L06 Apartment A (12 rooms, unaffected, re-verified)"
+  ],
+
+  "nextPhasePreviewOnly": "LUNA — TRUE FLOOR PLAN SYSTEM V1 / L06 GOLD STANDARD FLOOR, then L06 APARTMENT A — FULL INTERIOR REALITY (entrance -> smart lock -> foyer -> living -> dining -> kitchen -> bedrooms -> bathrooms -> windows -> balcony -> lighting -> finishes -> devices -> MEP interfaces). Neither started in this phase."
+}

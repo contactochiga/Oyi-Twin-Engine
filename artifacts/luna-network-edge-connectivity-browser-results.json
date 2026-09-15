@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "results": [
+    "JOURNEY 1 (Engineering discovery): Engineering -> Network / Edge auto-opens the Network Control Board — no Oyi command required, deterministic default focus, live status summary present",
+    "Physical connectivity: the Gateway tab shows the real, pre-existing parentRef backbone chain (riser -> branch -> Apartment 6A ONT -> router) all reachable at rest",
+    "JOURNEY 2 (spatial discovery): selecting a different network asset tab updates the SAME board — one persistent board, not a separate dashboard per device",
+    "THE NETWORK CARRIES TRUTH, IT DOES NOT CREATE TRUTH: the Oyi Edge/Core tab explicitly discloses it has no established connection to the gateway chain, rather than silently implying one",
+    "Network panel honestly discloses no remote-control capability rather than showing dead buttons",
+    "Deterministic cascade proven against the live running app: the gateway loses uplink -> the entire real physical backbone chain (riser/branch/ONT/router) and the Wi-Fi AP cascade to unreachable — read directly from the live provider, not simulated separately",
+    "Recovery captured — resetting the provider returns the gateway uplink and the entire backbone chain to reachable",
+    "JOURNEY 4 (Oyi): \"Show me the network.\" resolves through Oyi and keeps the board open — Oyi is an additional discovery path, not the only one",
+    "JOURNEY 5 (privacy): the live Facility Network Control Board exposes exactly the three common assets — Apartment 6A's Facility-owned ONT and the resident's own router are confirmed absent as board tabs (RepresentationPolicy re-verified in the deterministic suite: ONT CONTEXT_3D, router HIDDEN to Facility, both unchanged)",
+    "REGRESSION: Elevator, Water, Electrical, Fire, HVAC, Access and CCTV Control Boards all still work correctly after Network/Edge & Physical Connectivity was added"
+  ],
+  "errors": []
+}

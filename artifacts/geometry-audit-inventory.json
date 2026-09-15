@@ -1,0 +1,205 @@
+{
+  "levels": [
+    {
+      "ref": "LUNA-B1",
+      "base": -4,
+      "height": 4,
+      "footprint": {
+        "width": 44,
+        "depth": 34
+      },
+      "planRegions": 32
+    },
+    {
+      "ref": "LUNA-GROUND",
+      "base": 0,
+      "height": 5,
+      "footprint": {
+        "width": 44,
+        "depth": 34
+      },
+      "planRegions": 10
+    },
+    {
+      "ref": "LUNA-L01-AMENITIES",
+      "base": 5,
+      "height": 3.5,
+      "footprint": {
+        "width": 40,
+        "depth": 30
+      },
+      "planRegions": 9
+    },
+    {
+      "ref": "LUNA-L02",
+      "base": 8.5,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 4
+    },
+    {
+      "ref": "LUNA-L03",
+      "base": 11.75,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 4
+    },
+    {
+      "ref": "LUNA-L04",
+      "base": 15,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 4
+    },
+    {
+      "ref": "LUNA-L05",
+      "base": 18.25,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 4
+    },
+    {
+      "ref": "LUNA-L06",
+      "base": 21.5,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 4
+    },
+    {
+      "ref": "LUNA-L07",
+      "base": 24.75,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 4
+    },
+    {
+      "ref": "LUNA-L08",
+      "base": 28,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 4
+    },
+    {
+      "ref": "LUNA-L09",
+      "base": 31.25,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 4
+    },
+    {
+      "ref": "LUNA-L10",
+      "base": 34.5,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 1
+    },
+    {
+      "ref": "LUNA-L11",
+      "base": 37.75,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 3
+    },
+    {
+      "ref": "LUNA-L12",
+      "base": 41,
+      "height": 3.25,
+      "footprint": {
+        "width": 36,
+        "depth": 28
+      },
+      "planRegions": 3
+    },
+    {
+      "ref": "LUNA-PENTHOUSE",
+      "base": 44.25,
+      "height": 5,
+      "footprint": {
+        "width": 30,
+        "depth": 22
+      },
+      "planRegions": 1
+    },
+    {
+      "ref": "LUNA-ROOFTOP",
+      "base": 49.25,
+      "height": 3,
+      "footprint": {
+        "width": 26,
+        "depth": 18
+      },
+      "planRegions": 7
+    }
+  ],
+  "interiors": [
+    {
+      "ref": "LUNA-GROUND-LOBBY",
+      "level": "LUNA-GROUND",
+      "rooms": 3
+    },
+    {
+      "ref": "LUNA-L01-CLUB",
+      "level": "LUNA-L01-AMENITIES",
+      "rooms": 2
+    },
+    {
+      "ref": "LUNA-L06-APT-A",
+      "level": "LUNA-L06",
+      "rooms": 12
+    },
+    {
+      "ref": "LUNA-L10-APT-A",
+      "level": "LUNA-L10",
+      "rooms": 8
+    },
+    {
+      "ref": "LUNA-PENTHOUSE",
+      "level": "LUNA-PENTHOUSE",
+      "rooms": 9
+    },
+    {
+      "ref": "LUNA-ROOFTOP-SKY",
+      "level": "LUNA-ROOFTOP",
+      "rooms": 2
+    }
+  ],
+  "assets": 76,
+  "structure": 117,
+  "cores": 7,
+  "policySamples": {
+    "LUNA-L06-APT-A": "OPERATIONAL_2D",
+    "LUNA-L06-APT-A-KITCHEN": "OPERATIONAL_2D",
+    "LUNA-L02-APT-A": "FULL_3D",
+    "IMPORTED-UNKNOWN-NODE": "FULL_3D"
+  }
+}

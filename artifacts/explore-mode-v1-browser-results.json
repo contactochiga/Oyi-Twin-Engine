@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "results": [
+    "Presentation context: selecting L06 activates the existing single Spatial Card while remaining in the live Presentation UI.",
+    "Explore activation: compact bottom-right controller appears with one OYI shortcut and no duplicate Ask Oyi bar.",
+    "Pointer hold: holding Forward moves the real camera in the WebGL viewport; release clears movement.",
+    "Keyboard: W movement uses the same Explore movement contract and moves the WebGL viewport.",
+    "OYI shortcut: opens the existing contextual Oyi surface without adding a second top search.",
+    "Interact: center button executes through the app-level canonical target/selection handler; no detached fake modal appears.",
+    "Exit: hides controller, clears movement, and W is ignored when Explore is inactive.",
+    "Escape: exits Explore mode through the same cleanup path."
+  ]
+}

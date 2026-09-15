@@ -1,0 +1,143 @@
+{
+  "title": "Luna CCTV & Spatial Security System V1",
+  "revision": "1",
+  "status": "REFERENCE / CONCEPTUAL / SIMULATED — no live video, PTZ or recording exists in this reference build",
+  "cameraInventory": {
+    "refs": ["LUNA-GROUND-SEC-CAM-01", "LUNA-GROUND-LOBBY-CAM-01", "LUNA-B1-PARKING-CAM-01", "LUNA-L06-COMMON-CAM-01"],
+    "count": 4,
+    "source": "docs/LUNA_MASTER_EQUIPMENT_SCHEDULE.md EQ-CCTV / Current instance register",
+    "allObservableNoCommands": true
+  },
+  "existingAssetsReused": ["LUNA-GROUND-SEC-CAM-01", "LUNA-GROUND-LOBBY-CAM-01", "LUNA-B1-PARKING-CAM-01", "LUNA-L06-COMMON-CAM-01", "LUNA-L06-APT-A-ENTRY-INTERCOM-01"],
+  "newCanonicalOperationalAssets": [],
+  "newCanonicalAssetsJustification": "none created — the Master Equipment Schedule's own Current instance register already documents every camera this phase needed; no NVR/recording asset exists (EQ-RECORDING: 'No registered instance yet') and none was fabricated",
+  "liveVideoAbstraction": {
+    "exists": false,
+    "evidence": "lunaRuntimeSeed.ts's own pre-existing comment: camera streams have 'no non-fake way to represent' — stream.start/stream.stop/door_release deliberately unmapped",
+    "consequence": "no LIVE_VIEW capability exposed anywhere; camera context is state-only reference, never a fabricated stream"
+  },
+  "cameraStateModel": {
+    "resolver": "resolveCameraState() / resolveAllCameraStates() in src/luna/runtime/lunaCameraResolver.ts",
+    "notStoredState": true,
+    "states": ["online", "offline"],
+    "deliberatelyExcludedStates": ["fault", "maintenance", "unknown"],
+    "excludedStatesReason": "no fault/maintenance field exists on any camera's runtime row and no scenario sets one — nothing in the canonical catalog legitimately models these stages for cameras",
+    "existingReusedScenario": "camera-offline (lunaScenarios.ts) — pre-existing, reused as-is, not recreated",
+    "recovery": "i.resetAll() — matches the exact recovery convention every other system's own tests already use"
+  },
+  "cameraCapabilities": {
+    "exposed": [],
+    "notExposed": ["LIVE_VIEW", "PTZ", "ZOOM", "SNAPSHOT", "RECORDING", "PLAYBACK", "EVENT_SEARCH"],
+    "reason": "Master Equipment Schedule's own 'observable; none' — zero commands were fabricated for any of the four cameras"
+  },
+  "physicalGeometry": {
+    "newComponent": "src/luna/operational/CctvPlantEquipment.tsx",
+    "equipment": ["CameraGeometry — wall/ceiling bullet camera body, mounting bracket, forward-facing lens, status LED whose color follows the camera's own real online/offline state"],
+    "fieldOfViewCone": "deliberately omitted — the brief's own instruction that such a cone must never determine authorization/event truth made it simpler and more honest to skip a purely decorative element for V1",
+    "dispatch": "CCTV_EQUIPMENT_REFS (built from lunaCameraResolver.ts's own CCTV_CAMERA_REFS) in OperationalAssetLayer.tsx, same by-ref dispatch pattern as every prior system's equipment"
+  },
+  "accessEventCorrelation": {
+    "relationshipType": "monitored_by (pre-existing EngineeringRelationshipType — no new type was added)",
+    "edges": [
+      { "from": "LUNA-GROUND-ACCESS-MAIN-01", "to": "LUNA-GROUND-SEC-CAM-01", "basis": "identical locationLabel ('Ground — Main Entrance'), ~1m apart" },
+      { "from": "LUNA-L06-APT-A-ENTRY-LOCK-01", "to": "LUNA-L06-APT-A-ENTRY-INTERCOM-01", "basis": "identical locationLabel ('Level 06, Apartment A — Entry'), <1m apart; the intercom is already kind:'camera' in the canonical schedule" }
+    ],
+    "deliberatelyUnresolved": [
+      { "accessPoint": "LUNA-B1-ACCESS-SERVICE-01", "reason": "different locationLabel/position (~3m) than the Parking camera — not guessed" },
+      { "accessPoint": "LUNA-GROUND-ACCESS-LIFT-LOBBY-01", "reason": "no camera at a matching locationLabel/position — not inferred from proximity" }
+    ],
+    "resolver": "resolveCameraForAccessPoint(accessPointRef) in lunaCameraResolver.ts — walks the real edge only, never proximity"
+  },
+  "controlBoard": {
+    "component": "src/luna/operational/CctvControlBoard.tsx",
+    "position": "seventh SystemControlBoard consumer, beside Elevators/Water/Electrical/Fire/HVAC/Access",
+    "tabs": ["Camera 01 (default)", "Camera 02", "Camera 03", "Camera 04"],
+    "summaryWidget": "CctvStatusSummary — reused headerContent? slot, dom hooks [data-cctv-status-summary]",
+    "accessCorrelationSection": "AccessCorrelationSummary — shown only when the focused camera has a real monitored_by relationship, reads resolveAccessState()/getAccessEvents() directly",
+    "privateIntercomExcluded": "the apartment video intercom is deliberately NOT a board tab — HIDDEN to Facility, same disclosed boundary as HVAC's indoor units / Access's own lock"
+  },
+  "oyiIntelligence": {
+    "newMatcher": "matchCctvInvestigation in lunaIntentParser.ts, inserted after matchAccessStatus",
+    "newVocabulary": [
+      "camera 01 / camera 1 ... camera 04 / camera 4 added to each existing camera's own alias list",
+      "LUNA-L06-APT-A-ENTRY-INTERCOM-01's first-ever aliases (the camera at apartment 6a, apartment 6a camera, the intercom, video intercom, the doorbell)"
+    ],
+    "collisionCheck": "every new pattern checked against the full existing FACILITY_ASSET_ALIASES list and every other system's own target-phrase list — re-verified in scripts/verifyCctv.mjs (Electrical's 'active power path', HVAC's 'turn on the AC', Access's 'is the main entrance locked', Water's 'the water tank' all re-tested unaffected)",
+    "targetPhrasesVerified": [
+      "Show me the cameras.",
+      "Show me Camera 01.",
+      "Is Camera 01 online?",
+      "Show me the camera at Apartment 6A.",
+      "Show me the last access event.",
+      "Show me the camera associated with the last denied access.",
+      "Why was access denied?",
+      "Show me the security event."
+    ],
+    "parserPurity": "matchCctvInvestigation never reads live runtime/event state itself — it only resolves TEXT to a REF (the one real camera correlated to the one governed access point); the live event/camera narrative is composed later by lunaExplain.ts, the same purity every other matcher preserves"
+  },
+  "representationPolicy": {
+    "codeUnchanged": true,
+    "verifiedVia": "test:lift RepresentationPolicy byte-hash assertion",
+    "commonCameras": {
+      "facilityMode": "FULL_3D",
+      "residentMode": "HIDDEN",
+      "note": "a resident does NOT gain Facility CCTV visibility merely because a camera exists in common space — pre-existing rule, re-verified not broken"
+    },
+    "privateIntercom": {
+      "facilityMode": "HIDDEN",
+      "assignedResidentMode": "FULL_3D",
+      "note": "same pre-existing private-unit rule as the entrance lock — the camera never becomes an authorization authority, and privacy holds even for security investigation (proven via full controller round-trip: resident investigation succeeds end-to-end, identical Facility request denied end-to-end)"
+    }
+  },
+  "accessCctvBoundary": {
+    "accessOwns": ["identity", "credential", "authorization", "physical access", "access result", "access event"],
+    "cctvOwns": ["camera identity", "camera state", "camera capability", "camera context", "camera-related events"],
+    "cameraEventsNeverWriteAccessLog": true,
+    "verifiedVia": "scripts/verifyCctv.mjs check 6 — a camera going offline never writes to the Access event log"
+  },
+  "elevatorRelationship": {
+    "untouched": true,
+    "noFabricatedCoverage": true
+  },
+  "doNotOverbuildHonored": [
+    "no Network/Edge implementation",
+    "no facial recognition",
+    "no computer vision",
+    "no person tracking",
+    "no threat detection",
+    "no autonomous surveillance",
+    "no production camera streams",
+    "no cloud video management",
+    "no external CCTV vendors",
+    "no biometric systems",
+    "no advanced recording infrastructure",
+    "no security operations centre"
+  ],
+  "safetyBoundaries": [
+    "no PTZ, recording, playback, live-view or event-search capability was fabricated for any camera",
+    "no FAULT/MAINTENANCE camera state was fabricated — no runtime field or scenario supports them",
+    "camera-to-access-point relationships are real canonical edges, never inferred from proximity — two unresolved pairs were explicitly left without an edge",
+    "no field-of-view cone geometry was added, to avoid any risk of a purely visual element being read as operational/authorization truth",
+    "no security certification, facial-recognition, or surveillance-analytics claim was made anywhere"
+  ],
+  "tests": {
+    "deterministic": "scripts/verifyCctv.mjs — 14 checks",
+    "browser": "scripts/verifyCctvBrowser.mjs — 5 journeys, 5 screenshots, full Elevator/Water/Electrical/Fire/HVAC/Access regression included",
+    "fullRegressionReRun": [
+      "test:representation",
+      "test:architecture",
+      "test:lift (deterministic + browser)",
+      "test:four-lift (deterministic + browser)",
+      "test:water (deterministic + browser)",
+      "test:electrical (deterministic + browser)",
+      "test:electrical-live-ops (deterministic + browser)",
+      "test:fire (deterministic + browser)",
+      "test:hvac (deterministic + browser)",
+      "test:access (deterministic + browser)",
+      "typecheck (tsc -b)",
+      "build",
+      "lint"
+    ],
+    "allGreen": true
+  }
+}

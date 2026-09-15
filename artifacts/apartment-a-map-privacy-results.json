@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "results": [
+    "1. Facility + apartment-device command: no private 14-room map, no room-list disclosure — the real regression this phase found and fixed (navigateToAsset used to set activeInteriorRef unconditionally)",
+    "2. Facility + direct apartment request: still correctly denied full 3D entry — unchanged pre-existing privacy boundary",
+    "3. Assigned resident: the same real map DOES activate on genuine entry — privacy is correctly scoped, not a blanket map removal",
+    "4. Fresh session / unrelated identity: private map is not shown by default — confirms the map only ever appears from a real, policy-checked entry, never as a default-visible surface"
+  ]
+}

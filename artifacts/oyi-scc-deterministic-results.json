@@ -1,0 +1,152 @@
+[
+  {
+    "test": "test:representation",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-representation.log",
+    "seconds": 0.8
+  },
+  {
+    "test": "test:presentation",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-presentation.log",
+    "seconds": 51.5
+  },
+  {
+    "test": "test:architecture",
+    "exitCode": 1,
+    "log": "/tmp/oyi-scc-test-architecture.log",
+    "seconds": 9.0
+  },
+  {
+    "test": "test:lift",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-lift.log",
+    "seconds": 1.1
+  },
+  {
+    "test": "test:four-lift",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-four-lift.log",
+    "seconds": 0.7
+  },
+  {
+    "test": "test:water",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-water.log",
+    "seconds": 3.3
+  },
+  {
+    "test": "test:electrical",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-electrical.log",
+    "seconds": 15.8
+  },
+  {
+    "test": "test:electrical-live-ops",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-electrical-live-ops.log",
+    "seconds": 14.7
+  },
+  {
+    "test": "test:fire",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-fire.log",
+    "seconds": 1.6
+  },
+  {
+    "test": "test:hvac",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-hvac.log",
+    "seconds": 2.6
+  },
+  {
+    "test": "test:access",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-access.log",
+    "seconds": 12.6
+  },
+  {
+    "test": "test:cctv",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-cctv.log",
+    "seconds": 1.5
+  },
+  {
+    "test": "test:network",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-network.log",
+    "seconds": 0.9
+  },
+  {
+    "test": "test:drainage",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-drainage.log",
+    "seconds": 0.9
+  },
+  {
+    "test": "test:ingestion",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-ingestion.log",
+    "seconds": 1.0
+  },
+  {
+    "test": "test:l06-gold-standard",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-l06-gold-standard.log",
+    "seconds": 1.0
+  },
+  {
+    "test": "test:grand-lobby",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-grand-lobby.log",
+    "seconds": 0.7
+  },
+  {
+    "test": "test:ingestion-v2",
+    "exitCode": 1,
+    "log": "/tmp/oyi-scc-test-ingestion-v2.log",
+    "seconds": 1.0
+  },
+  {
+    "test": "test:spatial-transition",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-spatial-transition.log",
+    "seconds": 1.1
+  },
+  {
+    "test": "test:routed-traversal",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-routed-traversal.log",
+    "seconds": 1.0
+  },
+  {
+    "test": "test:l06-floor",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-l06-floor.log",
+    "seconds": 0.8
+  },
+  {
+    "test": "test:apt-a-interior",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-apt-a-interior.log",
+    "seconds": 0.9
+  },
+  {
+    "test": "test:apt-a-graph",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-apt-a-graph.log",
+    "seconds": 0.8
+  },
+  {
+    "test": "test:apt-a-oyi-semantics",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-apt-a-oyi-semantics.log",
+    "seconds": 1.3
+  },
+  {
+    "test": "test:apt-a-map-policy",
+    "exitCode": 0,
+    "log": "/tmp/oyi-scc-test-apt-a-map-policy.log",
+    "seconds": 0.8
+  }
+]

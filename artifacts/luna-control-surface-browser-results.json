@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "results": [
+    "1: Engineering -> Elevators immediately opens the unified control board with no Oyi command required",
+    "2: default focused tab is deterministic (Passenger Lift 02, aria-selected + data-lift-ref both confirm)",
+    "3: switching 01 -> 02 -> 03 -> Service updates one persistent board (never a second board), Service tab discloses the DD-required note",
+    "4: commanding the selected tab (Lift 01 Travel) leaves every other canonical lift IDLE — commands are scoped to the focused lift only",
+    "5: cycling through all four tabs while Lift 01 and Lift 03 are both mid-flight never disturbs either lift's destination — both arrive correctly",
+    "6: Follow (clicked from the board) tracks the currently focused lift (Lift 01) via LevelRail",
+    "7: switching the active lift (tab 01 -> tab 03) then Follow transfers camera/LevelRail ownership cleanly to the newly selected lift",
+    "8: exiting control (Exit lift view) restores the LevelRail to normal static floor navigation",
+    "9: Oyi (\"Show me Passenger Lift 03\") still opens/selects a lift, correctly focusing its tab on the same unified board — Oyi remains an additional route, not the only one",
+    "10: Consumer permission boundary unchanged — elevatorBoardOpen itself is gated on interactionScope===\"facility\", and the live provider still rejects a Consumer identity commanding the currently-focused lift"
+  ],
+  "errors": []
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "test:four-lift:browser",
+    "status": "PASS",
+    "ms": 32344
+  },
+  {
+    "name": "test:routed-traversal:browser",
+    "status": "PASS",
+    "ms": 46982
+  },
+  {
+    "name": "test:apt-a-teleport:browser",
+    "status": "PASS",
+    "ms": 12624
+  },
+  {
+    "name": "test:apt-a-map-privacy:browser",
+    "status": "PASS",
+    "ms": 15515
+  },
+  {
+    "name": "test:explore:browser",
+    "status": "PASS",
+    "ms": 12236
+  },
+  {
+    "name": "test:grand-lobby:browser",
+    "status": "PASS",
+    "ms": 47007
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "checks": [
+    "Canonical fire asset identity preserved: every existing fire ref intact (zero new operational assets were needed), no duplicates",
+    "NORMAL fire state: resolver reports normal, no active alarm devices, no originating zone, controller communication OK",
+    "Detector alarm -> ALARM building-state resolution: originating device (6A entry smoke detector) and affected level (L06) both correctly resolved from live state, never inferred from geometry",
+    "Event ordering: fire event log records the detector alarm, newest-first",
+    "Alarm clear/recovery: clearing the originating detector returns the building fire state to NORMAL and records a real \"Alarm cleared\" event",
+    "Controller fault/trouble: an independent panel trouble condition correctly resolves the building fire state to TROUBLE and is logged",
+    "Fire pump state: Start/Stop produce real running/pressure_bar telemetry; the hydraulic network (riser + L06 zone) correctly cascades from the pump, independently of the alarm network",
+    "Fire-water route continuity: LUNA-B1-FIRE-PANEL-01 -> LUNA-B1-FIRE-PUMP-01 -> LUNA-RISER-FIRE-01 -> LUNA-L06-FIRE-BRANCH-01",
+    "Alarm/hydraulic network relationship continuity: fire pump supplied_by fire tank via a typed edge; no false connection from mesh proximity (exactly 1 fire edge exists)",
+    "Fire Control Board asset registry: 7 real registered tabs, deterministic default (Panel)",
+    "Oyi parser resolves all fire target reference phrases to the correct intent shape (system/asset/query)",
+    "Oyi \"what is the fire status\"/\"where is the alarm\"/\"what triggered it\" all resolve to the SAME live narrative: \"Luna's fire system is currently ALARM (reference simulation). Origin: Entry Smoke Detector, LUNA-L06. 1 device currently active. Fire pump is stopped. Controller communication is OK. Most recent event: Detector alarm received, moments ago.\"",
+    "Facility control admission confirmed (FULL_3D); Consumer privacy boundary confirmed (B1 fire plant HIDDEN for residents; 6A smoke detector FULL_3D only for the assigned resident)",
+    "Full Oyi controller round-trip: \"Start the fire pump\" actually starts it (real state change); Consumer denied the same command",
+    "Safety boundary preserved: the fire alarm panel exposes zero commands (silence/reset remain unmapped) — Oyi cannot fabricate life-safety control authority"
+  ]
+}

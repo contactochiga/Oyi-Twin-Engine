@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "checks": [
+    "Canonical network/edge inventory preserved: every registered ref intact (zero new canonical operational assets were created), no duplicates",
+    "Router runtime gap fixed: LUNA-L06-APT-A-ROUTER-01 now has a real runtime row, matching the exact uplink_up:true value already declared in its own pre-existing seededState — nothing invented",
+    "Safety boundary preserved: no remote-control capability was fabricated for any network/edge asset — all remain observable, matching the real backend schedule",
+    "The one real physical backbone chain is expressed entirely through the PRE-EXISTING parentRef data (Phase 10) — no new relationship edges were needed: GATEWAY <- RISER <- BRANCH <- ONT <- ROUTER, and GATEWAY <- WIFI_AP. Oyi Edge/Core confirmed to have zero relationship to it.",
+    "resolveNetworkState() fresh-reset baseline: gateway uplink up, entire real backbone chain reachable, Wi-Fi AP reachable, edgeCoreConnected hardcoded false",
+    "Deterministic cascade: gateway uplink lost -> the entire real backbone chain (riser/branch/ONT/router) and the Wi-Fi AP cascade to unreachable — a real derivation within Network/Edge's own domain, the same precedent as recomputePowerNetwork()'s MDB energization cascade",
+    "Recovery: reset returns the gateway uplink, the entire backbone chain, and the Wi-Fi AP client count to their real baseline",
+    "Boundary proven: Fire and HVAC resolve their own complete, correct, independent state while the network is fully offline — Network/Edge never becomes a dependency of any other system's own resolver",
+    "Oyi parser resolves all network target phrases correctly. The unimplemented phrasing (\"what connects the fire panel to the network\") was deliberately given NO special-case code — it honestly falls through to a plain query on the fire panel itself, which never mentions or fabricates any network connection: \"Luna's fire system is currently NORMAL (reference simulation). No active alarms. Fire pump is stopped. Controller communication is OK.\"",
+    "The pre-existing generic \"connected to\" relationship mechanism (RELATIONSHIP_PHRASES) honestly answers \"I don't have that relationship on record\" for the fire panel — no fabricated network edge, and no special-case code was written for this negative answer",
+    "The real physical backbone is already traceable via the PRE-EXISTING buildServiceRoute()/UNIT_SYSTEM_TERMINATION mechanism (Phase 10's own \"network-edge\": NET-ONT-01 termination entry) — zero new route code was needed for this phase",
+    "Vocabulary collision check: CCTV/Access/HVAC phrases all resolve exactly as before; \"show me the network gateway\" (specific asset) is correctly NOT swallowed by the new \"show me the network.\" (aggregate) matcher",
+    "Oyi \"show me the network\" narrative covers the real backbone chain AND explicitly discloses Edge/Core's own lack of connection: \"The core network gateway's uplink is up (reference simulation). Data / Fiber Riser is reachable. Level 6 Data Distribution Point is reachable. Fiber Termination Point (ONT) is reachable. Home Router / Wi-Fi AP is reachable. Common-area Wi-Fi AP is reachable, 14 clients connected. Oyi Edge/Core is online, but has no established connection to this network infrastructure (DESIGN DECISION REQUIRED).\"",
+    "Oyi \"is the edge core online\" narrative: \"Luna Oyi Edge Core is online (reference simulation). No established physical or logical connection exists between Oyi Edge/Core and the building's network infrastructure in this reference build (DESIGN DECISION REQUIRED) — this asset's own record already discloses it as a local prototype placeholder.\"",
+    "RepresentationPolicy unchanged: Facility sees common network infrastructure FULL_3D and the Facility-owned ONT CONTEXT_3D (both pre-existing rules); the resident's own router stays HIDDEN to Facility, FULL_3D for the assigned resident",
+    "Network Control Board asset registry: 3 real common-asset tabs (Gateway default/Wi-Fi AP/Oyi Edge Core), deterministic default; the private-unit ONT and resident-owned router correctly excluded"
+  ]
+}

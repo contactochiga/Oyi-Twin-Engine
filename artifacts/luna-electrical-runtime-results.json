@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    "Canonical electrical asset identity preserved: every existing electrical ref intact (zero new operational assets were needed — the reference chain was already complete end-to-end), no duplicates",
+    "Utility-available baseline: GRID utility_available, MDB energized (415V), riser/branch/6A meter/6A DB all energized, ATS on grid",
+    "Complete reference-chain continuity: LUNA-B1-ELECTRICAL-GRID-01 -> LUNA-B1-ELECTRICAL-MDB-01 -> LUNA-RISER-ELECTRICAL-01 -> LUNA-L06-ELECTRICAL-BRANCH-01 -> LUNA-L06-APT-A-METER-ELEC-01",
+    "Upstream graph traversal: ATS supplied_by both grid (primary) and generator (standby) via typed edges — no false connection from mesh proximity (exactly 2 electrical edges exist)",
+    "Generator start/run/stop sequencing: STOPPED -> (turnOn) -> STARTING -> (~3s) -> RUNNING -> (turnOff) -> STOPPING -> (~1.5s) -> STOPPED, a real believable-timing sequence, not an instant label flip",
+    "Generator fault blocks start: commanding a faulted generator on leaves it STOPPED, not RUNNING (faultAware toggle, matching pumpBehavior() precedent)",
+    "Utility failure propagation: GRID loss -> ATS recognizes source loss -> generator sequence begins -> MDB/riser/branch/6A de-energized during the gap -> generator reaches RUNNING -> ATS auto-transfers -> full downstream re-energizes (MDB -> riser -> branch -> 6A meter -> 6A DB)",
+    "Utility restoration: ATS auto-transfers back to grid, generator auto-stands-down (RUNNING -> STOPPING -> STOPPED), downstream stays energized throughout the handback",
+    "Facility control admission confirmed (FULL_3D); Consumer privacy boundary confirmed (B1 electrical plant HIDDEN for residents; 6A meter FULL_3D only for the assigned resident)",
+    "Electrical Control Board asset registry: 8 real registered tabs, deterministic default (Utility/GRID-01), paired DB correctly resolves to its meter tab",
+    "Oyi parser resolves all 10 target reference phrases to the correct intent shape (system/asset/query/route)",
+    "Full Oyi controller round-trip: \"Start the generator\" actually starts it (real state change); Consumer denied the same command",
+    "Reset rebuilds AND recomputes derived electrical telemetry consistently (utility available, generator stopped, MDB energized)"
+  ]
+}

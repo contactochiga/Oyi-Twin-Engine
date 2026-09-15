@@ -1,0 +1,158 @@
+{
+  "errors": [],
+  "metrics": [
+    {
+      "name": "front",
+      "position": [
+        0,
+        28.999999999999996,
+        108
+      ],
+      "target": [
+        0,
+        26,
+        0
+      ],
+      "calls": 1425,
+      "triangles": 114116,
+      "geometries": 956,
+      "textures": 12
+    },
+    {
+      "name": "three-quarter",
+      "position": [
+        72,
+        58,
+        88
+      ],
+      "target": [
+        0,
+        26,
+        0
+      ],
+      "calls": 1425,
+      "triangles": 114116,
+      "geometries": 956,
+      "textures": 12
+    },
+    {
+      "name": "street-entrance",
+      "position": [
+        0,
+        3.424588863704412,
+        43.027943397469556
+      ],
+      "target": [
+        0,
+        3,
+        16
+      ],
+      "calls": 1061,
+      "triangles": 86332,
+      "geometries": 956,
+      "textures": 12
+    },
+    {
+      "name": "porte-cochere",
+      "position": [
+        13.013679468248716,
+        3.324195376430908,
+        35.01683626861381
+      ],
+      "target": [
+        0,
+        3,
+        19
+      ],
+      "calls": 993,
+      "triangles": 79512,
+      "geometries": 956,
+      "textures": 12
+    },
+    {
+      "name": "podium",
+      "position": [
+        30.999999999999996,
+        9.000000000000002,
+        41
+      ],
+      "target": [
+        0,
+        6,
+        12
+      ],
+      "calls": 1142,
+      "triangles": 98948,
+      "geometries": 956,
+      "textures": 12
+    },
+    {
+      "name": "residential-detail",
+      "position": [
+        30,
+        28,
+        32
+      ],
+      "target": [
+        14,
+        27,
+        14
+      ],
+      "calls": 1161,
+      "triangles": 82776,
+      "geometries": 956,
+      "textures": 12
+    },
+    {
+      "name": "crown",
+      "position": [
+        40,
+        65,
+        47
+      ],
+      "target": [
+        0,
+        52,
+        0
+      ],
+      "calls": 1002,
+      "triangles": 82318,
+      "geometries": 956,
+      "textures": 12
+    },
+    {
+      "name": "daylight",
+      "position": [
+        72,
+        58,
+        88
+      ],
+      "target": [
+        0,
+        26,
+        0
+      ],
+      "calls": 1425,
+      "triangles": 114116,
+      "geometries": 956,
+      "textures": 12
+    },
+    {
+      "name": "dusk",
+      "position": [
+        72,
+        58,
+        88
+      ],
+      "target": [
+        0,
+        26,
+        0
+      ],
+      "calls": 1425,
+      "triangles": 114116,
+      "geometries": 956,
+      "textures": 12
+    }
+  ]
+}

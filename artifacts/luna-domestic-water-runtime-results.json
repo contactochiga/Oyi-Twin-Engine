@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": [
+    "Canonical asset identity preserved: every existing water/drainage ref intact, every new ref (intake, 3 bathroom cold branches, 2 bathroom drains) registered exactly once, no duplicates anywhere in the catalog",
+    "Pump start/stop works via turnOn/turnOff; Pump 01 and Pump 02 state is fully independent (commanding one never touches the other)",
+    "Duty (BP-01 running) / standby (BP-02 idle) reference configuration preserved, with its existing supplied_by edge documenting the relationship",
+    "Downstream pressure/flow response: stopping all running pumps drops riser+branch to 0/no_flow; starting a pump restores 3.2 bar/flowing — a real behavioral response, not just a text flip",
+    "Isolation-valve effect verified from both ends: closing the B1 header valve cuts Apartment 6A supply_active (riser pressure -> 0); closing 6A's own valve cuts its supply_active without touching riser pressure",
+    "Tank telemetry (level_pct) observable and within a valid 0-100 range",
+    "B1 -> L06 -> 6A route continuity: full source-to-destination chain resolves (LUNA-B1-WATER-INTAKE-01 -> LUNA-B1-WATER-TANK-01 -> LUNA-B1-WATER-BP-01 -> LUNA-RISER-WATER-01 -> LUNA-L06-WATER-BRANCH-01 -> LUNA-L06-APT-A-UTILITY-VALVE-01 -> LUNA-L06-APT-A-METER-WATER-01)",
+    "Upstream/downstream graph traversal: riser isolated_by header valve, pumps supplied_by treatment, apartment isolated_by its own (nearest) valve — all via typed relationship edges, never parentRef alone",
+    "No false connection from mesh proximity: the typed-relationship graph contains exactly the intended, explicitly-authored water edges (4) — nothing inferred from geometry, which this test never reads",
+    "Facility control admission confirmed (FULL_3D); Consumer privacy boundary confirmed (B1 plant HIDDEN for residents; 6A meter FULL_3D only for the assigned resident, HIDDEN for every other resident)",
+    "Water Control Board asset registry: 8 real registered tabs, deterministic default (Tank), paired valve correctly resolves to its meter tab",
+    "Oyi parser resolves all 8 target reference phrases to the correct intent shape (system/asset/route/relationship)",
+    "Full Oyi controller round-trip: \"Start Booster Pump 02\" actually starts the pump (real state change, not just acknowledgement text); Consumer denied the same command",
+    "State preservation across scenario application and reset: existing water-pressure-fault scenario still works and correctly propagates through recomputeWaterNetwork; reset rebuilds derived telemetry consistently, not just raw seed state"
+  ]
+}

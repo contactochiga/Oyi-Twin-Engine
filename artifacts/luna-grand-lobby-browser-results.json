@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "results": [
+    "1. Luna exterior: default Presentation Mode arrival view",
+    "20. Facility experience: selecting the real Main Entrance asset correctly opens the existing real Access Control Board — Facility retains full common-infrastructure investigation capability, unaffected by this phase",
+    "2. Approach to entrance: real camera flight to the entrance via the entranceApproach preset, selection resolves to the real canonical access-point asset",
+    "3. Entrance closed: default CLOSED door state, real sliding-leaf geometry visible",
+    "4/5. Entrance opening + passing through: real door click begins the real Spatial Transition Engine sequence (approach -> real clearance-gated OPENING -> physical threshold crossing) into the lobby, not a fixed-delay teleport",
+    "6. Grand Lobby overview: real entry into the open-plan lobby volume, triggered by the entrance door itself",
+    "7. Ceiling/lighting: real feature ceiling (soffit + recessed field + linear light + downlight grid + feature pendant) over Reception",
+    "8. Reception: same shot as above — real feature wall + desk visible, selection resolves to LUNA-GROUND-LOBBY-RECEPTION",
+    "9. Lounge: real lounge seating + planting, selection resolves to LUNA-GROUND-LOBBY-LOUNGE",
+    "10. Passenger lift lobby: corrected room boundary genuinely wraps the real lift bank, selection resolves to LUNA-GROUND-LOBBY-LIFTS",
+    "11/12/13. Passenger Lifts 01/02/03: existing real landing-door geometry (DynamicLift.tsx) still opens/selects correctly, now properly enclosed by the corrected Lift Lobby architecture",
+    "14. Service/fire lift: real LUNA-LIFT-SERVICE-01 still resolves correctly; architecturally distinguished by its own real signage panel",
+    "15/16. Stairs 01/02: real hinged stair doors (distinct kinematics from the sliding entrance) selectable at their own real LUNA_CORES positions",
+    "Consumer experience: the Grand Lobby is real, walkable spatial context for residents under the existing common-level policy (CONTEXT_3D) — never broadened to Facility-grade per-room selection",
+    "17. Ground 2D plan: the real, corrected 2D floor plan for Ground, derived from the same canonical room data as the 3D architecture",
+    "18/19. 2D Lobby selection + corresponding 3D: selecting the Lift Lobby region in the 2D plan resolves to the exact same canonical ref the 3D architecture uses — one building, two representations",
+    "22. Oyi \"Take me to the lobby\": resolves through the existing, unmodified intelligence/navigation pipeline",
+    "23. Oyi \"Take me to the lifts\": resolves to the corrected Lift Lobby architecture through the same pipeline",
+    "24/25. Night + golden-hour lobby: existing lighting-mode toggle still works, the new feature-ceiling lighting responds to it (brighter downlight/linear-light emissive)",
+    "Regression: existing operational systems (drainage) and Oyi visual identity both remain fully functional after the Grand Lobby architecture was added"
+  ],
+  "errors": []
+}

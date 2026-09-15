@@ -1,0 +1,121 @@
+{
+  "title": "Luna Electrical System Reference V1",
+  "revision": "1",
+  "status": "REFERENCE DESIGN — not procurement, not certified electrical engineering",
+  "chain": {
+    "stages": ["utility", "main_distribution", "changeover", "standby_generator", "riser", "floor_branch", "isolation_meter", "distribution_board", "final_circuit", "load"],
+    "sourceToDestinationExample": [
+      "LUNA-B1-ELECTRICAL-GRID-01",
+      "LUNA-B1-ELECTRICAL-MDB-01",
+      "LUNA-RISER-ELECTRICAL-01",
+      "LUNA-L06-ELECTRICAL-BRANCH-01",
+      "LUNA-L06-APT-A-METER-ELEC-01",
+      "LUNA-L06-APT-A-DB-01",
+      "LUNA-L06-APT-A-LIGHTING-CIRCUIT-01"
+    ]
+  },
+  "canonicalAssets": {
+    "reused": [
+      { "ref": "LUNA-B1-ELECTRICAL-GRID-01", "type": "power_system", "classification": "asset-only", "note": "gained utility_available field this phase", "phase": "pre-existing, extended" },
+      { "ref": "LUNA-B1-ELECTRICAL-MDB-01", "type": "power_system", "classification": "asset-only", "note": "upgraded this phase from static context-only to real derived energization/voltage/load telemetry; also fills the switchgear/protection conceptual role (no registered separate switchgear/transformer asset)", "phase": "pre-existing, upgraded" },
+      { "ref": "LUNA-B1-ELECTRICAL-GEN-01", "type": "power_system", "classification": "controllable", "note": "gained phase (STOPPED/STARTING/RUNNING/STOPPING) and fault fields; generatorBehavior made faultAware", "phase": "pre-existing, extended" },
+      { "ref": "LUNA-B1-ELECTRICAL-ATS-01", "type": "controller", "classification": "controllable", "note": "now auto-driven by recomputePowerNetwork() when auto_mode", "phase": "pre-existing" },
+      { "ref": "LUNA-B1-ELECTRICAL-INV-01", "type": "power_system", "classification": "controllable", "phase": "pre-existing" },
+      { "ref": "LUNA-B1-ELECTRICAL-METER-01", "type": "energy_meter", "classification": "observable", "phase": "pre-existing" },
+      { "ref": "LUNA-RISER-ELECTRICAL-01", "type": "riser", "classification": "observable", "note": "upgraded this phase from static context-only to real derived energized telemetry + emissive energized-glow geometry", "phase": "pre-existing, upgraded" },
+      { "ref": "LUNA-L06-ELECTRICAL-BRANCH-01", "type": "floor_branch", "classification": "observable", "note": "upgraded this phase from static context-only to real derived energized telemetry", "phase": "pre-existing, upgraded" },
+      { "ref": "LUNA-L06-APT-A-METER-ELEC-01", "type": "energy_meter", "classification": "observable", "note": "gained new derived field supply_active this phase", "phase": "pre-existing, extended" },
+      { "ref": "LUNA-L06-APT-A-DB-01", "type": "panel", "classification": "asset-only", "note": "gained new derived field energized this phase; classification deliberately left as asset-only (unchanged)", "phase": "pre-existing, extended" },
+      { "ref": "LUNA-L06-APT-A-LIGHTING-CIRCUIT-01", "type": "circuit", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-LIGHTING-CIRCUIT-02", "type": "circuit", "classification": "asset-only", "phase": "pre-existing" },
+      { "ref": "LUNA-L06-APT-A-AC-CIRCUIT-01", "type": "circuit", "classification": "asset-only", "phase": "pre-existing" }
+    ],
+    "new": [],
+    "notCreated": [
+      { "concept": "Separate switchgear / main intake demarcation asset", "reason": "EQ-TRANSFORMER/switchgear has no registered instance in the accepted equipment schedule — MDB-01 fills this conceptual role instead of inventing a new asset" },
+      { "concept": "Transformer", "reason": "DD08 unresolved — utility voltage arrangement/transformer requirement is explicitly not to be invented" },
+      { "concept": "Per-floor electrical branches for levels other than L06", "reason": "Only L06 has a registered floor branch in the accepted MEP backbone; fabricating others would violate the 'do not generalize beyond the reference chain' stop condition" },
+      { "concept": "Earthing/bonding asset (EQ-EARTHING)", "reason": "No registered instance yet — DD08/DD11 unresolved, not needed for this reference chain" },
+      { "concept": "UPS/ICT power asset (EQ-UPS)", "reason": "No registered instance yet — DD08/DD14 unresolved, not needed for this reference chain" }
+    ]
+  },
+  "newRelationships": [
+    { "from": "LUNA-B1-ELECTRICAL-ATS-01", "type": "supplied_by", "to": "LUNA-B1-ELECTRICAL-GRID-01", "label": "primary source (utility)" },
+    { "from": "LUNA-B1-ELECTRICAL-ATS-01", "type": "supplied_by", "to": "LUNA-B1-ELECTRICAL-GEN-01", "label": "standby source (generator)" }
+  ],
+  "runtimeContract": {
+    "generator": {
+      "ref": "LUNA-B1-ELECTRICAL-GEN-01",
+      "state": { "running": "boolean", "phase": "'stopped' | 'starting' | 'running' | 'stopping'", "fault": "boolean", "fuel_level_pct": "number", "mode": "'auto' | 'manual'" },
+      "commands": ["turnOn (labeled Start)", "turnOff (labeled Stop)"],
+      "note": "setMode deliberately not exposed as a control-board button (would fabricate a zero-arg manual decision); faultAware — a faulted generator will not actually start on turnOn"
+    },
+    "ats": {
+      "ref": "LUNA-B1-ELECTRICAL-ATS-01",
+      "state": { "source": "'grid' | 'generator'", "auto_mode": "boolean", "fault": "boolean" },
+      "commands": [],
+      "note": "source is entirely auto-driven by recomputePowerNetwork() when auto_mode is true — no manual switching command is exposed on the board"
+    },
+    "derivedTelemetry": {
+      "grid": { "ref": "LUNA-B1-ELECTRICAL-GRID-01", "state": { "utility_available": "boolean" } },
+      "mdb": { "ref": "LUNA-B1-ELECTRICAL-MDB-01", "state": { "energized": "boolean", "voltage_v": "number (reference/simulated, 415 or 0)", "load_pct": "number (reference/simulated)" } },
+      "riser": { "ref": "LUNA-RISER-ELECTRICAL-01", "state": { "energized": "boolean" } },
+      "branch": { "ref": "LUNA-L06-ELECTRICAL-BRANCH-01", "state": { "energized": "boolean" } },
+      "apartmentMeter": { "ref": "LUNA-L06-APT-A-METER-ELEC-01", "state": { "reading_kwh": "number (existing, ambient-drifting)", "supply_active": "boolean (new)" } },
+      "apartmentDb": { "ref": "LUNA-L06-APT-A-DB-01", "state": { "energized": "boolean (new)" } },
+      "recomputeFunction": "recomputePowerNetwork() in lunaSimulationProvider.ts — deterministic, conceptual: MDB energized = ATS has a live source (grid if utility available, generator if actually running); riser/branch/6A meter/6A DB cascade one-for-one off MDB's energized state",
+      "generatorSequencing": "sequenceGeneratorPhase() — provider-owned believable timing: STARTING for ~3s before RUNNING, STOPPING for ~1.5s before STOPPED, matching the scheduleElevatorArrival() precedent",
+      "triggeredBy": ["execute() on LUNA-B1-ELECTRICAL-GRID-01/ATS-01", "sequenceGeneratorPhase() itself once a phase transition lands", "grid-failure scenario", "resetAll()"]
+    }
+  },
+  "controlBoard": {
+    "title": "Electrical",
+    "tabs": [
+      { "key": "LUNA-B1-ELECTRICAL-GRID-01", "label": "Utility" },
+      { "key": "LUNA-B1-ELECTRICAL-MDB-01", "label": "Main Dist." },
+      { "key": "LUNA-B1-ELECTRICAL-ATS-01", "label": "ATS" },
+      { "key": "LUNA-B1-ELECTRICAL-GEN-01", "label": "Generator" },
+      { "key": "LUNA-B1-ELECTRICAL-INV-01", "label": "Inverter" },
+      { "key": "LUNA-RISER-ELECTRICAL-01", "label": "Riser" },
+      { "key": "LUNA-L06-ELECTRICAL-BRANCH-01", "label": "L06 Dist." },
+      { "key": "LUNA-L06-APT-A-METER-ELEC-01", "label": "6A Meter", "pairedRef": "LUNA-L06-APT-A-DB-01" }
+    ],
+    "defaultFocusedRef": "LUNA-B1-ELECTRICAL-GRID-01"
+  },
+  "physicalGeometry": [
+    { "component": "SwitchboardCabinetGeometry", "usedFor": ["LUNA-B1-ELECTRICAL-GRID-01", "LUNA-B1-ELECTRICAL-MDB-01"], "description": "plinth + cabinet + door + vent louvre + energized indicator lamp" },
+    { "component": "ATSCabinetGeometry", "usedFor": ["LUNA-B1-ELECTRICAL-ATS-01"], "description": "cabinet with two source-indicator lamps (grid/generator)" },
+    { "component": "GeneratorSetGeometry", "usedFor": ["LUNA-B1-ELECTRICAL-GEN-01"], "description": "skid base, engine/alternator body, spinning-fan radiator, canopy hood, exhaust stack" },
+    { "component": "InverterCabinetGeometry", "usedFor": ["LUNA-B1-ELECTRICAL-INV-01"], "description": "slim cabinet with a battery-charge fill band" },
+    { "component": "ElectricityMeterGeometry", "usedFor": ["LUNA-B1-ELECTRICAL-METER-01", "LUNA-L06-APT-A-METER-ELEC-01"], "description": "shallow wall/panel meter with a recessed display face" },
+    { "component": "DistributionBoardGeometry", "usedFor": ["LUNA-L06-APT-A-DB-01"], "description": "flush wall panel with hinged door and breaker-row texture" }
+  ],
+  "oyiReferencePhrases": [
+    "Show me the electrical system.",
+    "Show the main electrical distribution.",
+    "Show the generator.",
+    "Is the generator running?",
+    "Show the electrical riser.",
+    "Show what supplies power to L06.",
+    "Show what supplies power to Apartment 6A.",
+    "Trace power to Apartment 6A.",
+    "Show the L06 distribution board.",
+    "Show the 6A meter."
+  ],
+  "oyiVocabularyGapsFixed": [
+    "Added missing aliases for the L06 electrical branch and the 6A meter/DB",
+    "Broadened matchShowRoute's power-phrase detection from 'what powers X' to any standalone power/powers wording",
+    "Fixed a pre-existing bug where matchShowRoute's unresolved fallback dropped the resolved system from its returned intent",
+    "Added 'l06' as a level alias (previously only 'level 6'/'floor 6'/'the sixth floor')",
+    "Added 'main electrical distribution' as an MDB-01 alias, with pattern-length tuning so it doesn't collide with the L06 branch's 'distribution board' phrase"
+  ],
+  "unresolvedDesignDecisions": {
+    "DD08": "Electrical supply and resilience — demand/diversity, utility intake/transformer need, voltage arrangement, standby duty, generator count/rating, fuel/exhaust, ATS sequence, BESS strategy and metering ownership. Not resolved by this phase.",
+    "DD07": "Cable containment/coordinated shaft final routing. Not resolved by this phase — PipeRun is used as a neutral stand-in geometry.",
+    "DD11": "Earthing/bonding/surge/lightning protection strategy. Not resolved by this phase.",
+    "DD14": "ICT/control/emergency power and UPS provision. Not resolved by this phase.",
+    "DD15": "B1 service allocation — final plant room boundaries/separation/clearances. Not resolved by this phase; LunaPlantRoom remains a procedural floor cue, not an approved room.",
+    "DD18": "Final circuit/breaker/metering ownership detail for floor/apartment DBs. Not resolved by this phase.",
+    "DD20": "Generator/ATS sequence and discrimination detail. Not resolved by this phase — sequencing here is reference/simulated timing only."
+  }
+}
