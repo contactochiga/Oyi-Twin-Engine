@@ -1,0 +1,62 @@
+{
+  "classification": "DECORATIVE REFERENCE \u2014 no canonical identity or runtime",
+  "sources": [
+    {
+      "name": "Midsize Sedan",
+      "author": "MrJaneLAB",
+      "url": "https://mrjanelab.itch.io/low-poly-midsize-sedan-lod-included",
+      "license": "CC0-1.0",
+      "changes": "FBX transforms baked; uniformly fitted to existing 4.4m length, grounded, categories merged, crease normals, 64-segment tyres at authored centres/radii, local PBR materials, LOD0/LOD2 converted to glTF."
+    },
+    {
+      "name": "Palm tree v2",
+      "author": "Yughues / Nobiax",
+      "url": "https://opengameart.org/content/palm-tree-v2",
+      "download": "https://opengameart.org/sites/default/files/palm_tree_v2.7z",
+      "license": "CC0-1.0",
+      "changes": "OBJ uniformly scaled to 6.1m, UV convention converted, TGA maps converted to PNG/JPEG, 600-triangle distant LOD generated."
+    }
+  ],
+  "files": [
+    {
+      "path": "public/exterior-assets/palm-color.png",
+      "bytes": 1323464,
+      "sha256": "293cda35f89845275a3b0c50940ae628cef22d898dc24b724cb7387d9ce49f83"
+    },
+    {
+      "path": "public/exterior-assets/palm-far.gltf",
+      "bytes": 43004,
+      "sha256": "0d94afc1706559f104cfedca40b2bea78c14f27b2f11199d45ea4e782f2d6615"
+    },
+    {
+      "path": "public/exterior-assets/palm-normal.jpg",
+      "bytes": 166677,
+      "sha256": "7e293251dd5bdaacba9705e881a3e6eaa7091b65e34a783d4bcb192a77dfdedd"
+    },
+    {
+      "path": "public/exterior-assets/palm-source-readme.txt",
+      "bytes": 262,
+      "sha256": "42da0c46ffab7856f8f0fa19c4dfdf8af93294a1b8b1c1d9a36c54352eb5a89a"
+    },
+    {
+      "path": "public/exterior-assets/palm.gltf",
+      "bytes": 41660,
+      "sha256": "9994ed3a26af7c5ac9e40e96bebfedb2c373cc68a2dd1dbe0e3aca880e2261e6"
+    },
+    {
+      "path": "public/exterior-assets/sedan-far.gltf",
+      "bytes": 84848,
+      "sha256": "8eee752ed9a5276d1a7fa9add2daa5050a8ffd49b524e0115d04dd604cfd154f"
+    },
+    {
+      "path": "public/exterior-assets/sedan-near.gltf",
+      "bytes": 280874,
+      "sha256": "93178684a5d7aa7e15271ac9ddc32b374895231dae37b61b3b06c958deb3869c"
+    },
+    {
+      "path": "public/exterior-assets/sedan-source-readme.md",
+      "bytes": 1756,
+      "sha256": "137b2693593b5b3ef1a07c9f71db3e34b5b9526564a3ccc318969c02a9116758"
+    }
+  ]
+}

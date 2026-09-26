@@ -2,6 +2,7 @@ import type { BoxSpec } from "../../engine/utils/geometryUtils";
 import type { FloorTint } from "../lunaMaterials";
 import type { DoorOpening } from "../../engine/components/InteriorRoom";
 import { furniture, place } from "./furniture";
+import { L01_AMENITY_CENTER_Z, L01_AMENITY_DOOR_WIDTH } from "../architecture/podiumCoordination";
 import { GROUND_LIFT_LOBBY_LAYOUT } from "../architecture/groundLobbyLayout";
 import { L06_LOBBY, L06_STAIR_LINK_WEST, L06_STAIR_LINK_EAST } from "../architecture/l06FloorPlate";
 
@@ -375,27 +376,17 @@ export const LUNA_GROUND_LOBBY: InteriorSpec = {
   ownerLevelRef: "LUNA-GROUND",
   label: "Ground — Lobby",
   rooms: [
-    { ref: "LUNA-GROUND-LOBBY-RECEPTION", label: "Reception", x: LOBBY_COL.reception, z: 6, width: 14, depth: 6, floorTint: "living", furniture: place(furniture.receptionDesk(4), 0, -1, 0), serviceVoid: true },
-    { ref: "LUNA-GROUND-LOBBY-LOUNGE", label: "Waiting Lounge", x: LOBBY_COL.lounge, z: -2, width: 10, depth: 10, floorTint: "neutral", furniture: [...place(furniture.loungeSeating(), 0, -1, 0), ...place(furniture.planter(), -3, 3, 0)] },
-    { ref: "LUNA-GROUND-LOBBY-LIFTS", label: "Lift Lobby", x: GROUND_LIFT_LOBBY_LAYOUT.x, z: GROUND_LIFT_LOBBY_LAYOUT.z, width: GROUND_LIFT_LOBBY_LAYOUT.width, depth: GROUND_LIFT_LOBBY_LAYOUT.depth, floorTint: "neutral", furniture: place(furniture.console(), 0, 3.5, 0), serviceVoid: true },
+    { ref: "LUNA-GROUND-LOBBY-RECEPTION", label: "Reception", x: LOBBY_COL.reception, z: 6, width: 14, depth: 6, floorTint: "living", furniture: [], serviceVoid: false },
+    { ref: "LUNA-GROUND-LOBBY-LOUNGE", label: "Waiting Lounge", x: LOBBY_COL.lounge, z: -2, width: 10, depth: 10, floorTint: "neutral", furniture: [] },
+    { ref: "LUNA-GROUND-LOBBY-LIFTS", label: "Lift Lobby", x: GROUND_LIFT_LOBBY_LAYOUT.x, z: GROUND_LIFT_LOBBY_LAYOUT.z, width: GROUND_LIFT_LOBBY_LAYOUT.width, depth: GROUND_LIFT_LOBBY_LAYOUT.depth, floorTint: "neutral", furniture: [], serviceVoid: false },
   ],
 };
 
 // --- Residents' Club (Level 1 Amenities) ---
-// Two rooms, not three — LUNA_CORES (lunaProgramme.ts) runs every
-// passenger/service lift plus the representative service riser the FULL
-// height of the building at a fixed x/z, and on this level that combined
-// cluster (x roughly -8.8 to 8.15) is nearly as wide as the whole original
-// Pool room. A first attempt tried folding a "Gym" into that central band
-// on the theory that structural columns through a gym are normal — but the
-// cores are full-height, floor-to-ceiling-and-beyond opaque shafts, so
-// standing anywhere near them at room scale still reads as a wall filling
-// the frame, not a column you walk past (confirmed the hard way via the
-// actual camera shot). There simply isn't usable open floor in that band.
-// Pool and Lounge instead sit entirely in the two genuinely clear bands on
-// either side, each with real clearance from both the core cluster and the
-// two protected stairs at z=9 (handled by keeping depth well under the
-// footprint's own z-extent).
+// Phase 2: preserve both room IDs and 9x16 footprints; move centres to z=-4.
+// Their front edges at z=4 now clear the protected stairs (starting z=6.25).
+// North openings face the common approach. Pool basin/plant design is unresolved;
+// the previously buried box and final furniture are omitted from this shell phase.
 export const LUNA_L01_CLUB: InteriorSpec = {
   interiorRef: "LUNA-L01-CLUB",
   ownerLevelRef: "LUNA-L01-AMENITIES",
@@ -405,14 +396,16 @@ export const LUNA_L01_CLUB: InteriorSpec = {
       ref: "LUNA-L01-CLUB-POOL",
       label: "Pool",
       x: -14.5,
-      z: 0,
+      z: L01_AMENITY_CENTER_Z,
       width: 9,
       depth: 16,
       floorTint: "wet",
-      furniture: [...place(furniture.pool(6, 12), 0, 0, 0), ...place(furniture.loungers(2, 2.2), 0, 6, 0)],
-      serviceVoid: true,
+      // Pool zone retained; the buried box was not a basin. Basin/plant design is deferred.
+      furniture: [],
+      doors: [{ side: "north", width: L01_AMENITY_DOOR_WIDTH }],
+      serviceVoid: false,
     },
-    { ref: "LUNA-L01-CLUB-LOUNGE", label: "Lounge", x: 14.5, z: 0, width: 9, depth: 16, floorTint: "living", furniture: place(furniture.loungeSeating(), 0, 0, -Math.PI / 2), serviceVoid: true },
+    { ref: "LUNA-L01-CLUB-LOUNGE", label: "Lounge", x: 14.5, z: L01_AMENITY_CENTER_Z, width: 9, depth: 16, floorTint: "living", furniture: [], doors: [{ side: "north", width: L01_AMENITY_DOOR_WIDTH }], serviceVoid: false },
   ],
 };
 

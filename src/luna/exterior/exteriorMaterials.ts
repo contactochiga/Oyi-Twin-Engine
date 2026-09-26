@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { bindExteriorMaps } from './exteriorTextureMaps';
 
 // LUNA_REFERENCE_DESIGN finish library. Textures are shared, materials are NOT:
 // level fade/clipping/selection own their material instance. No remote assets.
@@ -20,16 +21,37 @@ function grain(kind: 'stone' | 'paving' | 'timber' | 'soil') {
   t.anisotropy=4;t.needsUpdate=true;textures.set(kind,t);return t;
 }
 function surface(color:string,roughness:number,kind:'stone'|'paving'|'timber'|'soil') {
-  return new THREE.MeshStandardMaterial({color,roughness,metalness:0,bumpMap:grain(kind),bumpScale:kind==='timber'?.018:.009,roughnessMap:grain(kind)});
+  const material = new THREE.MeshStandardMaterial({color,roughness,metalness:0,bumpMap:grain(kind),bumpScale:kind==='timber'?.018:.009,roughnessMap:grain(kind)});
+  if(kind!=='soil') bindExteriorMaps(material,kind);
+  return material;
 }
 export const exteriorMaterials={
-  limestone:()=>surface('#d6d0c3',.76,'stone'),
-  soffit:()=>surface('#a79880',.86,'stone'),
-  paving:()=>surface('#aaa497',.8,'paving'),
+  limestone:()=>surface('#f0eadc',.76,'stone'),
+  soffit:()=>surface('#cec5b5',.86,'stone'),
+  paving:()=>surface('#dbd8cd',.8,'paving'),
   driveway:()=>surface('#565650',.85,'paving'),
-  timber:()=>surface('#79614b',.7,'timber'),
+  timber:()=>surface('#c4ad8c',.7,'timber'),
+  cushion:()=>surface('#c8c2ad',.97,'soil'),
   soil:()=>surface('#393b2e',1,'soil'),
-  bronze:()=>new THREE.MeshStandardMaterial({color:'#645346',roughness:.37,metalness:.72}),
+  bark:()=>surface('#685642',.92,'soil'),
+  bronze:()=>new THREE.MeshStandardMaterial({color:'#514b43',roughness:.42,metalness:.62}),
+  contactShadow:()=>{
+    const key='contact-shadow';let map=textures.get(key);
+    if(!map){
+      const n=64,data=new Uint8Array(n*n*4);
+      for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+        const u=(x/(n-1)-.5)*2,v=(y/(n-1)-.5)*2;
+        const alpha=Math.max(0,1-Math.pow(Math.abs(u),4)-Math.pow(Math.abs(v),6));
+        const i=(y*n+x)*4;data[i]=data[i+1]=data[i+2]=255;data[i+3]=Math.round(alpha*255);
+      }
+      map=new THREE.DataTexture(data,n,n);map.magFilter=THREE.LinearFilter;map.needsUpdate=true;textures.set(key,map);
+    }
+    return new THREE.MeshBasicMaterial({color:'#000000',map,transparent:true,opacity:.3,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1});
+  },
+  carPaint:()=>new THREE.MeshPhysicalMaterial({color:'#1d2326',roughness:.34,metalness:.4,clearcoat:.65,clearcoatRoughness:.22}),
+  carGlass:()=>new THREE.MeshPhysicalMaterial({color:'#27333a',roughness:.13,metalness:.25,clearcoat:1,clearcoatRoughness:.06}),
+  lens:()=>new THREE.MeshPhysicalMaterial({color:'#c9d8dc',roughness:.16,metalness:.35,clearcoat:1}),
+  tailLens:()=>new THREE.MeshPhysicalMaterial({color:'#681418',roughness:.2,clearcoat:1}),
   metal:()=>new THREE.MeshStandardMaterial({color:'#343735',roughness:.4,metalness:.65}),
   joint:()=>new THREE.MeshStandardMaterial({color:'#403f38',roughness:.92}),
   glass:()=>new THREE.MeshPhysicalMaterial({color:'#9eadad',roughness:.14,metalness:0,ior:1.5,transparent:true,opacity:.26,depthWrite:false,side:THREE.DoubleSide,envMapIntensity:.85}),

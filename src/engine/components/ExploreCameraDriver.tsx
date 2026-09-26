@@ -23,6 +23,7 @@ interface ExploreCameraDriverProps {
   movement: ExploreMovementIntent;
   controlsRef: React.RefObject<OrbitControlsImpl | null>;
   bounds: ExploreBounds | null;
+  allowStep?: (from: { x: number; y: number; z: number }, to: { x: number; y: number; z: number }) => boolean;
   onTargetChange: (target: ExploreTarget | null) => void;
   onMoveSample: (position: { x: number; y: number; z: number }) => void;
 }
@@ -58,7 +59,7 @@ function dampToward(current: THREE.Vector3, target: THREE.Vector3, rate: number,
   return current.lerp(target, factor);
 }
 
-export function ExploreCameraDriver({ active, movement, controlsRef, bounds, onTargetChange, onMoveSample }: ExploreCameraDriverProps) {
+export function ExploreCameraDriver({ active, movement, controlsRef, bounds, allowStep, onTargetChange, onMoveSample }: ExploreCameraDriverProps) {
   const { camera, scene, size, gl } = useThree();
   const raycaster = useRef(new THREE.Raycaster());
   const elapsedSinceTarget = useRef(0);
@@ -166,6 +167,10 @@ export function ExploreCameraDriver({ active, movement, controlsRef, bounds, onT
         camera.position.z = clampedZ;
       }
 
+      if (allowStep && !allowStep(before, camera.position)) {
+        camera.position.copy(before);
+        velocity.current.set(0, 0, 0);
+      }
       const applied = camera.position.clone().sub(before);
       applied.y = 0;
       if (applied.lengthSq() > 0) target.add(applied);

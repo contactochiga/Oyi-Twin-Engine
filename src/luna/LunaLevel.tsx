@@ -1,3 +1,5 @@
+import { AmenityEnvelope } from "./architecture/AmenityEnvelope";
+import { PodiumCoreApproach } from "./architecture/PodiumCoreApproach";
 import { GroundExteriorEnvelope } from "./exterior/GroundExteriorEnvelope";
 import type { GroundAssetSource } from "./architecture/groundAsset";
 import { useGroundAsset } from "./architecture/useGroundAsset";
@@ -104,7 +106,7 @@ export function LunaLevel({ level, stackIndex, groundArchitecture, liftInspectio
   return (
     <LevelMassing hideVisual={liftInspection} level={level} stackIndex={stackIndex} material={material} selectedMaterial={selectedMaterial} nightGlowIntensity={nightGlowIntensity}
       isClickThrough={groundEntranceClickThrough}
-      visual={imported.asset ? <GroundArchitecture asset={imported.asset} levelHeight={level.height} label={level.label} /> : level.ref === "LUNA-GROUND" ? <GroundExteriorEnvelope level={level}/> : undefined}>
+      visual={imported.asset ? <GroundArchitecture asset={imported.asset} levelHeight={level.height} label={level.label} /> : level.ref === "LUNA-GROUND" ? <GroundExteriorEnvelope level={level}/> : level.ref === "LUNA-L01-AMENITIES" ? <AmenityEnvelope level={level} /> : undefined}>
       {level.ref === "LUNA-GROUND" && <group name="ground-architecture-status" userData={{ status: imported.status, error: imported.error }} />}
       <group visible={!liftInspection}>
       {!imported.asset && <LevelFacade level={level} />}
@@ -112,6 +114,7 @@ export function LunaLevel({ level, stackIndex, groundArchitecture, liftInspectio
       {level.ref === "LUNA-GROUND" && !imported.asset && (
         <GrandLobbyArchitecture levelHeight={level.height} entranceDoorState={entranceDoorState ?? "CLOSED"} onSelectEntranceDoor={onSelectEntranceDoor} onEntranceDoorProgress={onEntranceDoorProgress} />
       )}
+      {!imported.asset && ["LUNA-GROUND", "LUNA-L01-AMENITIES"].includes(level.ref) && <PodiumCoreApproach level={level} />}
       {levelInterior && level.ref !== "LUNA-GROUND" && <InteriorLayer spec={levelInterior} levelHeight={level.height} />}
       {isL06 && <L06CommonArchitecture apartmentAEntranceOpen={apartmentAEntranceOpen} onApartmentAAngleChange={onApartmentAAngleChange} />}
       {level.ref === "LUNA-B1" && <LunaPlantRoom levelRef={level.ref} levelHeight={level.height} />}

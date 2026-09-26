@@ -22,7 +22,7 @@ export const LUNA_EXTERIOR_ENTRANCE_PLAZA = "LUNA-EXTERIOR-ENTRANCE-PLAZA";
 
 const EYE_HEIGHT = 1.7; // matches cameraDerivation.ts's own EYE_HEIGHT convention exactly
 const APPROACH_DISTANCE = 6;
-const ARRIVAL_DISTANCE = 6;
+const ARRIVAL_DISTANCE = 8; // Arrival ends inside the unchanged Reception boundary at z=8.
 
 function point(z: number) {
   return { x: GROUND_ENTRANCE_X, y: EYE_HEIGHT, z };
@@ -48,7 +48,8 @@ export const LUNA_MAIN_ENTRANCE_TRANSITION: SpatialTransition = {
   approachPoint: OUTSIDE,
   entryPoint: THRESHOLD,
   exitPoint: INSIDE,
-  crossingPath: [OUTSIDE, THRESHOLD, INSIDE],
+  // Keep the canonical entrance-axis column: pass it on +X, then rejoin arrival.
+  crossingPath: [OUTSIDE, THRESHOLD, { x: 1.2, y: EYE_HEIGHT, z: 15.5 }, { x: 1.2, y: EYE_HEIGHT, z: 12.5 }, INSIDE],
   accessRequirement: "NONE",
   actuatorBinding: GROUND_ENTRANCE_REF,
   clearanceRule: { requiredClearWidthMeters: 0.9, note: "generic single-file walking clearance (STANDARD_TRAVERSAL_PROFILE)" },
@@ -66,5 +67,5 @@ export const LUNA_MAIN_ENTRANCE_TRANSITION_REVERSE: SpatialTransition = {
   approachPoint: INSIDE,
   entryPoint: THRESHOLD,
   exitPoint: OUTSIDE,
-  crossingPath: [INSIDE, THRESHOLD, OUTSIDE],
+  crossingPath: [...LUNA_MAIN_ENTRANCE_TRANSITION.crossingPath].reverse(),
 };

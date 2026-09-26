@@ -82,7 +82,9 @@ try {
 
   // ---- 3. Consumer: a valid common route (Enter the lobby) succeeds for real ----
   await askOyi(oyiDevInput, 'Enter the lobby');
-  await pause(1400 + 2200 + 500); // real approach + real clearance-gated crossing
+  // The retained structural column adds two physical crossing waypoints.
+  // Observe canonical arrival rather than assuming the old three-point duration.
+  await page.waitForFunction(() => document.querySelector('.selection-debug__value')?.textContent.trim() === 'LUNA-GROUND-LOBBY', { timeout: 30000 });
   const consumerInLobby = await selectedRef();
   await shot('rtp-03-consumer-entered-lobby');
   assert.equal(consumerInLobby, 'LUNA-GROUND-LOBBY', 'a Consumer identity must be able to complete a real, valid common-space route (the Main Entrance has no lift-control gate)');
@@ -102,7 +104,9 @@ try {
   // to Level 6 — their own floor — now correctly shows the real
   // waiting/travelling sequence instead of being silently excluded.
   await askOyi(oyiDevInput, 'Take me to Level 6');
-  await pause(1200);
+  // Ground now has a physical common passage before the lift. Wait for the
+  // actual handoff, not the old 1.2s assumption of a context-only MOVE step.
+  await page.waitForFunction(() => document.body.innerText.includes('Waiting for the lift') || document.body.innerText.includes('Travelling'), { timeout: 30000 });
   const ownFloorLiftViewAppeared = await page.evaluate(() => document.body.innerText.includes('Waiting for the lift') || document.body.innerText.includes('Travelling'));
   assert.ok(ownFloorLiftViewAppeared, 'a Consumer identity must be able to ride a passenger lift to their own assigned home floor — real physical access, not a fabricated bypass');
   await shot('rtp-04-consumer-own-floor-lift-ride');

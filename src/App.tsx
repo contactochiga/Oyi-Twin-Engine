@@ -1,3 +1,4 @@
+import { podiumStepAllowed } from "./luna/explore/podiumWalkability";
 import { NavigationModeToggle } from "./luna/NavigationModeToggle";
 import { isLiftRef, liftDefinition, liftCamera, isLiftTracking, LIFT_02_REF, type LiftView } from "./luna/lift/lunaLift";
 import { ElevatorControlBoard } from "./luna/lift/ElevatorControlBoard";
@@ -291,6 +292,7 @@ export default function App({ groundArchitecture }: { groundArchitecture?: impor
   const liftRestore = useRef<{ floor: string | null; camera: CameraFlightTarget | null } | null>(null);
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const routeDriverRef = useRef<LunaRouteDriverHandle>(null);
+  const entranceClearanceRef = useRef(0); // same physical progress supplied to the transition driver
   const [entranceDoorState, setEntranceDoorState] = useState<SlidingDoorState>("CLOSED");
   const [apartmentAEntranceOpen, setApartmentAEntranceOpen] = useState(false);
   // Apartment A Full Interior Reality V1 (Part 6) — the boundary ref a
@@ -399,6 +401,7 @@ export default function App({ groundArchitecture }: { groundArchitecture?: impor
   const flyTo = (preset: CameraFlightTarget) => { endLiftView(); setFlightTarget(preset); };
 
   const isolateLevelAndFly = (levelRef: CanonicalRef | null, label: string) => {
+    routeDriverRef.current?.cancelRoute(); // Level navigation supersedes a physical common-area journey.
     endLiftView();
     setActiveSystem(null);
     setIsolatedLevelRef(levelRef);
@@ -555,6 +558,10 @@ export default function App({ groundArchitecture }: { groundArchitecture?: impor
     // room-resolution mechanism.
     const found = findSpace(ref);
     if (found?.kind === "room") {
+      if (["LUNA-GROUND", "LUNA-L01-AMENITIES"].includes(found.spec.ownerLevelRef)) {
+        setIsolatedLevelRef(found.spec.ownerLevelRef);
+        if (lunaRepresentationPolicy.resolveMode({ ref, identity: identityForScope(interactionScope) }) === "FULL_3D") setActiveInteriorRef(found.spec.interiorRef);
+      }
       setFocusedRoomRef(found.room.ref);
       setSelected({ ref: found.room.ref, kind: "room", label: found.room.label, parentRef: found.spec.interiorRef });
     }
@@ -630,7 +637,12 @@ export default function App({ groundArchitecture }: { groundArchitecture?: impor
         : found.kind === "room" ? found.room.ref
         : found.ref;
       const route = requestLunaRoute(destRef);
-      if (route) { routeDriverRef.current?.beginRoute(route); return; }
+      if (route) {
+        // Hand off only after policy/planning admits a real journey. A denied
+        // private target remains inspect-only and must not end manual Explore.
+        if (exploreMode) exitExploreMode();
+        routeDriverRef.current?.beginRoute(route); return;
+      }
       // requestLunaRoute() already reports a real, honest reason via
       // setRouteNarration on failure. Part 16 forbids a TOUR silently
       // completing as if physical travel happened when it didn't — but
@@ -644,7 +656,8 @@ export default function App({ groundArchitecture }: { groundArchitecture?: impor
       return;
     }
 
-    // TELEPORT
+    // Explicit TELEPORT hands camera ownership to the existing guarded action.
+    if (exploreMode) exitExploreMode();
     if (found.kind === "level") { isolateLevelAndFly(found.level.ref, found.level.label); return; }
     if (found.kind === "interior") { enterInterior(found.spec); return; }
     if (found.kind === "door") { setFlightTarget(found.cameraTarget); setSelected({ ref: found.ref, kind: "door", label: found.label }); return; }
@@ -832,7 +845,7 @@ export default function App({ groundArchitecture }: { groundArchitecture?: impor
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [interactionScope, activeLift, isolatedLevelRef, flightTarget, navigationMode]
+    [interactionScope, activeLift, isolatedLevelRef, flightTarget, navigationMode, currentSpaceRef, exploreMode]
   );
 
   const controller = useMemo(
@@ -1134,14 +1147,14 @@ export default function App({ groundArchitecture }: { groundArchitecture?: impor
                   <color attach="background" args={[SKY_COLOR[lightingMode]]} />
                   <fog attach="fog" args={[SKY_COLOR[lightingMode], FOG_NEAR[lightingMode], FOG_FAR[lightingMode]]} />
                   <Suspense fallback={null}>
-                    <Lighting mode={lightingMode} quality="high" />
+                    <Lighting mode={lightingMode} quality="high" outdoorReflections reflectionMap="/exterior-materials/venice_sunset_1k.hdr" />
                     <LightingModeContext.Provider value={lightingMode}>
                       <LunaBuilding
                         groundArchitecture={groundArchitecture}
                         liftInspection={Boolean(activeLift) && interactionScope === "facility"}
                         entranceDoorState={entranceDoorState}
                         onSelectEntranceDoor={enterGroundLobbyViaEntrance}
-                        onEntranceDoorProgress={(p) => routeDriverRef.current?.setEntranceDoorProgress(p)}
+                        onEntranceDoorProgress={(p) => { entranceClearanceRef.current = p; routeDriverRef.current?.setEntranceDoorProgress(p); }}
                         apartmentAEntranceOpen={apartmentAEntranceOpen}
                         onApartmentAAngleChange={(p) => routeDriverRef.current?.setApartmentADoorProgress(p)}
                       />
@@ -1170,6 +1183,7 @@ export default function App({ groundArchitecture }: { groundArchitecture?: impor
                     movement={exploreMovement}
                     controlsRef={controlsRef}
                     bounds={exploreBounds}
+                    allowStep={(from, to) => podiumStepAllowed(from, to, entranceClearanceRef.current >= 0.95)}
                     onTargetChange={setExploreTarget}
                     onMoveSample={onExploreMoveSample}
                   />

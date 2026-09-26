@@ -1,3 +1,6 @@
+import {L01InteriorFinishes} from "./architecture/L01InteriorFinishes";
+import {groundInteriorMaterials} from "./architecture/groundInterior/groundInteriorMaterials";
+import { PODIUM_CEILINGS } from "./architecture/podiumCoordination";
 import { useMemo } from "react";
 import { InteriorRoom, ServiceZone, AccessPanel } from "../engine";
 import type { InteriorSpec } from "./interiors/lunaInteriors";
@@ -37,6 +40,7 @@ export function InteriorLayer({ spec, levelHeight }: { spec: InteriorSpec; level
 
   return (
     <group position={[0, -levelHeight / 2, 0]}>
+      {spec.interiorRef === "LUNA-L01-CLUB" && <L01InteriorFinishes/>}
       {spec.rooms.map((room) => (
         <RoomWithMaterials key={room.ref} ownerLevelRef={spec.ownerLevelRef} interiorRef={spec.interiorRef} room={room} />
       ))}
@@ -73,8 +77,8 @@ function RoomWithMaterials({ ownerLevelRef, interiorRef, room }: { ownerLevelRef
   // focused room independently (see useRoomOpacity); a shared material
   // instance would make every room holding it fade together instead,
   // exactly the bug already fixed once for exterior levels in Phase 2.
-  const floorMaterial = useMemo(() => floorMaterialForTint(room.floorTint), [room.floorTint]);
-  const wallMaterial = useMemo(() => lunaMaterialFactories.interiorWall(), []);
+  const floorMaterial = useMemo(() => ownerLevelRef === "LUNA-L01-AMENITIES" ? groundInteriorMaterials.floor() : floorMaterialForTint(room.floorTint), [room.floorTint,ownerLevelRef]);
+  const wallMaterial = useMemo(() => ownerLevelRef === "LUNA-L01-AMENITIES" ? groundInteriorMaterials.plaster() : lunaMaterialFactories.interiorWall(), [ownerLevelRef]);
   const furnitureMaterial = useMemo(() => lunaMaterialFactories.furnitureWood(), []);
   const furnitureGeometry = useMemo(() => (room.furniture.length ? mergedBoxGeometry(room.furniture) : null), [room.furniture]);
 
@@ -90,6 +94,8 @@ function RoomWithMaterials({ ownerLevelRef, interiorRef, room }: { ownerLevelRef
       z={room.z}
       width={room.width}
       depth={room.depth}
+      wallHeight={ownerLevelRef === "LUNA-L01-AMENITIES" ? PODIUM_CEILINGS.amenities + 0.03 : undefined}
+      floorTop={ownerLevelRef === "LUNA-L01-AMENITIES" ? 0 : undefined}
       doorSide={room.doorSide}
       doors={room.doors}
       doorRef={doorRef}

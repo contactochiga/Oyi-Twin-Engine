@@ -230,7 +230,7 @@ export async function loadGroundAsset(source: GroundAssetSource, policy: Represe
   if (digest !== source.sha256) throw Error('Package checksum mismatch');
   inspectGroundPayload(bytes.buffer, source);
   signal.throwIfAborted();
-  const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+  const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
   const manager = new THREE.LoadingManager();
   let dependencyFailed = false;
   manager.onError = () => { dependencyFailed = true; };

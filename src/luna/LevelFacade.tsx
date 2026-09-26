@@ -1,3 +1,9 @@
+import {crownConstruction,crownCoreSkins} from './exterior/crownConstruction';
+import {glazingAssembly,glazingAssemblyMaterials} from './exterior/glazingAssembly';
+import {useHeroVisual} from './exterior/heroAssets';
+import {HeroAsset} from './exterior/HeroAsset';
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { metricFinishUV } from "./exterior/exteriorTextureMaps";
 import { GROUND_ENTRANCE_OPENING_WIDTH, GROUND_ENTRANCE_HEIGHT } from "./architecture/GroundEntrance";
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
@@ -11,7 +17,7 @@ import { lunaMaterialFactories as originalMaterials, tierForLevel } from "./luna
 import { mergedBoxGeometry, type BoxSpec } from "../engine/utils/geometryUtils";
 
 import { exteriorMaterials, exteriorWindowMaterial } from "./exterior/exteriorMaterials";
-import { balconyFinish, arrivalCarGeometry } from "./exterior/exteriorGeometry";
+import { balconyFinish, arrivalCarGeometry, windowFaceGeometry } from "./exterior/exteriorGeometry";
 import { plantingFromBoxes, leafMaterial } from "./exterior/plantGeometry";
 
 // Exterior-only projection: interior factories and operational materials unchanged.
@@ -37,6 +43,7 @@ function FacadeMesh({ levelRef, geometry, materialFactory, castShadow = true }: 
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const material = useMemo(() => materialFactory(), [materialFactory]);
+  const finishGeometry=useMemo(()=>[exteriorMaterials.limestone,exteriorMaterials.soffit,exteriorMaterials.paving,exteriorMaterials.timber].includes(materialFactory as typeof exteriorMaterials.limestone)?metricFinishUV(geometry):geometry,[geometry,materialFactory]);
   const restingOpacity = useMemo(() => material.opacity, [material]);
   useLevelFadeOpacity(levelRef, meshRef, restingOpacity);
   const { sectionMode, sectionSide } = useSceneMode();
@@ -50,7 +57,7 @@ function FacadeMesh({ levelRef, geometry, materialFactory, castShadow = true }: 
   // it rides on top of (Phase 12: hover/selection must resolve to real
   // canonical geometry, and dense Phase 11 facade detail was intercepting
   // the ray in front of every level's actual hit target).
-  return <mesh ref={meshRef} geometry={geometry} material={material} castShadow={castShadow} receiveShadow raycast={() => null} />;
+  return <mesh ref={meshRef} geometry={finishGeometry} material={material} castShadow={castShadow} receiveShadow raycast={() => null} />;
 }
 
 // Phase 14 — per-window occupied-building glow (§6). Shares FacadeMesh's
@@ -97,41 +104,45 @@ function PlanterFinish({levelRef, geometry}:{levelRef:string;geometry:THREE.Buff
   </>;
 }
 function CanopyLighting({level}:{level:LevelDescriptor}){
-  const left=useRef<THREE.PointLight>(null),right=useRef<THREE.PointLight>(null);
+  const left=useRef<THREE.SpotLight>(null),right=useRef<THREE.SpotLight>(null);
+  const targets=useMemo(()=>[-6,6].map(x=>{const target=new THREE.Object3D();target.position.set(x,-level.height/2,level.footprint.depth/2+4);return target;}),[level.height,level.footprint.depth]);
   const lighting=useLightingMode(),mode=useSceneMode();
   useFrame(()=>{
     const fade=systemFadeOverride(mode,level.ref,1)??(mode.isolatedLevelRef&&mode.isolatedLevelRef !== level.ref ? .02 : 1);
-    // Two bounded, non-shadow lights; no light per downlight/per balcony.
-    const power=(lighting==='day'?0:lighting==='goldenHour'?6:18)*fade;
+    // Two downward, bounded lights: no upward spill through the canopy/podium.
+    const power=(lighting==='day'?4:lighting==='goldenHour'?38:170)*fade;
     for(const ref of [left,right])if(ref.current)ref.current.intensity=power;
   });
   return <>
-    <pointLight ref={left} position={[-6,level.height/2-.6,level.footprint.depth/2+4]} color="#ffdab0" distance={12} decay={2}/>
-    <pointLight ref={right} position={[6,level.height/2-.6,level.footprint.depth/2+4]} color="#ffdab0" distance={12} decay={2}/>
+    <primitive object={targets[0]}/><spotLight ref={left} target={targets[0]} position={[-6,level.height/2-.6,level.footprint.depth/2+4]} color="#ffd3a0" distance={14} decay={2} angle={1.05} penumbra={1}/>
+    <primitive object={targets[1]}/><spotLight ref={right} target={targets[1]} position={[6,level.height/2-.6,level.footprint.depth/2+4]} color="#ffd3a0" distance={14} decay={2} angle={1.05} penumbra={1}/>
   </>;
+}
+function CrownLighting({level}:{level:LevelDescriptor}) {
+  const a=useRef<THREE.PointLight>(null),b=useRef<THREE.PointLight>(null);
+  const lighting=useLightingMode(),mode=useSceneMode();
+  useFrame(()=>{
+    const fade=systemFadeOverride(mode,level.ref,1)??(mode.isolatedLevelRef&&mode.isolatedLevelRef!==level.ref?.02:1);
+    const power=(lighting==='evening'?32:lighting==='goldenHour'?8:0)*fade;
+    if(a.current)a.current.intensity=power;if(b.current)b.current.intensity=power;
+  });
+  return <><pointLight ref={a} position={[-8,level.height/2+1.2,6]} color="#ffd3a0" distance={12} decay={2}/><pointLight ref={b} position={[8,level.height/2+1.2,6]} color="#ffd3a0" distance={12} decay={2}/></>;
 }
 function ArrivalCars({level,z}:{level:LevelDescriptor;z:number}) {
   const car=useMemo(()=>arrivalCarGeometry(),[]);
-  return <>{[-4.2,3.4].map(x=><group key={x} position={[x,-level.height/2,z]}>
-    <FacadeMesh levelRef={level.ref} geometry={car.body} materialFactory={originalMaterials.carBody}/>
-    <FacadeMesh levelRef={level.ref} geometry={car.glass} materialFactory={originalMaterials.carGlass} castShadow={false}/>
-    <FacadeMesh levelRef={level.ref} geometry={car.roof} materialFactory={originalMaterials.carBody}/>
+  const visual=useHeroVisual('sedan');
+  return <>{[-4.2,3.4].map(x=><group key={x} position={[x,-level.height/2-.05,z]}>
+    <FacadeMesh levelRef={level.ref} geometry={car.contact} materialFactory={exteriorMaterials.contactShadow} castShadow={false}/>
+    {visual?<HeroAsset visual={visual} kind="sedan" levelRef={level.ref}/>:<>
+    <FacadeMesh levelRef={level.ref} geometry={car.body} materialFactory={exteriorMaterials.carPaint}/>
+    <FacadeMesh levelRef={level.ref} geometry={car.glass} materialFactory={exteriorMaterials.carGlass} castShadow={false}/>
+    <FacadeMesh levelRef={level.ref} geometry={car.roof} materialFactory={exteriorMaterials.carPaint}/>
     <FacadeMesh levelRef={level.ref} geometry={car.wheels} materialFactory={exteriorMaterials.joint}/>
     <FacadeMesh levelRef={level.ref} geometry={car.hubs} materialFactory={exteriorMaterials.metal} castShadow={false}/>
-    <FacadeMesh levelRef={level.ref} geometry={car.lamps} materialFactory={exteriorMaterials.warmLight} castShadow={false}/>
+    <FacadeMesh levelRef={level.ref} geometry={car.lamps} materialFactory={exteriorMaterials.lens} castShadow={false}/>
+    <FacadeMesh levelRef={level.ref} geometry={car.trim} materialFactory={exteriorMaterials.metal} castShadow={false}/>
+    <FacadeMesh levelRef={level.ref} geometry={car.red} materialFactory={exteriorMaterials.tailLens} castShadow={false}/></>}
   </group>)}</>;
-}
-
-// Deterministic per-bay window state — a small hash of level number + bay
-// index + face id, never Math.random(), so the pattern is stable across
-// re-renders and reads as a considered "some units lit, some dim, some
-// dark" rhythm rather than flicker. Roughly two-thirds lit, a fifth dim, the
-// rest dark — "occupied but not every window blazing" per §6's own words.
-function windowState(levelNumber: number, faceId: number, bayIndex: number): "bright" | "dim" | "dark" {
-  const h = (levelNumber * 13 + faceId * 29 + bayIndex * 7) % 20;
-  if (h < 13) return "bright";
-  if (h < 17) return "dim";
-  return "dark";
 }
 
 function finPositions(width: number, depth: number, count: number): BoxSpec[] {
@@ -204,22 +215,7 @@ function ResidentialFacade({ level, premium }: { level: LevelDescriptor; premium
   // every side elevation a bare glazing box with no window rhythm at all —
   // confirmed the hard way reviewing a waterfront-angle Phase 14 screenshot
   // where the tower read as a generic blue office block from the side.
-  const mullionGeometry = useMemo(() => {
-    const specs: BoxSpec[] = [];
-    const bays = finCount * 2;
-    for (let i = 0; i <= bays; i++) {
-      const x = -width / 2 + (width / bays) * i;
-      specs.push({ size: [0.08, h * 0.86, 0.06], position: [x, 0, depth / 2 + 0.03] });
-      specs.push({ size: [0.08, h * 0.86, 0.06], position: [x, 0, -depth / 2 - 0.03] });
-    }
-    const sideBays = sideFinCount * 2;
-    for (let i = 0; i <= sideBays; i++) {
-      const z = -depth / 2 + (depth / sideBays) * i;
-      specs.push({ size: [0.06, h * 0.86, 0.08], position: [width / 2 + 0.03, 0, z] });
-      specs.push({ size: [0.06, h * 0.86, 0.08], position: [-width / 2 - 0.03, 0, z] });
-    }
-    return mergedBoxGeometry(specs);
-  }, [width, depth, h, finCount, sideFinCount]);
+  const assembly=useMemo(()=>glazingAssembly(width,depth,h,finCount*2,sideFinCount*2,Number(level.ref.match(/L(\d+)$/)?.[1]??0)),[width,depth,h,finCount,sideFinCount,level.ref]);
 
   // Slab-edge spandrel band at the floor line, wrapped on all four faces —
   // the horizontal counterpart to the vertical fins, matching how a real
@@ -231,8 +227,14 @@ function ResidentialFacade({ level, premium }: { level: LevelDescriptor; premium
         { size: [width * 0.98, spandrelHeight, 0.1], position: [0, floorLocalBottom + spandrelHeight / 2, -depth / 2 - 0.05] },
         { size: [0.1, spandrelHeight, depth * 0.98], position: [width / 2 + 0.05, floorLocalBottom + spandrelHeight / 2, 0] },
         { size: [0.1, spandrelHeight, depth * 0.98], position: [-width / 2 - 0.05, floorLocalBottom + spandrelHeight / 2, 0] },
+        // Finish the existing 0.07h head gap above the 0.86h glazing course.
+        // The overlapping massing/unit surfaces behind it remain untouched.
+        { size: [width, h * .07, .1], position: [0, h * .465, depth / 2 + .05] },
+        { size: [width, h * .07, .1], position: [0, h * .465, -depth / 2 - .05] },
+        { size: [.1, h * .07, depth], position: [width / 2 + .05, h * .465, 0] },
+        { size: [.1, h * .07, depth], position: [-width / 2 - .05, h * .465, 0] },
       ]),
-    [width, depth, floorLocalBottom]
+    [width, depth, floorLocalBottom, h]
   );
 
   // Balcony slabs + balustrades wrap all four faces as one continuous
@@ -292,44 +294,21 @@ function ResidentialFacade({ level, premium }: { level: LevelDescriptor; premium
   // above already established, so every glow quad sits centered in its
   // own window bay on all four faces. "Dark" bays get no extra geometry
   // at all — the ordinary glazing shows through unchanged.
-  const windowGlowGeometry = useMemo(() => {
-    const bays = finCount * 2;
-    const sideBays = sideFinCount * 2;
-    const winW = (width / bays) * 0.72;
-    const winSideW = (depth / sideBays) * 0.72;
-    const winH = h * 0.62;
-    const bright: BoxSpec[] = [];
-    const dim: BoxSpec[] = [];
-    const pushFace = (state: "bright" | "dim" | "dark", spec: BoxSpec) => {
-      if (state === "bright") bright.push(spec);
-      else if (state === "dim") dim.push(spec);
-    };
-    for (let i = 0; i < bays; i++) {
-      const x = -width / 2 + (width / bays) * (i + 0.5);
-      pushFace(windowState(levelNumber, 0, i), { size: [winW, winH, 0.03], position: [x, 0, depth / 2 + 0.015] });
-      pushFace(windowState(levelNumber, 1, i), { size: [winW, winH, 0.03], position: [x, 0, -depth / 2 - 0.015] });
-    }
-    for (let i = 0; i < sideBays; i++) {
-      const z = -depth / 2 + (depth / sideBays) * (i + 0.5);
-      pushFace(windowState(levelNumber, 2, i), { size: [0.03, winH, winSideW], position: [width / 2 + 0.015, 0, z] });
-      pushFace(windowState(levelNumber, 3, i), { size: [0.03, winH, winSideW], position: [-width / 2 - 0.015, 0, z] });
-    }
-    return { bright: mergedBoxGeometry(bright), dim: mergedBoxGeometry(dim) };
-  }, [width, depth, h, finCount, sideFinCount, levelNumber]);
 
   return (
     <>
-      <FacadeMesh levelRef={level.ref} geometry={glazingBacking} materialFactory={exteriorMaterials.glazing} castShadow={false}/>
+      <FacadeMesh levelRef={level.ref} geometry={glazingBacking} materialFactory={glazingAssemblyMaterials.shadow} castShadow={false}/>
       <FacadeMesh levelRef={level.ref} geometry={finGeometry} materialFactory={lunaMaterialFactories.bronzeFin} />
-      <FacadeMesh levelRef={level.ref} geometry={mullionGeometry} materialFactory={lunaMaterialFactories.mullion} castShadow={false} />
+      <FacadeMesh levelRef={level.ref} geometry={assembly.frames} materialFactory={lunaMaterialFactories.mullion} castShadow={false} />
       <FacadeMesh levelRef={level.ref} geometry={spandrelGeometry} materialFactory={lunaMaterialFactories.spandrelBand} />
+      <FacadeMesh levelRef={level.ref} geometry={assembly.glass} materialFactory={glazingAssemblyMaterials.glass} castShadow={false}/>
       <BalconyFinish level={level} projection={balconyDepth}/>
       <FacadeMesh levelRef={level.ref} geometry={balconyGeometry} materialFactory={lunaMaterialFactories.balconySlab} />
       <FacadeMesh levelRef={level.ref} geometry={balustradeGeometry} materialFactory={lunaMaterialFactories.glassBalustrade} castShadow={false} />
       {accentScreenGeometry && <FacadeMesh levelRef={level.ref} geometry={accentScreenGeometry} materialFactory={lunaMaterialFactories.privacyScreen} castShadow={false} />}
       {accentPlantingGeometry && <PlanterFinish levelRef={level.ref} geometry={accentPlantingGeometry} />}
-      <WindowGlowMesh levelRef={level.ref} geometry={windowGlowGeometry.bright} materialFactory={lunaMaterialFactories.windowGlowBright} baseIntensity={1.1} />
-      <WindowGlowMesh levelRef={level.ref} geometry={windowGlowGeometry.dim} materialFactory={lunaMaterialFactories.windowGlowDim} baseIntensity={0.45} />
+      <WindowGlowMesh levelRef={level.ref} geometry={assembly.curtain} materialFactory={glazingAssemblyMaterials.curtain} baseIntensity={1.6} />
+      <WindowGlowMesh levelRef={level.ref} geometry={assembly.dim} materialFactory={glazingAssemblyMaterials.curtain} baseIntensity={0.5} />
     </>
   );
 }
@@ -466,8 +445,8 @@ function AmenityFacade({ level }: { level: LevelDescriptor }) {
   const glazingGeometry = useMemo(
     () =>
       mergedBoxGeometry([
-        { size: [width * 0.9, h * 0.78, 0.12], position: [0, 0, depth / 2 - 0.05] },
-        { size: [width * 0.9, h * 0.78, 0.12], position: [0, 0, -depth / 2 + 0.05] },
+        { size: [width * 0.9, h * 0.78, 0.12], position: [0, 0, depth / 2 + 0.066] },
+        { size: [width * 0.9, h * 0.78, 0.12], position: [0, 0, -depth / 2 - 0.066] },
       ]),
     [width, depth, h]
   );
@@ -488,9 +467,16 @@ function AmenityFacade({ level }: { level: LevelDescriptor }) {
     return mergedBoxGeometry(specs);
   }, [width, depth, terraceDepth, floorLocalBottom]);
 
+  const frames=useMemo(()=>mergedBoxGeometry([-1,1].flatMap(side=>[
+    ...[-1,1].map(edge=>({size:[width*.9,.06,.15] as [number,number,number],position:[0,edge*h*.39,side*(depth/2+.14)] as [number,number,number]})),
+    ...Array.from({length:21},(_,i)=>({size:[.045,h*.78,.15] as [number,number,number],position:[-width*.45+i*width*.9/20,0,side*(depth/2+.14)] as [number,number,number]})),
+  ])),[width,depth,h]);
+  const glow=useMemo(()=>windowFaceGeometry([-1,1].flatMap(side=>Array.from({length:20},(_,i)=>({size:[width*.9/20-.12,h*.70,.012] as [number,number,number],position:[-width*.45+(i+.5)*width*.9/20,0,side*(depth/2+.128)] as [number,number,number]})))),[width,depth,h]);
   return (
     <>
-      <FacadeMesh levelRef={level.ref} geometry={glazingGeometry} materialFactory={lunaMaterialFactories.lobbyGlass} castShadow={false} />
+      <FacadeMesh levelRef={level.ref} geometry={frames} materialFactory={exteriorMaterials.metal} castShadow={false}/>
+      <WindowGlowMesh levelRef={level.ref} geometry={glow} materialFactory={exteriorWindowMaterial} baseIntensity={1.6}/>
+      <FacadeMesh levelRef={level.ref} geometry={glazingGeometry} materialFactory={exteriorMaterials.glazing} castShadow={false} />
       <FacadeMesh levelRef={level.ref} geometry={screenGeometry} materialFactory={lunaMaterialFactories.timberScreen} />
       <FacadeMesh levelRef={level.ref} geometry={terraceGeometry} materialFactory={lunaMaterialFactories.balconySlab} />
       <PlanterFinish levelRef={level.ref} geometry={plantingGeometry} />
@@ -504,6 +490,7 @@ function PenthouseFacade({ level }: { level: LevelDescriptor }) {
   const floorLocalBottom = -h / 2;
   const terraceDepth = 2.8;
 
+  const coreFinish=useMemo(()=>crownCoreSkins(h),[h]);
   const frames=useMemo(()=>{
     const boxes:BoxSpec[]=[];
     for(let x=-width/2;x<=width/2;x+=2.5)for(const side of [-1,1])boxes.push({size:[.065,h,.085],position:[x,0,side*(depth/2+.045)]});
@@ -558,6 +545,8 @@ function PenthouseFacade({ level }: { level: LevelDescriptor }) {
 
   return (
     <>
+      <FacadeMesh levelRef={level.ref} geometry={coreFinish.skins} materialFactory={exteriorMaterials.limestone}/>
+      <FacadeMesh levelRef={level.ref} geometry={coreFinish.joints} materialFactory={exteriorMaterials.joint} castShadow={false}/>
       <FacadeMesh levelRef={level.ref} geometry={frames} materialFactory={exteriorMaterials.bronze} castShadow={false}/>
       <BalconyFinish level={level} projection={terraceDepth} frontScale={1}/>
       <FacadeMesh levelRef={level.ref} geometry={terraceGeometry} materialFactory={lunaMaterialFactories.balconySlab} />
@@ -587,8 +576,19 @@ function RooftopCrown({ level }: { level: LevelDescriptor }) {
   const h = level.height;
   const topLocal = h / 2;
 
+  const construction=useMemo(()=>crownConstruction(width,depth,topLocal),[width,depth,topLocal]);
   const crownFinish=useMemo(()=>{
-    const joints:BoxSpec[]=[],light:BoxSpec[]=[],metal:BoxSpec[]=[];
+    const joints:BoxSpec[]=[],light:BoxSpec[]=[],metal:BoxSpec[]=[],skin:BoxSpec[]=[];
+    // Thin finish on the EXISTING roof enclosure; no terrace or mass change.
+    for(const side of [-1,1]){
+      skin.push({size:[width,h,.012],position:[0,0,side*(depth/2+.006)]});
+      skin.push({size:[.012,h,depth],position:[side*(width/2+.006),0,0]});
+      metal.push({size:[width+.04,.045,.06],position:[0,topLocal,side*(depth/2)]});
+      metal.push({size:[.06,.045,depth],position:[side*width/2,topLocal,0]});
+      for(let x=-width/2+1.5;x<width/2;x+=1.5)joints.push({size:[.012,h,.014],position:[x,0,side*(depth/2+.013)]});
+      for(let z=-depth/2+1.5;z<depth/2;z+=1.5)joints.push({size:[.014,h,.012],position:[side*(width/2+.013),0,z]});
+    }
+    for(const x of [-8,8])light.push({size:[.12,.18,.05],position:[x,topLocal+.35,depth/2-.08]});
     for(const [x,z] of STAIR_CORE_SPOTS){
       for(const side of [-1,1]){
         for(let j=-1.4;j<=1.4;j+=1.4)joints.push({size:[.014,3.6,.008],position:[x+j,topLocal+1.8,z+side*3.104]});
@@ -597,17 +597,23 @@ function RooftopCrown({ level }: { level: LevelDescriptor }) {
       }
       for(const yy of [.9,1.8,2.7])for(const side of [-1,1])joints.push({size:[4.2,.012,.009],position:[x,topLocal+yy,z+side*3.105]});
     }
-    return {joints:mergedBoxGeometry(joints),light:mergedBoxGeometry(light),metal:mergedBoxGeometry(metal)};
-  },[topLocal]);
+    return {skin:mergedBoxGeometry(skin),joints:mergedBoxGeometry(joints),light:mergedBoxGeometry(light),metal:mergedBoxGeometry(metal)};
+  },[topLocal,width,depth,h]);
 
   const stairCladdingGeometry = useMemo(() => {
     const specs: BoxSpec[] = [];
     const ch = 3.6;
     for (const [x, z] of STAIR_CORE_SPOTS) {
       specs.push({ size: [4.2, ch, 6.2], position: [x, topLocal + ch / 2, z] });
+      // Core already reaches the roof datum: match its existing 3.5 × 5.5m
+      // faces with 12mm finish skins through this storey. Canonical core stays.
+      for(const side of [-1,1]){
+        specs.push({size:[3.5,h,.012],position:[x,0,z+side*2.756]});
+        specs.push({size:[.012,h,5.5],position:[x+side*1.756,0,z]});
+      }
     }
     return mergedBoxGeometry(specs);
-  }, [topLocal]);
+  }, [topLocal,h]);
   const stairCladdingCapGeometry = useMemo(() => {
     const specs: BoxSpec[] = [];
     const ch = 3.6;
@@ -667,9 +673,9 @@ function RooftopCrown({ level }: { level: LevelDescriptor }) {
     return mergedBoxGeometry(specs);
   }, [width, depth, topLocal]);
 
-  // Luna Sky as a real destination, not just a service plant box: an
-  // infinity pool under the pergola, an enclosed sky lounge/bar volume at
-  // one end, and a pair of cabanas at the other — Phase 11 section 10.
+  // Frozen roof composition: existing pool/pergola, private relaxation
+  // enclosure and four deck seats. No hospitality/commercial programme is
+  // inferred from the inherited visual enclosure.
   // Concealed technical plant (risers/B1 MEP) stays entirely separate,
   // addressed elsewhere in the operational asset table, never merged here.
   const poolGeometry = useMemo(() => mergedBoxGeometry([{ size: [width * 0.42, 0.3, depth * 0.5], position: [width * 0.06, topLocal + 0.1, 0] }]), [width, depth, topLocal]);
@@ -709,7 +715,7 @@ function RooftopCrown({ level }: { level: LevelDescriptor }) {
   // attention; low sun-loungers read as the same "pool deck is furnished"
   // idea at a fraction of the visual weight.
   const cabanaGeometry = useMemo(() => {
-    const specs: BoxSpec[] = [];
+    const parts:THREE.BufferGeometry[]=[],frames:BoxSpec[]=[];
     const spots: Array<[number, number]> = [
       [width / 2 - 2.6, -depth * 0.3],
       [width / 2 - 2.6, -depth * 0.18],
@@ -717,12 +723,24 @@ function RooftopCrown({ level }: { level: LevelDescriptor }) {
       [width / 2 - 2.6, depth * 0.3],
     ];
     for (const [x, z] of spots) {
-      specs.push({ size: [1.8, 0.32, 0.7], position: [x, topLocal + 0.16, z] });
+      parts.push(new THREE.BoxGeometry(1.22,.10,.66).translate(x-.22,topLocal+.26,z));
+      parts.push(new THREE.BoxGeometry(.56,.10,.66).rotateZ(.43).translate(x+.61,topLocal+.38,z));
+      for(const side of [-1,1]){
+        frames.push({size:[1.7,.045,.04],position:[x,topLocal+.195,z+side*.3]});
+        for(const dx of [-.7,.7])frames.push({size:[.04,.18,.04],position:[x+dx,topLocal+.09,z+side*.3]});
+      }
     }
-    return mergedBoxGeometry(specs);
+    const cushions=mergeGeometries(parts)!;parts.forEach(g=>g.dispose());return {cushions,frames:mergedBoxGeometry(frames)};
   }, [width, depth, topLocal]);
   return (
     <>
+      <FacadeMesh levelRef={level.ref} geometry={construction.terrace} materialFactory={exteriorMaterials.paving}/>
+      <FacadeMesh levelRef={level.ref} geometry={construction.stone} materialFactory={exteriorMaterials.limestone}/>
+      <FacadeMesh levelRef={level.ref} geometry={construction.metal} materialFactory={exteriorMaterials.metal}/>
+      <FacadeMesh levelRef={level.ref} geometry={construction.joints} materialFactory={exteriorMaterials.joint} castShadow={false}/>
+      <FacadeMesh levelRef={level.ref} geometry={construction.soil} materialFactory={exteriorMaterials.soil} castShadow={false}/>
+      <CrownLighting level={level}/>
+      <FacadeMesh levelRef={level.ref} geometry={crownFinish.skin} materialFactory={exteriorMaterials.bronze}/>
       <FacadeMesh levelRef={level.ref} geometry={crownFinish.joints} materialFactory={exteriorMaterials.joint} castShadow={false}/>
       <FacadeMesh levelRef={level.ref} geometry={crownFinish.metal} materialFactory={exteriorMaterials.bronze} castShadow={false}/>
       <WindowGlowMesh levelRef={level.ref} geometry={crownFinish.light} materialFactory={exteriorMaterials.warmLight} baseIntensity={1.5}/>
@@ -733,7 +751,8 @@ function RooftopCrown({ level }: { level: LevelDescriptor }) {
       <FacadeMesh levelRef={level.ref} geometry={loungeWallGeometry} materialFactory={lunaMaterialFactories.stone} />
       <FacadeMesh levelRef={level.ref} geometry={loungeGlazingGeometry} materialFactory={lunaMaterialFactories.lobbyGlass} castShadow={false} />
       <FacadeMesh levelRef={level.ref} geometry={loungeRoofGeometry} materialFactory={lunaMaterialFactories.darkAluminium} />
-      <FacadeMesh levelRef={level.ref} geometry={cabanaGeometry} materialFactory={lunaMaterialFactories.timberScreen} />
+      <FacadeMesh levelRef={level.ref} geometry={cabanaGeometry.frames} materialFactory={exteriorMaterials.metal}/>
+      <FacadeMesh levelRef={level.ref} geometry={cabanaGeometry.cushions} materialFactory={exteriorMaterials.cushion} />
       <FacadeMesh levelRef={level.ref} geometry={stairCladdingGeometry} materialFactory={lunaMaterialFactories.stone} />
       <FacadeMesh levelRef={level.ref} geometry={stairCladdingCapGeometry} materialFactory={lunaMaterialFactories.darkAluminium} />
       <FacadeMesh levelRef={level.ref} geometry={stairCladdingFinGeometry} materialFactory={lunaMaterialFactories.bronzeFin} castShadow={false} />

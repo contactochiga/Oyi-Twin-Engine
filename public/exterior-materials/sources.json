@@ -1,0 +1,101 @@
+[
+  {
+    "asset": "concrete_wall_008",
+    "channel": "Diffuse",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_008/concrete_wall_008_diff_1k.jpg",
+    "file": "public/exterior-materials/concrete_wall_008_diff_1k.jpg",
+    "bytes": 623051,
+    "sha256": "a203166d280d3cfc6a91bbc9ffdae406eb9555b4a4f658cd92619063eb17c147",
+    "license": "CC0-1.0",
+    "source": "https://polyhaven.com/a/concrete_wall_008"
+  },
+  {
+    "asset": "concrete_wall_008",
+    "channel": "nor_gl",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_008/concrete_wall_008_nor_gl_1k.jpg",
+    "file": "public/exterior-materials/concrete_wall_008_nor_gl_1k.jpg",
+    "bytes": 511519,
+    "sha256": "83cd3fa2c7cbf4c81402386065daf8fa6f72e1f1f77e02ccb1eedb28496909ae",
+    "license": "CC0-1.0",
+    "source": "https://polyhaven.com/a/concrete_wall_008"
+  },
+  {
+    "asset": "concrete_wall_008",
+    "channel": "Rough",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_008/concrete_wall_008_rough_1k.jpg",
+    "file": "public/exterior-materials/concrete_wall_008_rough_1k.jpg",
+    "bytes": 322313,
+    "sha256": "2344fe72c4dc2fb9e4ce9b47079524ee8969f22c4af4bee85667511073fbf14a",
+    "license": "CC0-1.0",
+    "source": "https://polyhaven.com/a/concrete_wall_008"
+  },
+  {
+    "asset": "oak_wood_planks",
+    "channel": "Diffuse",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_wood_planks/oak_wood_planks_diff_1k.jpg",
+    "file": "public/exterior-materials/oak_wood_planks_diff_1k.jpg",
+    "bytes": 696814,
+    "sha256": "f715ed3e4346e94f971ef8dd61221ff6cc774886c20f65381e01e1dc0bb0a634",
+    "license": "CC0-1.0",
+    "source": "https://polyhaven.com/a/oak_wood_planks"
+  },
+  {
+    "asset": "oak_wood_planks",
+    "channel": "nor_gl",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_wood_planks/oak_wood_planks_nor_gl_1k.jpg",
+    "file": "public/exterior-materials/oak_wood_planks_nor_gl_1k.jpg",
+    "bytes": 392213,
+    "sha256": "b4272cb2818f8f33f2620a2dc093c962f34920e9d485a4e132eb6d69de1ba950",
+    "license": "CC0-1.0",
+    "source": "https://polyhaven.com/a/oak_wood_planks"
+  },
+  {
+    "asset": "oak_wood_planks",
+    "channel": "Rough",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_wood_planks/oak_wood_planks_rough_1k.jpg",
+    "file": "public/exterior-materials/oak_wood_planks_rough_1k.jpg",
+    "bytes": 845590,
+    "sha256": "10ced559145df3c537bf1ccef6dc767ef6c47e134c21a9650bab261fa95ecacf",
+    "license": "CC0-1.0",
+    "source": "https://polyhaven.com/a/oak_wood_planks"
+  },
+  {
+    "asset": "concrete_floor_02",
+    "channel": "Diffuse",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_floor_02/concrete_floor_02_diff_1k.jpg",
+    "file": "public/exterior-materials/concrete_floor_02_diff_1k.jpg",
+    "bytes": 776097,
+    "sha256": "6db84a6d87dc50508b9d134d6fbd2b7e876b8081a5f43a118a249ca18de73af5",
+    "license": "CC0-1.0",
+    "source": "https://polyhaven.com/a/concrete_floor_02"
+  },
+  {
+    "asset": "concrete_floor_02",
+    "channel": "nor_gl",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_floor_02/concrete_floor_02_nor_gl_1k.jpg",
+    "file": "public/exterior-materials/concrete_floor_02_nor_gl_1k.jpg",
+    "bytes": 192757,
+    "sha256": "fcda391b57a816d646ae15544688be53790478da5cd48dbe514b3c6901415e61",
+    "license": "CC0-1.0",
+    "source": "https://polyhaven.com/a/concrete_floor_02"
+  },
+  {
+    "asset": "concrete_floor_02",
+    "channel": "Rough",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_floor_02/concrete_floor_02_rough_1k.jpg",
+    "file": "public/exterior-materials/concrete_floor_02_rough_1k.jpg",
+    "bytes": 318550,
+    "sha256": "c7f026a611b7859903c61ec7fd4574944157223e9e7796413dd6e2a66eaeac7a",
+    "license": "CC0-1.0",
+    "source": "https://polyhaven.com/a/concrete_floor_02"
+  },
+  {
+    "file": "public/exterior-materials/venice_sunset_1k.hdr",
+    "bytes": 1397783,
+    "sha256": "0e72ed46b5316cb5fb67fc81ff85b024a09146fd89ef3811a8d2299647ada118",
+    "url": "https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr",
+    "source": "https://polyhaven.com/a/venice_sunset",
+    "license": "CC0-1.0",
+    "use": "lighting/reflections only; not geographic background"
+  }
+]

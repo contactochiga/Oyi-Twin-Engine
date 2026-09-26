@@ -1,3 +1,5 @@
+import { podiumSlabPanels } from "../architecture/podiumSlabOpenings";
+import { PODIUM_CORE_OPENINGS } from "../architecture/podiumCoordination";
 import { mergedBoxGeometry } from "../../engine/utils/geometryUtils";
 import { useEffect } from "react";
 import { useMemo } from "react";
@@ -22,16 +24,19 @@ export function LunaLevelStructure({ levelRef, inspection = false }: { levelRef:
   const elements = useMemo(() => LUNA_STRUCTURAL_ELEMENTS.filter((e) => e.ownerLevelRef === levelRef), [levelRef]);
   const sleeves = useMemo(() => LUNA_MEP_SLEEVES.filter((s) => s.ownerLevelRef === levelRef), [levelRef]);
 
-  // Same slab identity, actual 3x3m reference shaft opening; no new assets.
-  const slabVisuals = useMemo(() => new Map(elements.filter(e => e.ref.includes("SLAB")).map(e => {
+  // Existing structural identities/transforms; coordinated podium core apertures.
+  const slabVisuals = useMemo(() => new Map(elements.filter(e => e.ref.includes("SLAB") || e.ref === "LUNA-STRUCT-L01-TRANSFER-01").map(e => {
     const w = e.size.x, d = e.size.z, h = e.size.y;
+    if (levelRef === "LUNA-GROUND" || levelRef === "LUNA-L01-AMENITIES") {
+      return [e.ref, mergedBoxGeometry(podiumSlabPanels(w,d,h))];
+    }
     return [e.ref, mergedBoxGeometry([
       { size: [(w - 3) / 2, h, d], position: [-(w + 3) / 4, 0, 0] },
       { size: [(w - 3) / 2, h, d], position: [(w + 3) / 4, 0, 0] },
       { size: [3, h, (d - 3) / 2], position: [0, 0, -(d + 3) / 4] },
       { size: [3, h, (d - 3) / 2], position: [0, 0, (d + 3) / 4] },
     ])];
-  })), [elements]);
+  })), [elements, levelRef]);
   useEffect(() => () => slabVisuals.forEach(g => g.dispose()), [slabVisuals]);
   if (elements.length === 0 && sleeves.length === 0) return null;
 
@@ -68,6 +73,7 @@ export function LunaStructuralCore({ inspection = false }: { inspection?: boolea
   return (
     <StructuralCoreWall
       revealFront={inspection}
+      frontOpenings={PODIUM_CORE_OPENINGS}
       ref_={core.ref}
       label={core.label}
       centerX={core.centerX}

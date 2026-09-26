@@ -91,8 +91,9 @@ export const LUNA_ROOM_CAMERA_PRESETS: Record<string, RoomCameraPreset> = {
   // Lift Lobby stands clear of the lift bank looking at the real landing
   // doors (z≈1.43-1.5, DynamicLift.tsx's own Doors group z).
   "LUNA-GROUND-LOBBY-RECEPTION": { position: [0, 1.7, 8], target: [0, 1.3, 3.5], preferredFov: 58, minimumDistance: 2 },
-  "LUNA-GROUND-LOBBY-LIFTS": { position: [1.8, 1.7, -5.5], target: [1.8, 1.3, 1.4], preferredFov: 60, minimumDistance: 2.5 },
-  "LUNA-L01-CLUB-POOL": { position: [-14.5, 1.7, -6.5], target: [-14.5, 1.3, 4], preferredFov: 58, minimumDistance: 2.2 },
+  "LUNA-GROUND-LOBBY-LIFTS": { position: [1.8, 1.7, 2.8], target: [1.8, 1.3, 1.4], preferredFov: 60, minimumDistance: 2.5 },
+  "LUNA-L01-CLUB-POOL": { position: [-14.5, 1.7, 2.8], target: [-14.5, 1.3, -6], preferredFov: 58, minimumDistance: 2.2 },
+  "LUNA-L01-CLUB-LOUNGE": { position: [14.5, 1.7, 2.8], target: [14.5, 1.3, -6], preferredFov: 58, minimumDistance: 2 },
   "LUNA-L10-APT-A-LIVING": { position: [6.65, 1.7, 4.33], target: [0.65, 1.3, 4.33], preferredFov: 60, minimumDistance: 2 },
   // Stands on the east side, clear of LUNA-STAIR-02 (lunaProgramme.ts —
   // its footprint clips the room's own NE corner, confirmed the hard way:

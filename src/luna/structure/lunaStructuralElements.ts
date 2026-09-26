@@ -17,6 +17,8 @@
 import type { StructuralElementRecord } from "../../engine/structuralCatalog";
 import { LUNA_LEVELS, LUNA_BUILDING_SPAN } from "../lunaProgramme";
 
+import { isCoordinatedPodiumLevel } from "../architecture/podiumCoordination";
+
 const SLAB_THICKNESS = 0.35;
 const COLUMN_SIZE = 0.5;
 
@@ -39,7 +41,7 @@ function slabFor(levelRef: string): StructuralElementRecord {
     label: `${level.label} — Structural Slab`,
     elementType: "slab",
     ownerLevelRef: levelRef,
-    position: { x: 0, y: -level.height / 2 + SLAB_THICKNESS / 2, z: 0 },
+    position: { x: 0, y: -level.height / 2 + (isCoordinatedPodiumLevel(levelRef) ? -1 : 1) * SLAB_THICKNESS / 2, z: 0 },
     size: { x: level.footprint.width * 0.98, y: SLAB_THICKNESS, z: level.footprint.depth * 0.98 },
   };
 }

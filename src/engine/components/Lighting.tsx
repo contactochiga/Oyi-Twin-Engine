@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+import * as THREE from "three";
 import { Environment, Lightformer } from "@react-three/drei";
 import type { RenderQuality } from "../hooks/useRenderQuality";
 import { shadowsEnabledFor } from "../hooks/useRenderQuality";
@@ -14,6 +16,10 @@ export interface LightingProps {
    * shadow pass entirely (a real GPU cost on a small card), everything
    * else keeps the full lighting rig. Defaults to "standard". */
   quality?: RenderQuality;
+  /** Optional local sky/ground reflection field; default host appearance stays unchanged. */
+  outdoorReflections?: boolean;
+  /** Optional packaged HDR for reflection/lighting only; never a background. */
+  reflectionMap?: string;
 }
 
 interface LightingTuning {
@@ -100,7 +106,18 @@ const TUNING: Record<"day" | "goldenHour" | "evening", LightingTuning> = {
  * no visible error (confirmed during Phase 1 verification). The
  * Lightformer children form below are baked into a small cubemap
  * synchronously, in-process — zero network requests, zero Suspense risk. */
-export function Lighting({ mode = "day", quality = "standard" }: LightingProps) {
+export function Lighting({ mode = "day", quality = "standard", outdoorReflections = false, reflectionMap }: LightingProps) {
+  const [environment,setEnvironment]=useState<{url:string;texture:THREE.DataTexture}|null>(null);
+  useEffect(()=>{
+    if(!reflectionMap)return;
+    let active=true,owned:THREE.DataTexture|undefined;
+    void import('three/examples/jsm/loaders/HDRLoader.js').then(({HDRLoader})=>new HDRLoader().loadAsync(reflectionMap)).then(texture=>{
+      if(!active){texture.dispose();return;}
+      owned=texture;texture.mapping=THREE.EquirectangularReflectionMapping;setEnvironment({url:reflectionMap,texture});
+    }).catch(()=>console.warn('Optional reflection map unavailable; local procedural environment retained.'));
+    return()=>{active=false;owned?.dispose();};
+  },[reflectionMap]);
+  const activeEnvironment=environment?.url===reflectionMap?environment?.texture:null;
   const t = TUNING[mode];
   const shadowsOn = shadowsEnabledFor(quality);
   const shadowMapSize = quality === "high" ? 2048 : 1024;
@@ -134,13 +151,31 @@ export function Lighting({ mode = "day", quality = "standard" }: LightingProps) 
         shadow-bias={-0.0004}
       />
       <directionalLight position={[-50, 40, -60]} intensity={t.fillIntensity} color={t.fillColor} />
-      <Environment resolution={128}>
+      {activeEnvironment ? <Environment map={activeEnvironment} environmentIntensity={mode==='day'?.65:mode==='goldenHour'?.5:.18} environmentRotation={[0,.6,0]}/> : <Environment resolution={128}>
         <group>
+          {outdoorReflections && <ReflectionSky mode={mode}/>}
           <Lightformer intensity={t.formerWarm} color={t.formerWarmColor} position={[20, 12, 10]} scale={[16, 8, 1]} />
           <Lightformer intensity={t.formerCool} color="#9fc0ff" position={[-18, 8, -14]} scale={[14, 10, 1]} />
           <Lightformer intensity={t.formerSky} color="#ffffff" position={[0, 24, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[40, 40, 1]} />
         </group>
-      </Environment>
+      </Environment>}
     </>
   );
+}
+
+/** Local cubemap backdrop, not geographic imagery or another scene model.
+ * Baked by the existing Environment once per mode; no network/Suspense source. */
+function ReflectionSky({mode}:{mode:NonNullable<LightingProps['mode']>}){
+  const geometry=useMemo(()=>{
+    const g=new THREE.SphereGeometry(80,32,16),p=g.getAttribute('position'),colors=new Float32Array(p.count*3);
+    const palette=mode==='day'?['#819aa9','#d7d5c8','#706f60']:mode==='goldenHour'?['#6f818c','#d5b18a','#625844']:['#202a43','#62687a','#262820'];
+    const zenith=new THREE.Color(palette[0]),horizon=new THREE.Color(palette[1]),ground=new THREE.Color(palette[2]);
+    for(let i=0;i<p.count;i++){
+      const height=p.getY(i)/80,c=height>=0?horizon.clone().lerp(zenith,Math.sqrt(height)):horizon.clone().lerp(ground,Math.min(1,-height*3));
+      colors.set([c.r,c.g,c.b],i*3);
+    }
+    g.setAttribute('color',new THREE.BufferAttribute(colors,3));return g;
+  },[mode]);
+  useEffect(()=>()=>geometry.dispose(),[geometry]);
+  return <mesh geometry={geometry}><meshBasicMaterial vertexColors side={THREE.BackSide}/></mesh>;
 }

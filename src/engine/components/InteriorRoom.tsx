@@ -63,6 +63,8 @@ interface InteriorRoomProps {
    * backward-compatible). Multiple openings on the SAME wall are
    * supported (segments are computed between them, sorted by offset). */
   doors?: DoorOpening[];
+  /** Optional finished floor top relative to the level datum. */
+  floorTop?: number;
   floorMaterial: THREE.Material;
   wallMaterial: THREE.Material;
   /** Pre-merged furniture geometry for this room, or null for an empty room. */
@@ -118,6 +120,7 @@ export function InteriorRoom({
   doorWidth = 1.0,
   doorRef,
   doors,
+  floorTop = 0.08,
   floorMaterial,
   wallMaterial,
   furnitureGeometry,
@@ -212,7 +215,7 @@ export function InteriorRoom({
         ref={floorRef}
         geometry={floorGeometry}
         material={floorMaterial}
-        position={[0, 0.04, 0]}
+        position={[0, floorTop - 0.04, 0]}
         receiveShadow
         onClick={(e) => {
           e.stopPropagation();

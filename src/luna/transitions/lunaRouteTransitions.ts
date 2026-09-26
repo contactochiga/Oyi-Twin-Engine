@@ -1,3 +1,4 @@
+import { PODIUM_PASSAGES } from "../architecture/podiumPassages";
 import { apartmentTransitions } from "../architecture/apartmentSpatial";
 // Luna — Spatial Transition Engine V1.1: the real TransitionBindings
 // config, built from the SAME real refs every other phase already uses
@@ -28,13 +29,9 @@ export const LUNA_LIFT_CAPABLE_REFS = new Set(LIFT_DEFINITIONS.map((d) => d.ref)
  * a one-line change, not a new file. */
 export const LUNA_STAIR_CAPABLE_REFS = new Set<string>();
 
-/** Part 9 — no live open-plan common-area-to-common-area boundary exists
- * in Luna's current spatial model (the audit confirmed Reception/Lounge/
- * Lift-Lobby collapse into ONE graph node, not three) — so there is
- * nothing real to bind an OPEN_PASSAGE transition to yet. Left empty and
- * disclosed rather than fabricating a boundary that doesn't exist; the
- * non-Luna fixture (Part 22) is where OPEN_PASSAGE is actually proven. */
-export const LUNA_PASSAGE_TRANSITIONS: never[] = [];
+/** Ground/L01 now has measured common passages. Bind them into the existing
+ * OPEN_PASSAGE pipeline; no instantaneous context-only MOVE through these zones. */
+export const LUNA_PASSAGE_TRANSITIONS = PODIUM_PASSAGES;
 
 export const LUNA_STAIR_DOOR_REFS = GROUND_STAIR_REFS.map((ref) => `${ref}-DOOR-01`);
 
@@ -44,7 +41,7 @@ export const LUNA_STAIR_DOOR_REFS = GROUND_STAIR_REFS.map((ref) => `${ref}-DOOR-
 // identically, no special-casing per door.
 export const LUNA_TRANSITION_BINDINGS: TransitionBindings = {
   doorTransitions: [LUNA_MAIN_ENTRANCE_TRANSITION, LUNA_MAIN_ENTRANCE_TRANSITION_REVERSE, ...LUNA_L06_APARTMENT_ENTRANCE_TRANSITIONS, ...apartmentTransitions],
-  passageTransitions: [],
+  passageTransitions: LUNA_PASSAGE_TRANSITIONS,
   liftCapableRefs: LUNA_LIFT_CAPABLE_REFS,
   stairCapableRefs: LUNA_STAIR_CAPABLE_REFS,
 };

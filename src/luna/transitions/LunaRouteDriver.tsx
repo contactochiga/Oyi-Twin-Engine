@@ -22,7 +22,7 @@ import type { RepresentationIdentity } from "../../engine/representationPolicy";
 import type { CanonicalRef } from "../../engine/types";
 import type { SpatialTransition } from "../../engine/spatial/transitions";
 import { beginTransition, beginApproach, arriveAtApproachPoint, resolveAccessStep, resumeAfterUserInput, checkClearance, advanceCrossing, type TransitionRuntimeContext } from "../../engine/spatial/transitionEngine";
-import { buildTraversalWaypoints } from "../../engine/spatial/cameraTraversal";
+import { podiumTraversalWaypoints } from "../architecture/podiumPassages";
 import { resolveTransitionAccess } from "../../engine/spatial/accessResolution";
 import { isBoundaryClearForTraversal, slidingBoundaryState, hingedBoundaryState, OPEN_BOUNDARY_STATE, STANDARD_TRAVERSAL_PROFILE, type BoundaryState } from "../../engine/spatial/clearance";
 import {
@@ -75,7 +75,7 @@ function sameWaypoint(a: CameraFlightTarget, b: CameraFlightTarget): boolean {
 // makes the golden journey's real Apartment A entrance crossing possible
 // at all, exactly the "USE THE BUILDING, no teleport fallback" requirement.
 function resolveDoorTransition(fromRef: CanonicalRef, toRef: CanonicalRef): SpatialTransition | undefined {
-  return LUNA_TRANSITION_BINDINGS.doorTransitions.find((t) => t.fromSpaceRef === fromRef && t.toSpaceRef === toRef);
+  return [...LUNA_TRANSITION_BINDINGS.doorTransitions, ...LUNA_TRANSITION_BINDINGS.passageTransitions].find((t) => t.fromSpaceRef === fromRef && t.toSpaceRef === toRef);
 }
 
 function boundaryStateFor(transition: SpatialTransition, doorProgress: number, apartmentADoorProgress: number): BoundaryState {
@@ -220,13 +220,13 @@ export const LunaRouteDriver = forwardRef<LunaRouteDriverHandle, LunaRouteDriver
     const step = currentRouteStep(route);
     if (!step) return;
 
-    if (step.kind === "TRANSITION") {
+    if (step.kind === "TRANSITION" || step.kind === "OPEN_PASSAGE") {
       const transition = resolveDoorTransition(step.fromRef, step.toRef);
       if (!transition) {
         setRoute((r) => (r ? failRoute(r, "FAULT", `no real transition mapped for ${step.fromRef} -> ${step.toRef}`) : r));
         return;
       }
-      const waypoints = buildTraversalWaypoints(transition);
+      const waypoints = podiumTraversalWaypoints(transition);
       waypointsRef.current = waypoints;
       onFlightTargetChange(waypoints[0]);
       setTransitionCtx(beginApproach(beginTransition(transition, waypoints.length)));
@@ -410,10 +410,10 @@ export const LunaRouteDriver = forwardRef<LunaRouteDriverHandle, LunaRouteDriver
     if (route.status === "FAULT") { onNarration(`Something went wrong. ${route.failureReason ?? ""}`.trim()); return; }
     if (route.status === "CANCELLED") { onNarration("Route cancelled."); return; }
     if (!step) return;
-    if (step.kind === "TRANSITION") {
-      if (transitionCtx?.phase === "APPROACHING") onNarration("Approaching the entrance.");
-      else if (transitionCtx?.phase === "ACTUATING" || transitionCtx?.phase === "WAITING_FOR_CLEARANCE") onNarration("Opening the door.");
-      else if (transitionCtx?.phase === "CROSSING") onNarration("Entering.");
+    if (step.kind === "TRANSITION" || step.kind === "OPEN_PASSAGE") {
+      if (transitionCtx?.phase === "APPROACHING") onNarration(step.kind === "OPEN_PASSAGE" ? "Following common circulation." : "Approaching the entrance.");
+      else if (transitionCtx?.phase === "ACTUATING" || transitionCtx?.phase === "WAITING_FOR_CLEARANCE") onNarration(step.kind === "OPEN_PASSAGE" ? "Walking." : "Opening the door.");
+      else if (transitionCtx?.phase === "CROSSING") onNarration(step.kind === "OPEN_PASSAGE" ? "Walking." : "Entering.");
     } else if (step.kind === "LIFT") {
       if (liftCtx?.phase === "CALLING") onNarration("Waiting for the lift.");
       else if (liftCtx?.phase === "BOARDING" || liftCtx?.phase === "TRAVELLING") onNarration("Travelling.");

@@ -46,20 +46,20 @@ try {
   const facilityRouteResult = requestRoute(lunaModel, LUNA_TRANSITION_BINDINGS, (edge) => lunaIsRouteEdgeAllowed(edge, facility), LUNA_EXTERIOR_ENTRANCE_PLAZA, 'LUNA-L06', 'test-route-1');
   assert.equal(facilityRouteResult.status, 'OK');
   const route1 = facilityRouteResult.route;
-  assert.equal(route1.steps.length, 3, 'Exterior->Lobby(door) + Lobby->Ground(adjacency, free) + Ground->L06(lift, coalesced from 2 raw edges into 1)');
+  assert.equal(route1.steps.length, 3, 'Exterior->Lobby(door) + Lobby->Ground(adjacency, physical passage) + Ground->L06(lift, coalesced from 2 raw edges into 1)');
   assert.equal(route1.steps[0].kind, 'TRANSITION');
   assert.equal(route1.steps[2].kind, 'LIFT');
   assert.equal(route1.steps[2].fromRef, 'LUNA-GROUND');
   assert.equal(route1.steps[2].toRef, 'LUNA-L06');
-  checks.push('2. requestRoute(): Exterior -> Level 6 for Facility produces a real, correctly-coalesced 3-step SpatialRoute (door transition, free adjacency reposition, one logical lift leg) — not a raw 4-edge graph walk');
+  checks.push('2. requestRoute(): Exterior -> Level 6 for Facility produces a real, correctly-coalesced 3-step SpatialRoute (door transition, physical common-area passage, one logical lift leg) — not a raw 4-edge graph walk');
 
   // ---- 3. Route execution ordering: pure step functions never skip out of order ----
   let r = beginRoute(route1);
   assert.equal(r.status, 'EXECUTING');
   assert.equal(currentRouteStep(r).kind, 'TRANSITION');
-  r = advanceRouteStep(r); // TRANSITION -> MOVE
-  assert.equal(currentRouteStep(r).kind, 'MOVE');
-  r = advanceRouteStep(r); // MOVE -> LIFT
+  r = advanceRouteStep(r); // TRANSITION -> OPEN_PASSAGE
+  assert.equal(currentRouteStep(r).kind, 'OPEN_PASSAGE', 'Ground circulation now has physical waypoints and must not become an instantaneous MOVE');
+  r = advanceRouteStep(r); // OPEN_PASSAGE -> LIFT
   assert.equal(currentRouteStep(r).kind, 'LIFT');
   r = markRouteWaiting(r);
   assert.equal(r.status, 'WAITING');

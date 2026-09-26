@@ -100,7 +100,13 @@ try {
   ctx = advanceCrossing(ctx);
   assert.equal(ctx.phase, 'CROSSING');
   assert.equal(ctx.waypointIndex, 2);
-  ctx = advanceCrossing(ctx);
+  // Phase 2 adds real intermediate points around the retained entrance column.
+  // Arrival must wait for EVERY physical waypoint, rather than assuming three.
+  for (let i = 2; i < waypoints.length; i++) {
+    assert.equal(ctx.phase, 'CROSSING');
+    assert.equal(ctx.waypointIndex, i);
+    ctx = advanceCrossing(ctx);
+  }
   assert.equal(ctx.phase, 'ARRIVED');
   assert.ok(isTerminalPhase(ctx.phase));
   checks.push('9. Transition state machine: IDLE-less golden path LOCATING_ENTRY -> APPROACHING -> WAITING_FOR_ACCESS -> ACTUATING -> WAITING_FOR_CLEARANCE -> CROSSING -> ARRIVED walks step by step, never skipping a phase out of order');

@@ -16,9 +16,10 @@ import type { LiftState } from "./liftSimulation";
 type V3 = [number, number, number];
 function Part({ liftRef, role, position, size, color = "#a9b2bb", opacity = 1, clipped = false }: { liftRef: string; role: string; position: V3; size: V3; color?: string; opacity?: number; clipped?: boolean }) {
   const { sectionMode, sectionSide } = useSceneMode();
+  const groundDoorFinish = role === "LUNA-GROUND-door-left" || role === "LUNA-GROUND-door-right" || role === "LUNA-L01-AMENITIES-door-left" || role === "LUNA-L01-AMENITIES-door-right";
   return <mesh name={`${liftRef}::${role}`} userData={{ canonicalRef: liftRef, componentRole: role }} position={position} castShadow={opacity === 1} receiveShadow>
     <boxGeometry args={size} />
-    <meshStandardMaterial color={color} roughness={0.45} metalness={0.25} transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} clippingPlanes={sectionClipPlanes(clipped && sectionMode, sectionSide)} />
+    <meshStandardMaterial color={groundDoorFinish ? "#57483b" : color} roughness={groundDoorFinish ? 0.32 : 0.45} metalness={groundDoorFinish ? 0.7 : 0.25} transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} clippingPlanes={sectionClipPlanes(clipped && sectionMode, sectionSide)} />
   </mesh>;
 }
 function Doors({ liftRef, floorRef, y = 0, z, car = false }: { liftRef: string; floorRef?: string; y?: number; z: number; car?: boolean }) {

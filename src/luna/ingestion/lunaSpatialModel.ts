@@ -1,3 +1,4 @@
+import { GROUND_ARRIVAL, L01_STAIR_DOORS } from "../architecture/podiumCoordination";
 import { normalizedApartmentRooms, normalizedApartmentDoors } from "../architecture/apartmentSpatial";
 // Luna — Building Ingestion V2 Parts 25/26: Luna as the reference
 // fixture proving the generic engine's derivation functions reproduce
@@ -188,7 +189,14 @@ function buildDoors(): NormalizedDoor[] {
       provenance: { derivedFrom: "computed", sourceIds: [`${ref}-DOOR-01`], note: "repackaged from GrandLobbyArchitecture.tsx's real, currently non-actuated stair door geometry" },
     };
   });
-  return [mainEntrance, ...stairDoors];
+  const l01Doors: NormalizedDoor[] = L01_STAIR_DOORS.map(d=>({
+    canonicalRef:d.ref,sourceRefs:[d.ref],source2DRefs:[d.ref],source3DRefs:[d.ref],
+    levelRef:LUNA_L01_CLUB.ownerLevelRef,spaceType:"door",name:d.label,doorKind:"hinged",
+    fromSpaceRef:LUNA_L01_CLUB.interiorRef,toSpaceRef:d.stairRef,animationReadiness:"STATIC_BOUNDARY",
+    boundary:{kind:"rect",x:d.x,z:d.z,width:d.width,depth:.06},
+    confidence:1,reviewStatus:"CONFIRMED",provenance:{derivedFrom:"authored",sourceIds:[d.stairRef],note:"LUNA_REFERENCE_DESIGN: static access face matching Ground reference dimensions; not certified fire egress or a live actuator."},
+  }));
+  return [mainEntrance, ...stairDoors, ...l01Doors];
 }
 
 /** Part 3/24 — the whole Grand Lobby interior as its own normalized
@@ -201,7 +209,7 @@ function buildGroundLobby(): NormalizedCommonArea {
   const minX = Math.min(...rooms.map((r) => r.x - r.width / 2));
   const maxX = Math.max(...rooms.map((r) => r.x + r.width / 2));
   const minZ = Math.min(...rooms.map((r) => r.z - r.depth / 2));
-  const maxZ = Math.max(...rooms.map((r) => r.z + r.depth / 2));
+  const maxZ = Math.max(GROUND_ARRIVAL.z + GROUND_ARRIVAL.depth / 2, ...rooms.map((r) => r.z + r.depth / 2));
   return {
     canonicalRef: LUNA_GROUND_LOBBY.interiorRef,
     sourceRefs: [LUNA_GROUND_LOBBY.interiorRef],
@@ -213,7 +221,7 @@ function buildGroundLobby(): NormalizedCommonArea {
     boundary: { kind: "rect", x: (minX + maxX) / 2, z: (minZ + maxZ) / 2, width: maxX - minX, depth: maxZ - minZ },
     confidence: 1,
     reviewStatus: "CONFIRMED",
-    provenance: { derivedFrom: "computed", sourceIds: [LUNA_GROUND_LOBBY.interiorRef], note: "bounding rect computed from Luna's own real LUNA_GROUND_LOBBY room rects (reception/lounge/lift lobby)" },
+    provenance: { derivedFrom: "computed", sourceIds: [LUNA_GROUND_LOBBY.interiorRef], note: "bounding rect computed from existing room zones and the coordinated entrance approach; not net usable area" },
   };
 }
 
@@ -315,7 +323,26 @@ export function buildLunaReferenceModel(): NormalizedBuildingModel {
   model.levels = buildLevels();
   model.units = buildL06Units();
   model.rooms = normalizedApartmentRooms();
-  model.commonAreas = [...buildL01CommonAreas(), buildGroundLobby(), ...buildL06CommonAreas()];
+  model.rooms.push(...LUNA_GROUND_LOBBY.rooms.map(room => ({
+    canonicalRef: room.ref, sourceRefs: [room.ref], source2DRefs: [room.ref], source3DRefs: [room.ref],
+    parentRef: LUNA_GROUND_LOBBY.interiorRef, levelRef: LUNA_GROUND_LOBBY.ownerLevelRef,
+    spaceType: "room" as const, name: room.label,
+    boundary: { kind: "rect" as const, x: room.x, z: room.z, width: room.width, depth: room.depth },
+    connectedSpaceRefs: [LUNA_GROUND_LOBBY.interiorRef], confidence: 1, reviewStatus: "CONFIRMED" as const,
+    provenance: { derivedFrom: "computed" as const, sourceIds: [room.ref], note: "Existing Ground open zones; Phase 2 coordinated passages." },
+  })));
+  model.commonAreas = [...buildL01CommonAreas(), {
+    canonicalRef: LUNA_L01_CLUB.interiorRef, sourceRefs: [LUNA_L01_CLUB.interiorRef], source2DRefs: [], source3DRefs: [LUNA_L01_CLUB.interiorRef],
+    levelRef: LUNA_L01_CLUB.ownerLevelRef, spaceType: "common_area", name: LUNA_L01_CLUB.label,
+    // Aggregate context, not a claim that the core inside this bounding box is walkable.
+    boundary: (() => {
+      const rooms=LUNA_L01_CLUB.rooms;
+      const minX=Math.min(...rooms.map(r=>r.x-r.width/2)), maxX=Math.max(...rooms.map(r=>r.x+r.width/2));
+      const minZ=Math.min(...rooms.map(r=>r.z-r.depth/2)), maxZ=5.5; // arrival centre 5.2 plus 0.3m body margin
+      return { kind: "rect" as const, x:(minX+maxX)/2,z:(minZ+maxZ)/2,width:maxX-minX,depth:maxZ-minZ };
+    })(),
+    confidence: 1, reviewStatus: "CONFIRMED", provenance: { derivedFrom: "computed", sourceIds: LUNA_L01_CLUB.rooms.map(r=>r.ref), note: "Existing amenity group plus common arrival; collision and passages govern actual walkability." },
+  }, buildGroundLobby(), ...buildL06CommonAreas()];
   const cores = buildCores();
   model.lifts = cores.lifts;
   model.stairs = cores.stairs;

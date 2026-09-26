@@ -1,3 +1,4 @@
+import { LUNA_GROUND_LOBBY, LUNA_L01_CLUB } from "../interiors/lunaInteriors";
 import type { CanonicalRef, TwinNodeDescriptor } from "../../engine/types";
 import type { ExploreBounds } from "../../engine/components/ExploreCameraDriver";
 import type { NormalizedSpatialObject } from "../../engine/spatial/types";
@@ -7,6 +8,9 @@ import { LUNA_LEVELS } from "../lunaProgramme";
 import { lunaTwinDataProvider } from "../operational/lunaTwinDataProvider";
 import { findSpace } from "../interiors/lunaSpaceLookup";
 import { LUNA_EXTERIOR_ENTRANCE_PLAZA } from "../transitions/lunaTransitions";
+
+let cachedModel: ReturnType<typeof buildLunaReferenceModel> | undefined;
+const referenceModel = () => cachedModel ??= buildLunaReferenceModel();
 
 function contains2D(obj: NormalizedSpatialObject, x: number, z: number): boolean {
   const boundary = obj.boundary;
@@ -28,10 +32,14 @@ function levelForY(y: number) {
 }
 
 export function resolveLunaExploreSpace(position: { x: number; y: number; z: number }, activeInteriorRef: CanonicalRef | null): CanonicalRef {
-  const model = buildLunaReferenceModel();
+  const model = referenceModel();
   const level = levelForY(position.y);
-  const objects = allSpatialObjects(model).filter((obj) => obj.boundary && contains2D(obj, position.x, position.z));
+  const objects = allSpatialObjects(model).filter((obj) => obj.boundary && obj.levelRef === level?.ref && contains2D(obj, position.x, position.z));
   const interiorObjects = activeInteriorRef ? objects.filter((obj) => obj.parentRef === activeInteriorRef || obj.canonicalRef === activeInteriorRef) : [];
+  const podiumSpec = level?.ref === "LUNA-GROUND" ? LUNA_GROUND_LOBBY : level?.ref === "LUNA-L01-AMENITIES" ? LUNA_L01_CLUB : null;
+  const podiumRoom = podiumSpec?.rooms.find(r => Math.abs(position.x-r.x) <= r.width/2 && Math.abs(position.z-r.z) <= r.depth/2);
+  if (podiumRoom) return podiumRoom.ref;
+  if (level?.ref === "LUNA-GROUND" && position.z > 16) return LUNA_EXTERIOR_ENTRANCE_PLAZA;
   const room = interiorObjects.find((obj) => obj.spaceType === "room");
   if (room) return room.canonicalRef;
   const common = objects.find((obj) => obj.spaceType === "common_area" || obj.spaceType === "corridor" || obj.spaceType === "amenity" || obj.spaceType === "service_space");
@@ -42,8 +50,8 @@ export function resolveLunaExploreSpace(position: { x: number; y: number; z: num
 }
 
 export function lunaExploreBounds(activeInteriorRef: CanonicalRef | null, isolatedLevelRef: CanonicalRef | null): ExploreBounds | null {
-  const model = buildLunaReferenceModel();
-  if (activeInteriorRef) {
+  const model = referenceModel();
+  if (activeInteriorRef && activeInteriorRef !== LUNA_GROUND_LOBBY.interiorRef && activeInteriorRef !== LUNA_L01_CLUB.interiorRef) {
     const rooms = model.rooms.filter((room) => room.parentRef === activeInteriorRef && room.boundary?.kind === "rect");
     if (rooms.length) {
       const extents = rooms.map((room) => {
@@ -64,7 +72,7 @@ export function lunaExploreBounds(activeInteriorRef: CanonicalRef | null, isolat
     minX: -level.footprint.width / 2 + 0.6,
     maxX: level.footprint.width / 2 - 0.6,
     minZ: -level.footprint.depth / 2 + 0.6,
-    maxZ: level.footprint.depth / 2 - 0.6,
+    maxZ: level.ref === "LUNA-GROUND" ? 27 : level.footprint.depth / 2 - 0.6,
   };
 }
 
@@ -77,7 +85,7 @@ export function descriptorForExploreTarget(ref: CanonicalRef): TwinNodeDescripto
   if (found?.kind === "unit") return { ref: found.ref, kind: "unit", label: found.label };
   if (found?.kind === "room") return { ref: found.room.ref, kind: "room", label: found.room.label, parentRef: found.spec.interiorRef };
   if (found?.kind === "door") return { ref: found.ref, kind: "door", label: found.label };
-  const model = buildLunaReferenceModel();
+  const model = referenceModel();
   const obj = allSpatialObjects(model).find((entry) => entry.canonicalRef === ref);
   if (!obj) return null;
   const kind = obj.spaceType === "lift" ? "device" : obj.spaceType === "stair" || obj.spaceType === "riser" ? "core-shaft" : obj.spaceType === "structural_element" ? "structural-element" : "room";

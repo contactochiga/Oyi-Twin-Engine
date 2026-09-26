@@ -90,7 +90,7 @@ export function TopCommandBar({
             onClick={onOpenOyi}
             style={{ display: "flex", alignItems: "center", padding: 0, background: "none", border: "none", cursor: onOpenOyi ? "pointer" : "default", flexShrink: 0 }}
           >
-            <img src={oyiLogo} alt="Oyi" width={22} height={22} style={{ display: "block", borderRadius: 6 }} />
+            <img src={typeof oyiLogo === "string" ? oyiLogo : oyiLogo.src} alt="Oyi" width={22} height={22} style={{ display: "block", borderRadius: 6 }} />
           </button>
           <button className="sidebar-toggle" aria-label="Toggle sidebar" aria-expanded={sidebarOpen} aria-controls="luna-sidebar" onClick={onToggleSidebar}>☰</button>
         </div>

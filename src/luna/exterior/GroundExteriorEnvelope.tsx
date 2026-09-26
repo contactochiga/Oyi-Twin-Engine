@@ -1,3 +1,5 @@
+import { podiumSlabPanels } from "../architecture/podiumSlabOpenings";
+import { metricFinishUV } from "./exteriorTextureMaps";
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { LevelDescriptor } from '../../engine/types';
@@ -27,19 +29,20 @@ export function GroundExteriorEnvelope({level}:{level:LevelDescriptor}) {
   const geometry=useMemo(()=>{
     const {width:w,depth:d}=level.footprint,h=level.height,t=.16,halfEntry=GROUND_ENTRANCE_OPENING_WIDTH/2;
     // Existing glazing y=[-.46h,.36h]; do not invent a taller opening.
-    return mergedBoxGeometry([
+    return metricFinishUV(mergedBoxGeometry([
       {size:[t,h,d],position:[-w/2+t/2,0,0]},
       {size:[t,h,d],position:[w/2-t/2,0,0]},
       {size:[w,h,t],position:[0,0,-d/2+t/2]},
-      {size:[w,t,d],position:[0,h/2-t/2,0]},
-      {size:[w,t,d],position:[0,-h/2+t/2,0]},
+      ...podiumSlabPanels(w,d,t,h/2-t/2),
+      // Ground finish follows the real circulation cores; it cannot fill shafts.
+      ...podiumSlabPanels(w,d,t,-h/2-t/2),
       {size:[w*.04,h,t],position:[-w*.48,0,d/2-t/2]},
       {size:[w*.04,h,t],position:[w*.48,0,d/2-t/2]},
       {size:[w*.92,h*.14,t],position:[0,h*.43,d/2-t/2]},
       // Ground glazing has a low plinth. Leave the known entrance axis clear.
       {size:[w*.46-halfEntry,h*.04,t],position:[-(w*.46+halfEntry)/2,-h*.48,d/2-t/2]},
       {size:[w*.46-halfEntry,h*.04,t],position:[(w*.46+halfEntry)/2,-h*.48,d/2-t/2]},
-    ]);
+    ]));
   },[level]);
   return <mesh ref={mesh} name="ground-procedural-envelope" geometry={geometry} material={selected?selectedMaterial:material} castShadow receiveShadow
     onClick={e=>{e.stopPropagation();select({ref:level.ref,kind:'level',label:level.label});}} {...hover}/>;

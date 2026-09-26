@@ -8,3 +8,6 @@ for(const name of ['test:four-lift:browser','test:routed-traversal:browser','tes
  try{output=execFileSync(command[0],command.slice(1),{encoding:'utf8',timeout:300000,maxBuffer:5e6,stdio:['ignore','pipe','pipe']});}catch(e){status='FAIL';output=(e.stdout??'')+'\n'+(e.stderr??'')+'\n'+e.message;}
  writeFileSync(`${dir}/${name.replaceAll(':','-')}.log`,output);results.push({name,status,ms:Date.now()-started});writeFileSync(`${dir}/browser.json`,JSON.stringify(results,null,2));console.log(name,status,output.slice(-600));
 }
+
+// Propagate any recorded failure; known baseline failures remain visible.
+process.exitCode = results.some(result => result.status !== 'PASS') ? 1 : 0;

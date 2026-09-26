@@ -629,7 +629,14 @@ if (typeof window !== "undefined") {
     advanceLiftClock(Math.min(0.1, (now - previous) / 1000));
     previous = now;
   }, 40);
-  import.meta.hot?.dispose(() => clearInterval(timer));
+  // Vite exposes import.meta.hot during development, while consumers such
+  // as Facility OS compile this source through Next.js where ImportMeta has
+  // no `hot` member. Keep HMR cleanup optional without coupling the runtime
+  // provider to Vite's global typings.
+  const hot = (import.meta as ImportMeta & {
+    hot?: { dispose: (callback: () => void) => void };
+  }).hot;
+  hot?.dispose(() => clearInterval(timer));
 }
 
 // ---- Public provider ----

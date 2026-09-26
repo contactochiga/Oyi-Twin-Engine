@@ -61,7 +61,7 @@ try {
   // toSpaceRef. The 2 real L01 amenity rooms this assertion originally
   // checked are still both present and unchanged; the total count grew
   // because a genuinely new space was added, not because L01 changed.
-  assert.equal(luna.commonAreas.filter((c) => c.levelRef === 'LUNA-L01-AMENITIES').length, 2, 'L01 must carry its 2 real amenity rooms (Pool, Lounge)');
+  assert.equal(luna.commonAreas.filter((c) => c.levelRef === 'LUNA-L01-AMENITIES' && c.spaceType === 'amenity').length, 2, 'L01 must carry its 2 real amenity rooms (Pool, Lounge)');
   // True Floor Plan System V1 (L06 Gold Standard) legitimately added 3
   // more common areas on LUNA-L06 itself — the real Lift Lobby plus the
   // two stair-link corridors (l06FloorPlate.ts), registered so the
@@ -69,7 +69,8 @@ try {
   // lobby (Part 32/34's mandatory lift-arrival fix). Nothing existing was
   // removed or changed; the total count grew from 3 to 6.
   assert.equal(luna.commonAreas.filter((c) => c.levelRef === 'LUNA-L06').length, 3, 'L06 must carry its 3 real common circulation zones (Lift Lobby + 2 stair-links)');
-  assert.equal(luna.commonAreas.length, 6, 'L01\'s 2 amenity rooms + the Grand Lobby + L06\'s 3 new common circulation zones');
+  assert.equal(luna.commonAreas.length, 7, 'Two L01 amenity rooms + existing Club aggregate now normalized for real routing + Ground Lobby + three unchanged L06 common zones');
+  assert.ok(luna.commonAreas.some(c => c.canonicalRef === 'LUNA-L01-CLUB'), 'the existing Club identity is a real common route destination, not a fabricated third amenity room');
   assert.deepEqual(luna.units.map((u) => u.canonicalRef).sort(), ['LUNA-L06-APT-A', 'LUNA-L06-APT-B', 'LUNA-L06-APT-C', 'LUNA-L06-APT-D'].sort());
   checks.push('4. Normalized spaces: L06 units and L01 common areas match Luna\'s own real canonical refs exactly');
 

@@ -28,6 +28,8 @@ export interface CameraFlightTarget {
    * (6m), or the user's very first zoom-in click pulls the camera back
    * out through a wall. Omit to keep the current minDistance (Phase 12). */
   minDistance?: number;
+  /** Optional look limit for walking shots; building overview keeps its default. */
+  maxPolarAngle?: number;
 }
 
 interface CameraRigProps {
@@ -118,6 +120,7 @@ export const CameraRig = forwardRef<OrbitControlsImpl, CameraRigProps>(function 
   const [flying, setFlying] = useState(flightTarget !== null);
   const [settledTarget, setSettledTarget] = useState<[number, number, number]>(DEFAULT_TARGET);
   const [minDistance, setMinDistance] = useState(6);
+  const [maxPolarAngle, setMaxPolarAngle] = useState(Math.PI * 0.495);
   const lastFlightTarget = useRef(flightTarget);
 
   // A *new* flightTarget (a different preset clicked) restarts the flight
@@ -142,6 +145,7 @@ export const CameraRig = forwardRef<OrbitControlsImpl, CameraRigProps>(function 
           onSettle={(finalTarget) => {
             setSettledTarget(finalTarget);
             setMinDistance(flightTarget?.minDistance ?? 6);
+            setMaxPolarAngle(flightTarget?.maxPolarAngle ?? Math.PI * 0.495);
             setFlying(false);
             if (onArrive && flightTarget) onArrive(flightTarget);
           }}
@@ -160,7 +164,7 @@ export const CameraRig = forwardRef<OrbitControlsImpl, CameraRigProps>(function 
           // clamps distance on its very first update() call, and so a
           // user can manually zoom out into Ring 2/3 from any position.
           maxDistance={900}
-          maxPolarAngle={Math.PI * 0.495}
+          maxPolarAngle={maxPolarAngle}
           enabled={!manualLook}
           enableRotate={!manualLook}
           enablePan={!manualLook}

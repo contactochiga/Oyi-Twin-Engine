@@ -1,8 +1,10 @@
 import { useMemo } from "react";
 import * as THREE from "three";
-import { ExteriorPalm, ExteriorShrub } from "./exterior/ExteriorPlanting";
+import { ExteriorPalm, ExteriorShrubBatch, type ShrubPlacement } from "./exterior/ExteriorPlanting";
+import { metricFinishUV } from "./exterior/exteriorTextureMaps";
 import { exteriorMaterials } from "./exterior/exteriorMaterials";
-import { LUNA_SITE, LUNA_LEVELS } from "./lunaProgramme";
+import { sitePalmPlacements } from "./exterior/sitePlantingLayout";
+import { LUNA_SITE } from "./lunaProgramme";
 import { lunaMaterialFactories } from "./lunaMaterials";
 import { useLightingMode } from "../engine";
 import { mergedBoxGeometry, type BoxSpec } from "../engine/utils/geometryUtils";
@@ -38,6 +40,10 @@ const ACCESS_CONNECTOR_POINTS: Array<[number, number]> = [
  * were built as their visual replacement (Phase 15B report §6), subject
  * to the same regression pass as every other Phase 15B change. */
 export function LunaEnvironment() {
+  const finishPlanes = useMemo(() => [ [14,20], [2.4,16] ].map(([width,depth]) => {
+    const source=new THREE.PlaneGeometry(width,depth);
+    const geometry=metricFinishUV(source);source.dispose();return geometry;
+  }), []);
   const drivewayMaterial = useMemo(() => exteriorMaterials.driveway(), []);
   const connectorRoadMaterial = useMemo(() => lunaMaterialFactories.contextRoad(), []);
   const connectorSidewalkMaterial = useMemo(() => exteriorMaterials.paving(), []);
@@ -69,10 +75,12 @@ export function LunaEnvironment() {
         rotationY,
       });
     }
-    return mergedBoxGeometry(specs);
+    return metricFinishUV(mergedBoxGeometry(specs));
   }, []);
   const lawnMaterial = useMemo(() => new THREE.MeshStandardMaterial({color:"#4e5b3a",roughness:1}), []);
   const pavingMaterial = useMemo(() => exteriorMaterials.paving(), []);
+  const boundaryGeometry = useMemo(()=>metricFinishUV(new THREE.BoxGeometry(.6,.7,LUNA_SITE.depth+30)),[]);
+  const medianGeometry = useMemo(()=>metricFinishUV(new THREE.BoxGeometry(4,.5,10)),[]);
   const boundaryMaterial = useMemo(() => exteriorMaterials.limestone(), []);
   const bollardPostMaterial = useMemo(() => lunaMaterialFactories.darkAluminium(), []);
   const lightingMode = useLightingMode();
@@ -84,13 +92,7 @@ export function LunaEnvironment() {
   // Non-canonical landscape relocation: the inherited x=±8 palms grew
   // through the canopy. Derived setback clears its unchanged width and the
   // Ground envelope; it does not move building/circulation/access geometry.
-  const groundWidth=LUNA_LEVELS.find(l=>l.ref==='LUNA-GROUND')!.footprint.width;
-  const palmSpots: Array<[number, number, number]> = [
-    [-groundWidth*.31-3.3, 0, LUNA_SITE.depth / 2 - 1],
-    [groundWidth*.31+3.3, 0, LUNA_SITE.depth / 2 - 1],
-    [-groundWidth/2-3, 0, LUNA_SITE.depth / 2 - 8],
-    [groundWidth/2+3, 0, LUNA_SITE.depth / 2 - 8],
-  ];
+  const palmSpots=useMemo(()=>sitePalmPlacements(LUNA_SITE.depth),[]);
 
   return (
     <group>
@@ -105,21 +107,20 @@ export function LunaEnvironment() {
           with a planted median suggesting a real loop rather than a single
           straight apron. */}
       <mesh raycast={()=>null} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.03, LUNA_SITE.depth / 2 + 8]} receiveShadow>
-        <planeGeometry args={[14, 20]} />
+        <primitive object={finishPlanes[0]} attach="geometry" />
         <primitive object={drivewayMaterial} attach="material" />
       </mesh>
       <mesh raycast={()=>null} position={[0, 0.25, LUNA_SITE.depth / 2 + 8]} castShadow>
-        <boxGeometry args={[4, 0.5, 10]} />
+        <primitive object={medianGeometry} attach="geometry" />
         <primitive object={boundaryMaterial} attach="material" />
       </mesh>
-      {[[-2.2, LUNA_SITE.depth / 2 + 4], [2.2, LUNA_SITE.depth / 2 + 12]].map(([x, z], i) => (
-        <ExteriorShrub key={`median-${i}`} position={[x,0,z]} scale={[1.2,1.4,1.2]}/>
-      ))}
+      {/* Planting stays within the existing raised median below. The two old
+          outliers at x=±2.2 grew through the adjacent vehicle paving. */}
 
       {/* Pedestrian path from the drop-off loop toward the entrance canopy,
           distinct paving from the vehicular driveway surface. */}
       <mesh raycast={()=>null} rotation={[-Math.PI / 2, 0, 0]} position={[7.5, -0.02, LUNA_SITE.depth / 2 + 6]} receiveShadow>
-        <planeGeometry args={[2.4, 16]} />
+        <primitive object={finishPlanes[1]} attach="geometry" />
         <primitive object={pavingMaterial} attach="material" />
       </mesh>
 
@@ -137,7 +138,7 @@ export function LunaEnvironment() {
       {/* Low boundary treatment along both site edges. */}
       {[-LUNA_SITE.width / 2 + 1, LUNA_SITE.width / 2 - 1].map((x, i) => (
         <mesh raycast={()=>null} key={`boundary-${i}`} position={[x, 0.35, 0]} receiveShadow castShadow material={boundaryMaterial}>
-          <boxGeometry args={[0.6, 0.7, LUNA_SITE.depth + 30]} />
+          <primitive object={boundaryGeometry} attach="geometry" />
         </mesh>
       ))}
 
@@ -164,6 +165,7 @@ export function LunaEnvironment() {
 // pedestrian path (2.4 x 16) and boundary extents. No operational drainage,
 // gate, ramp or changed circulation is inferred from these surface seams.
 function ArrivalSurfaceDetail(){
+  const shrubs=useMemo(()=>Array.from({length:16},(_,i)=>({position:[(i%2===0?-1:1)*1.15,.5,30.0+Math.floor(i/2)*1.12],scale:[1.5,.6,1.1]} as ShrubPlacement)),[]);
   const paving=useMemo(()=>exteriorMaterials.paving(),[]),soil=useMemo(()=>exteriorMaterials.soil(),[]);
   const seams=useMemo(()=>{
     const a:BoxSpec[]=[];
@@ -186,6 +188,6 @@ function ArrivalSurfaceDetail(){
     <mesh geometry={seams} raycast={()=>null}><meshStandardMaterial color="#393c36" roughness={1}/></mesh>
     <mesh geometry={edge} material={paving} raycast={()=>null} receiveShadow/>
     <mesh position={[0,.515,34]} rotation={[-Math.PI/2,0,0]} material={soil} raycast={()=>null}><planeGeometry args={[3.8,9.8]}/></mesh>
-    {Array.from({length:16},(_,i)=><ExteriorShrub key={i} position={[(i%2===0?-1:1)*1.15,.5,30.0+Math.floor(i/2)*1.12]} scale={[1.5,.6,1.1]}/>)}
+    <ExteriorShrubBatch placements={shrubs}/>
   </group>;
 }

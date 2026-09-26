@@ -86,6 +86,10 @@ try {
   assert.deepEqual(narrationAfterTeleport, [], 'a TELEPORT arrival must never generate real-route narration (approaching/opening/crossing) — it is a direct, policy-checked arrival, never a fabricated physical route');
   const mapVisible = await page.evaluate(() => Boolean(document.querySelector('[data-luna-spatial-map="LUNA-L06-APT-A"]')));
   assert.ok(mapVisible, 'the Apartment A map must be active immediately after a TELEPORT arrival — mapSpec must react to TELEPORT the same way it reacts to TOUR');
+  // Wait for the real camera-derived dot. The existing camera easing can still
+  // be 8cm above the floor-context tolerance after the old fixed 800ms delay.
+  // No synthetic position/current-space update and no weakened dot assertion.
+  await page.waitForSelector('[data-luna-live-dot]', { timeout: 10000 });
   const dotPresent = await page.evaluate(() => Boolean(document.querySelector('[data-luna-live-dot]')));
   assert.ok(dotPresent, 'the live position dot must be present after a TELEPORT arrival — currentSpaceRef is real (focusRoom sets it), not just a camera cut with no spatial-truth update');
   await shot('teleport-03-entered-kitchen');

@@ -10,3 +10,6 @@ for(const name of names){
  writeFileSync(`${dir}/${name.replaceAll(':','-')}.log`,output);results.push({name,status,ms:Date.now()-started});
  writeFileSync(`${dir}/deterministic.json`,JSON.stringify(results,null,2));console.log(name,status);
 }
+
+// Propagate any recorded failure; known baseline failures remain visible.
+process.exitCode = results.some(result => result.status !== 'PASS') ? 1 : 0;

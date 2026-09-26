@@ -6,7 +6,10 @@ import { useSystemAssetOpacity } from "../hooks/useSystemAssetOpacity";
 import { useCanonicalHoverHandlers } from "../hooks/useHover";
 import { mergedBoxGeometry, type BoxSpec } from "../utils/geometryUtils";
 
+import { rectangularPanels } from "../utils/rectangularPanels";
+
 interface StructuralCoreWallProps {
+  frontOpenings?: readonly { x: number; width: number; baseElevation: number; height: number }[];
   ref_: CanonicalRef;
   label: string;
   centerX: number;
@@ -40,6 +43,7 @@ export function StructuralCoreWall({
   material,
   selectedMaterial,
   revealFront = false,
+  frontOpenings,
 }: StructuralCoreWallProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const { select } = useSelection();
@@ -55,8 +59,13 @@ export function StructuralCoreWall({
       { size: [thickness, height, halfDepth * 2], position: [centerX - halfWidth - thickness / 2, 0, centerZ] },
       { size: [thickness, height, halfDepth * 2], position: [centerX + halfWidth + thickness / 2, 0, centerZ] },
     ];
-    return mergedBoxGeometry(revealFront ? specs.filter((_, i) => i !== 1) : specs);
-  }, [centerX, centerZ, halfWidth, halfDepth, thickness, height, revealFront]);
+    const withoutFront = specs.filter((_, i) => i !== 1);
+    if (revealFront) return mergedBoxGeometry(withoutFront);
+    if (!frontOpenings?.length) return mergedBoxGeometry(specs);
+    const front = rectangularPanels(halfWidth * 2 + thickness * 2, height, thickness,
+      frontOpenings.map(o => ({ x: o.x - centerX, y: o.baseElevation + o.height / 2 - baseElevation - height / 2, width: o.width, height: o.height })));
+    return mergedBoxGeometry([...withoutFront, ...front.map(b => ({ ...b, position: [b.position[0] + centerX, b.position[1], centerZ + halfDepth + thickness / 2] as [number, number, number] }))]);
+  }, [centerX, centerZ, halfWidth, halfDepth, thickness, height, revealFront, frontOpenings, baseElevation]);
 
   return (
     <mesh

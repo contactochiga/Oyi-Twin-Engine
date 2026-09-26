@@ -30,6 +30,20 @@ try {
     if (button) button.click();
   });
   await page.waitForFunction(() => document.body.innerText.includes('Level 6') && document.body.innerText.includes('Apartment A'));
+  // The card updates before its camera flight finishes. Starting Explore at
+  // that instant interrupts the flight over PH and tests an unrelated target.
+  // Wait for the real, source-derived L06 camera pose before manual movement.
+  await page.evaluate(async () => {
+    const url = performance.getEntriesByType('resource').map(r=>r.name).find(n=>n.includes('@react-three_fiber'));
+    const f = await import(url);
+    const presets = await import('/src/luna/lunaCameraPresets.ts');
+    window.exploreTestState = () => f._roots.get(document.querySelector('canvas')).store.getState();
+    window.exploreTestArrival = presets.levelCloseCamera('LUNA-L06').position;
+  });
+  await page.waitForFunction(() => {
+    const s=window.exploreTestState(), p=s.camera.position.toArray();
+    return !!s.controls && Math.hypot(...p.map((v,i)=>v-window.exploreTestArrival[i]))<.05;
+  }, { timeout:10000 });
   results.push('Presentation context: selecting L06 activates the existing single Spatial Card while remaining in the live Presentation UI.');
 
   await page.click('[data-explore-activate]');

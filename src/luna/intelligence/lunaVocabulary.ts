@@ -239,6 +239,9 @@ export const SPACE_ALIASES: SpaceAlias[] = [
   { ref: "LUNA-L10-APT-A", kind: "interior", patterns: ["premium residence", "level 10 apartment"] },
   { ref: "LUNA-B1", kind: "level", patterns: ["the basement", "basement", "b1"] },
   { ref: "LUNA-GROUND", kind: "level", patterns: ["the ground floor", "ground floor", "the ground level"] },
+  { ref: "LUNA-L01-AMENITIES", kind: "level", patterns: ["level 1", "floor 1", "l01", "amenity level", "the first floor"] },
+  { ref: "LUNA-L01-CLUB-POOL", kind: "room", patterns: ["amenity pool", "l01 pool", "club pool"] },
+  { ref: "LUNA-L01-CLUB-LOUNGE", kind: "room", patterns: ["amenity lounge", "l01 lounge", "club lounge"] },
   { ref: "LUNA-L06", kind: "level", patterns: ["level 6", "floor 6", "the sixth floor", "l06"] },
   { ref: "LUNA-L10", kind: "level", patterns: ["level 10", "floor 10", "the tenth floor"] },
 ];
@@ -257,7 +260,11 @@ function findByPattern<T extends { patterns: string[] }>(list: T[], text: string
   // "bedroom light" collision, and "booster pump 01" beats "pump 01" vs
   // "pump 1" ambiguity consistently.
   const sorted = [...list].sort((a, b) => Math.max(...b.patterns.map((p) => p.length)) - Math.max(...a.patterns.map((p) => p.length)));
-  return sorted.find((item) => item.patterns.some((p) => text.includes(p)));
+  return sorted.find((item) => item.patterns.some((p) => {
+    const index = text.indexOf(p);
+    // A numeric alias must end at a numeric boundary: Level 1 is not Level 10.
+    return index >= 0 && (!/\d$/.test(p) || !/\d/.test(text[index + p.length] ?? ""));
+  }));
 }
 
 export function matchSystem(text: string): OperationalSystem | undefined {
