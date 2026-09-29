@@ -140,6 +140,19 @@ export interface OyiResponse {
  * controller never invents wording about a building it doesn't model. */
 export type ExplainAsset = (assetRef: CanonicalRef) => string;
 
+/**
+ * A host-owned transport into the authenticated Oyi Core conversation API.
+ * Twin deliberately owns no endpoint, credentials or model client: a host
+ * that can establish identity may supply this adapter, while an unconfigured
+ * host must disclose the handoff requirement rather than invent an answer.
+ */
+export type CoreConversationHandoff = (input: {
+  message: string;
+  context: TwinIntelligenceContext;
+  scope: InteractionScope;
+  reason: string;
+}) => Promise<OyiResponse>;
+
 export class TwinIntelligenceController {
   private twinData: TwinDataProvider;
   private twinRuntime: TwinRuntimeProvider;
@@ -147,6 +160,7 @@ export class TwinIntelligenceController {
   private explainAsset: ExplainAsset;
   private buildRoute?: (system: OperationalSystem, targetRef: CanonicalRef) => ServiceRoute | null;
   private resolveRelationship?: (ref: CanonicalRef, type: EngineeringRelationshipType) => RelationshipLookupResult | null;
+  private coreConversationHandoff?: CoreConversationHandoff;
 
   constructor(
     twinData: TwinDataProvider,
@@ -154,7 +168,8 @@ export class TwinIntelligenceController {
     scene: SceneActions,
     explainAsset: ExplainAsset,
     buildRoute?: (system: OperationalSystem, targetRef: CanonicalRef) => ServiceRoute | null,
-    resolveRelationship?: (ref: CanonicalRef, type: EngineeringRelationshipType) => RelationshipLookupResult | null
+    resolveRelationship?: (ref: CanonicalRef, type: EngineeringRelationshipType) => RelationshipLookupResult | null,
+    coreConversationHandoff?: CoreConversationHandoff
   ) {
     this.twinData = twinData;
     this.twinRuntime = twinRuntime;
@@ -162,6 +177,7 @@ export class TwinIntelligenceController {
     this.explainAsset = explainAsset;
     this.buildRoute = buildRoute;
     this.resolveRelationship = resolveRelationship;
+    this.coreConversationHandoff = coreConversationHandoff;
   }
 
   async handleIntent(intent: ParsedIntent, scopePolicy: ScopePolicy, context: TwinIntelligenceContext): Promise<OyiResponse> {
@@ -190,9 +206,18 @@ export class TwinIntelligenceController {
       case "show_relationship":
         return this.handleShowRelationship(intent, scopePolicy, context);
       default:
+        if (this.coreConversationHandoff) {
+          return this.coreConversationHandoff({
+            message: intent.raw,
+            context,
+            scope: scopePolicy.scope,
+            reason: intent.unresolvedReason ?? "twin_domain_unresolved",
+          });
+        }
         return {
           ok: false,
-          text: intent.unresolvedReason ?? "I didn't understand that. Try something like \"show me the water system\" or \"take me to Apartment 6A\".",
+          text: "This is not a resolved Twin spatial request. Connect this host to authenticated Oyi Core conversation to continue.",
+          data: { handoff_required: true, handoff_reason: intent.unresolvedReason ?? "twin_domain_unresolved" },
           context,
         };
     }
