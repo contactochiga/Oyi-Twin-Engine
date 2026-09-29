@@ -1,4 +1,5 @@
 import oyiLogo from "../../assets/oyi-logo.png";
+import { imageAssetUrl } from "./imageAssetUrl";
 import type { ExploreInputAction, ExploreMovementIntent } from "../../spatial/exploreInput";
 import type { PointerEvent } from "react";
 
@@ -69,7 +70,7 @@ export function ExploreController({ active, movement, targetLabel, onActivate, o
       </div>
       <div className="explore-secondary" aria-label="Explore secondary controls">
         <button className="explore-secondary__button explore-secondary__button--oyi" data-explore-oyi onClick={onOpenOyi} aria-label="Open Oyi">
-          <img src={typeof oyiLogo === "string" ? oyiLogo : oyiLogo.src} alt="" aria-hidden="true" />
+          <img src={imageAssetUrl(oyiLogo)} alt="" aria-hidden="true" />
           <span>OYI</span>
         </button>
         <button className="explore-secondary__button" data-explore-exit onClick={onExit}>

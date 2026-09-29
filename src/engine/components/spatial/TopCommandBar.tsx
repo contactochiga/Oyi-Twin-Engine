@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { GLASS_SURFACE } from "./glassStyle";
 import { WeatherTimeSurface, type WeatherState } from "./WeatherTimeSurface";
 import oyiLogo from "../../assets/oyi-logo.png";
+import { imageAssetUrl } from "./imageAssetUrl";
 
 import type { LightingMode } from "../../hooks/useLightingMode";
 import type { OyiResponse } from "../../twinIntelligence";
@@ -90,7 +91,7 @@ export function TopCommandBar({
             onClick={onOpenOyi}
             style={{ display: "flex", alignItems: "center", padding: 0, background: "none", border: "none", cursor: onOpenOyi ? "pointer" : "default", flexShrink: 0 }}
           >
-            <img src={typeof oyiLogo === "string" ? oyiLogo : oyiLogo.src} alt="Oyi" width={22} height={22} style={{ display: "block", borderRadius: 6 }} />
+            <img src={imageAssetUrl(oyiLogo)} alt="Oyi" width={22} height={22} style={{ display: "block", borderRadius: 6 }} />
           </button>
           <button className="sidebar-toggle" aria-label="Toggle sidebar" aria-expanded={sidebarOpen} aria-controls="luna-sidebar" onClick={onToggleSidebar}>☰</button>
         </div>
